@@ -1,0 +1,27 @@
+{
+  "id": "gen-1762567114-Yi8CZq9UZvwGzxGtqa8u",
+  "provider": "DeepInfra",
+  "model": "meta-llama/llama-3.2-11b-vision-instruct",
+  "object": "chat.completion",
+  "created": 1762567114,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "# Vocabulary\n\n1. **anthropology**\n2. **philosophy**\n3. **misanthrope**\n4. **hold sb., accountable for**\n5. **outlier**\n6. **stunting**\n7. **malnourished**\n8. **phenomenally**\n9. **hangs in the balance**\n10. **balance the books**\n11. **check and balance**\n12. **balance out**\n13. **throw off balance**\n14. **magic wand**\n15. **gut microbiome**\n16. **hovel**\n17. **crave**\n18. **shove**\n19. **coil**\n20. **plummet**\n21. **cat has nine lives**\n22. **be the cat’s whiskers**\n23. **let the cat out of the bag**\n24. **put the cat among the pigeons**\n25. **be inclined to**\n26. **inclination**\n27. **afflict (v.)**\n28. **affliction(s) (n.)**\n29. **afflictive (adj.)**\n30. **be afflicted with/by**\n31. **progressive (adj.)**\n32. **with the aid of**\n33. **to a degree**\n34. **disquieting**\n35. **empower**\n36. **fluent**\n37. **lag**\n38. **mangle**\n39. **misapprehension**\n40. **optimist**\n41. **prowl**\n42. **recitation**\n43. **stupefy**\n44. **sulky**\n45. **supplement**\n46. **surge**\n47. **trait**\n48. **unscrupulous**\n49. **abstain**\n50. **accommodate**\n51. **exalt**\n52. **far-fetched**\n53. **self-seeking**\n54. **submissive**\n55. **tally**\n56. **taskmaster**\n57. **transform**\n58. **upheaval**\n59. **beacon**\n60. **berserk**\n61. **celestial**\n62. **chasten**\n63. **confiscate**\n64. **data**\n65. **detract**\n66. **encounter**\n67. **epic**\n68. **pantomime**\n69. **pessimist**\n70. **precaution**\n71. **prosecute**\n72. **puncture**\n73. **retaliate**\n74. **sham**\n75. **uncouth**\n76. **underscore**\n77. **wholesome**\n78. **wistful**",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6531,
+    "completion_tokens": 546,
+    "total_tokens": 7077,
+    "prompt_tokens_details": null
+  }
+}

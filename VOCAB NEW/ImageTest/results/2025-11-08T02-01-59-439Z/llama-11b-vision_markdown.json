@@ -1,0 +1,27 @@
+{
+  "id": "gen-1762567670-gf3vml8FvFM9ga2Bx3UL",
+  "provider": "DeepInfra",
+  "model": "meta-llama/llama-3.2-11b-vision-instruct",
+  "object": "chat.completion",
+  "created": 1762567670,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "# Vocabulary\n\n1. **anthropology**\n2. **philosophy**\n3. **misanthrope**\n4. **hold sb., accountable for**\n5. **outlier**\n6. **stunting**\n7. **malnourished**\n8. **phenomenally**\n9. **hangs in the balance**\n10. **balance the books**\n11. **check and balance**\n12. **balance out**\n13. **throw off balance**\n14. **magic wand**\n15. **gut microbiome**\n16. **hovel**\n17. **crave**\n18. **shove**\n19. **coil**\n20. **plummet**\n21. **cat has nine lives**\n22. **be the cat’s whiskers**\n23. **let the cat out of the bag**\n24. **put the cat among the pigeons**\n25. **be inclined to**\n26. **inclination**\n27. **afflict (v.)**\n28. **affliction(s) (n.)**\n29. **afflictive (adj.)**\n30. **be afflicted with/by**\n31. **progressive (adj.)**\n32. **with the aid of**\n33. **to a degree**\n34. **disillusioned (adj.)**\n35. **disquieting**\n36. **empower**\n37. **fluent**\n38. **lag**\n39. **mangle**\n40. **misapprehension**\n41. **optimist**\n42. **prowl**\n43. **recitation**\n44. **stupefy**\n45. **sulky**\n46. **supplement**\n47. **surge**\n48. **trait**\n49. **unscrupulous**\n50. **abstain**\n51. **accommodate**\n52. **allegiance**\n53. **amalgamate**\n54. **append**\n55. **commemorate**\n56. **enumerate**\n57. **exalt**\n58. **far-fetched**\n59. **extort**\n60. **glum**\n61. **replica**\n62. **responsive**\n63. **sanctuary**\n64. **self-seeking**\n65. **submissive**\n66. **tally**\n67. **taskmaster**\n68. **transform**\n69. **upheaval**\n70. **beacon**\n71. **berserk**\n72. **celestial**\n73. **chasten**\n74. **confiscate**\n75. **data**\n76. **detract**\n77. **encounter**\n78. **epic**\n79. **pantomime**\n80. **pessimist**\n81. **precaution**\n82. **prosecute**\n83. **puncture**\n84. **retaliate**\n85. **sham**\n86. **uncouth**\n87. **underscore**\n88. **wholesome**\n89. **wistful**",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6531,
+    "completion_tokens": 617,
+    "total_tokens": 7148,
+    "prompt_tokens_details": null
+  }
+}

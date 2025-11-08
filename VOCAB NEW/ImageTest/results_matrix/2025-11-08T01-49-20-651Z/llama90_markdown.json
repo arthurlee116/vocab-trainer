@@ -1,0 +1,40 @@
+{
+  "experiment": {
+    "name": "llama90_markdown",
+    "model": "meta-llama/llama-3.2-90b-vision-instruct",
+    "temperature": 0,
+    "promptKey": "markdownDualPass"
+  },
+  "promptStyle": {
+    "system": "Perform two-pass transcription: pass one captures everything, pass two verifies spelling. Mark uncertain items with \"(?)\" and remember to drop (n.)/(adj.) tails while keeping curly apostrophes intact.",
+    "user": "输出 Markdown：二级标题 = 区块名，下面使用有序列表。完成后列出 `Uncertain:` 行，写出你标记的问题词。只提取编号词汇，不要把区块标题当成词条。去掉 (n.)、(adj.) 等词性括号，让文本与核心单词一致，同时保留花体撇号/连字符（例如 “cat’s”）。",
+    "responseFormat": null
+  },
+  "result": {
+    "id": "gen-1762566755-VcnyadCGH0GbhUrasrdF",
+    "provider": "DeepInfra",
+    "model": "meta-llama/llama-3.2-90b-vision-instruct",
+    "object": "chat.completion",
+    "created": 1762566755,
+    "choices": [
+      {
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "## Goalkeeper\n1. anthropology\n2. philosophy\n3. misanthrope\n4. hold sb. accountable for\n5. outline\n6. stunting\n7. malnourished\n8. phenomenally\n9. hangs in the balance\n10. balance the books\n11. check and balance\n12. balance out\n13. throw off balance\n14. magic wand\n15. gut microbiome\n\n## Hassan\n1. hovel\n2. dank\n3. covet\n4. crave\n5. spool\n6. horde\n7. shove\n8. trophy\n9. uncoil\n10. coil\n11. overcast\n12. ragged\n13. plummet\n\n## 14 Steps\n1. a cat has nine lives\n2. be the cat's whiskers\n3. let the cat out of the bag\n4. put the cat among the pigeons\n5. be inclined to\n6. inclination\n7. afflict \n8. affliction\n9. afflictive\n10. be afflicted with/by\n11. progressive\n12. with the aid of\n13. to a degree\n14. disillusioned\n15. disillusionment\n16. hold on to\n17. lead up to\n18. sanity\n19. slashing\n20. swerve\n21. dreaded\n22. enormity\n23. enormous\n24. peer at\n25. jack\n26. jack up\n27. frail\n28. frailty\n29. be all set\n30. penetrate\n31. penetrating\n32. fumble\n33. fumble with/in sth. for sth.\n34. be filled/overflowing with\n35. indifference\n36. indifferent\n37. scriptural\n38. admonition\n39. admonitory\n40. beat down\n\n## Unit 13\n1. adhere\n2. affirm\n3. atrocity\n4. cope\n5. deter\n6. disquieting\n7. empower\n8. fluent\n9. lag\n10. mangle\n11. misapprehension\n12. optimist\n13. prowl\n14. recitation\n15. stupefy\n16. sulky\n17. supplement\n18. surge\n19. trait\n20. unscrupulous\n\n## Unit 14\n1. abstain\n2. accommodate\n3. allegiance\n4. amalgamate\n5. append\n6. commemorate\n7. enumerate\n8. exalt\n9. far-fetched\n10. extort\n11. glum\n12. replica\n13. responsive\n14. sanctuary\n15. self-seeking\n16. submissive\n17. tally\n18. taskmaster\n19. transform\n20. upheaval\n\n## Unit 15\n1. beacons\n2. berserk\n3. celestial\n4. chasten\n5. confiscate\n6. data\n7. detract\n8. encounter\n9. epic\n10. pantomime\n11. pessimist\n12. precaution\n13. prosecute\n14. puncture\n15. retaliate\n16. sham(?)\n17. uncouth\n18. underscore\n19. wholesome\n20. wistful\n\nUncertain: sham(?)",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 2020,
+      "completion_tokens": 703,
+      "total_tokens": 2723,
+      "prompt_tokens_details": null
+    }
+  }
+}

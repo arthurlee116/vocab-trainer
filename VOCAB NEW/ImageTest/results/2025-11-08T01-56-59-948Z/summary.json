@@ -1,0 +1,56 @@
+[
+  {
+    "experiment": "gpt-4o-mini_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5-chat_json",
+    "success": false,
+    "error": "OpenRouter request failed (400): {\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Invalid schema for response_format 'gpt5_sections': In context=('properties', 'section"
+  },
+  {
+    "experiment": "gpt-4o-mini_plaintext",
+    "success": true
+  },
+  {
+    "experiment": "claude-3.5-sonnet_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-4o_double_pass_markdown",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5-pro_markdown",
+    "success": false,
+    "error": "OpenRouter request failed (402): {\"error\":{\"message\":\"This request requires more credits, or fewer max_tokens. You requested up to 128000 tokens, but can only afford 83542. To increase, visit https://openrouter.ai/settings/credits an"
+  },
+  {
+    "experiment": "gemini-2.0-flash_json",
+    "success": true
+  },
+  {
+    "experiment": "llama-11b-vision_markdown",
+    "success": true
+  },
+  {
+    "experiment": "claude-sonnet-4.5_json",
+    "success": true
+  },
+  {
+    "experiment": "gemini-2.5-pro_json",
+    "success": true
+  },
+  {
+    "experiment": "qwen3-vl-235b_markdown",
+    "success": true
+  },
+  {
+    "experiment": "nova-premier_json",
+    "success": true
+  },
+  {
+    "experiment": "polaris-alpha_markdown",
+    "success": true
+  }
+]

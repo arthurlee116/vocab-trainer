@@ -1,0 +1,4 @@
+Error: OpenRouter request failed (405): {"error":{"message":"Provider returned error","code":405,"metadata":{"raw":"{\"detail\":\"json_schema response format is not supported for model: nvidia/NVIDIA-Nemotron-Nano-12B-v2-VL\"}","provider_name":"DeepInfra"}},"user_id":"user_2vbe2cpITrdRaQHrwtbhY5NHtb9"}
+    at runRequest (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:259:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:343:24)

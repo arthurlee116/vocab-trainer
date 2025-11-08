@@ -1,0 +1,28 @@
+[
+  {
+    "experiment": "gpt-4o-mini_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-4o-mini_plaintext",
+    "success": true
+  },
+  {
+    "experiment": "claude-3.5-sonnet_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-4o_double_pass_markdown",
+    "success": true
+  },
+  {
+    "experiment": "gemini-1.5-flash_json",
+    "success": false,
+    "error": "OpenRouter request failed (400): {\"error\":{\"message\":\"google/gemini-1.5-flash is not a valid model ID\",\"code\":400},\"user_id\":\"user_2vbe2cpITrdRaQHrwtbhY5NHtb9\"}"
+  },
+  {
+    "experiment": "llama-90b-vision_markdown",
+    "success": false,
+    "error": "OpenRouter request failed (429): {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"meta-llama/llama-3.2-90b-vision-instruct is temporarily rate-limited upstream. Please retry shortly, or add your own key to "
+  }
+]

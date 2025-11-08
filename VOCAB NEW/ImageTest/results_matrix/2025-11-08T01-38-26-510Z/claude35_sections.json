@@ -1,0 +1,88 @@
+{
+  "experiment": {
+    "name": "claude35_sections",
+    "model": "anthropic/claude-3.5-sonnet",
+    "temperature": 0,
+    "promptKey": "strictSections"
+  },
+  "promptStyle": {
+    "system": "你是一个严格的视觉 OCR 代理，读取学习资料时必须逐字核对。保留括号、短划线和复数标记，禁止臆造任何内容。",
+    "user": "阅读给定的单词表照片，按照区块（标题 + 列表）输出 JSON。每个条目需要原样文本，若你不确定请在 note 字段里写 \"uncertain\"。",
+    "responseFormat": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "sections_payload",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "sections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "heading": {
+                    "type": "string"
+                  },
+                  "entries": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "type": "integer"
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "note": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "text"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "heading",
+                  "entries"
+                ]
+              }
+            }
+          },
+          "required": [
+            "sections"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "result": {
+    "id": "gen-1762565939-JX4xtISDbz2l3jJQABkR",
+    "provider": "Amazon Bedrock",
+    "model": "anthropic/claude-3.5-sonnet",
+    "object": "chat.completion",
+    "created": 1762565939,
+    "choices": [
+      {
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\n  \"Goalkeeper\": {\n    \"items\": [\n      \"1.anthropology\",\n      \"2.philosophy\",\n      \"3.timekeeper\",\n      \"4.hold sb. accountable for\",\n      \"5.outlier\",\n      \"6.stunting\",\n      \"7.malnourished\",\n      \"8.phenomenally\",\n      \"9.hangs in the balance\",\n      \"10.balance the books\",\n      \"11.check and balance\",\n      \"12.balance out\",\n      \"13.throw off balance\",\n      \"14.magic wand\",\n      \"15.gut microbiome\"\n    ]\n  },\n  \"Hassan\": {\n    \"items\": [\n      \"1.hovel\",\n      \"2.dank\",\n      \"3.covet\",\n      \"4.crave\",\n      \"5.spool\",\n      \"6.horde\",\n      \"7.shove\",\n      \"8.topple\",\n      \"9.uncoil\",\n      \"10.coil\",\n      \"11.overcast\",\n      \"12.ragged\",\n      \"13.plummet\"\n    ]\n  },\n  \"14 Steps\": {\n    \"items\": [\n      \"1.a cat has nine lives\",\n      \"2.be the cat's whiskers\",\n      \"3.let the cat out of the bag\",\n      \"4.put the cat among the pigeons\",\n      \"5.be inclined to\",\n      \"6.inclination (n.)\",\n      \"7.afflict (v.)\",\n      \"8.affliction(s) (n.)\",\n      \"9.afflictive (adj.)\",\n      \"10.be afflicted with/ by\",\n      \"11.progressive (adj.)\",\n      \"12.with the aid of\",\n      \"13.to a degree\",\n      \"14.disillusioned (adj.)\",\n      \"15.disillusionment (n.)\",\n      \"16.hold on to\",\n      \"17.lead up to\",\n      \"18.sanity (n.)\",\n      \"19.slashing (adj.)\",\n      \"20.swerve (v.)\",\n      \"21.dreaded (adj.)\",\n      \"22.enormity (n.)\",\n      \"23.enormous (adj.)\",\n      \"24.peer at\",\n      \"25.jack\",\n      \"26.jack up\",\n      \"27.frail (adj.)\",\n      \"28.frailty (n.)\",\n      \"29.be all set\",\n      \"30.penetrate(v.),penetration (n.)\",\n      \"31.penetrating look (adj.)\",\n      \"32.fumble (v.)\",\n      \"33.fumble with/in sth. for sth.\",\n      \"34.be filled to overflowing with\",\n      \"35.indifference (n.)\",\n      \"36.indifferent (adj.)\",\n      \"37.scriptural (adj.)\",\n      \"38.admonition (n.)\",\n      \"39.admonitory (adj.)\",\n      \"40.beat down\"\n    ]\n  },\n  \"Unit 13\": {\n    \"items\": [\n      \"1. adhere\",\n      \"2. affirm\",\n      \"3. atrocity\",\n      \"4. cope\",\n      \"5. deter\",\n      \"6. disquieting\",\n      \"7. empower\",\n      \"8. fluent\",\n      \"9. lag\",\n      \"10.mangle\",\n      \"11. misapprehension\",\n      \"12. optimist\",\n      \"13. prowl\",\n      \"14. recitation\",\n      \"15. stupefy\",\n      \"16. sulky\",\n      \"17. supplement\",\n      \"18. surge\",\n      \"19. trait\",\n      \"20. unscrupulous\"\n    ]\n  },\n  \"Unit 14\": {\n    \"items\": [\n      \"1. abstain\",\n      \"2. accommodate\",\n      \"3. allegiance\",\n      \"4. amalgamate\",\n      \"5. append\",\n      \"6. commemorate\",\n      \"7. enumerate\",\n      \"8. exalt\",\n      \"9. far-fetched\",\n      \"10. extort\",\n      \"11. glum\",\n      \"12. replica\",\n      \"13. responsive\",\n      \"14. sanctuary\",\n      \"15. self-seeking\",\n      \"16. submissive\",\n      \"17. tally\",\n      \"18. taskmaster\",\n      \"19. transform\",\n      \"20. upheaval\"\n    ]\n  },\n  \"Unit 15\": {\n    \"items\": [\n      \"1. beacon\",\n      \"2. berserk\",\n      \"3. celestial\",\n      \"4. chasten\",\n      \"5. confiscate\",\n      \"6. data\",\n      \"7. detract\",\n      \"8. encounter\",\n      \"9. epic\",\n      \"10. pantomime\",\n      \"11. pessimist\",\n      \"12. precaution\",\n      \"13. prosecute\",\n      \"14. puncture\",\n      \"15. retaliate\",\n      \"16. sham\",\n      \"17. uncount\",\n      \"18. underscore\",\n      \"19. wholesome\",\n      \"20. wistful\"\n    ],\n    \"note\": \"uncertain about item 16 as there appears to be some additional characters after 'sham'\"\n  }\n}",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1154,
+      "completion_tokens": 1324,
+      "total_tokens": 2478
+    }
+  }
+}

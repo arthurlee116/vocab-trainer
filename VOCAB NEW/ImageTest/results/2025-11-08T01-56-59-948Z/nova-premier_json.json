@@ -1,0 +1,26 @@
+{
+  "id": "gen-1762567373-X1U1jPf71RqJG6YBFeSX",
+  "provider": "Amazon Bedrock",
+  "model": "amazon/nova-premier-v1",
+  "object": "chat.completion",
+  "created": 1762567374,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"sections\": [\n    {\n      \"heading\": \"Goalkeeper\",\n      \"entries\": []\n    },\n    {\n      \"heading\": \"Hassan\",\n      \"entries\": [\n        \"hovel\",\n        \"crave\",\n        \"shove\",\n        \"dank\",\n        \"spool\",\n        \"trophy\",\n        \"covet\",\n        \"horde\",\n        \"uncoil\"\n      ]\n    },\n    {\n      \"heading\": \"14 Steps\",\n      \"entries\": [\n        \"a cat has nine lives\",\n        \"be the cat's whiskers\",\n        \"let the cat out of the bag\",\n        \"put the cat among the pigeons\",\n        \"be inclined to\",\n        \"inclination\",\n        \"afflict\",\n        \"affliction(s)\",\n        \"afflictive\",\n        \"be afflicted with/ by\",\n        \"progressive\",\n        \"with the aid of\",\n        \"to a degree\",\n        \"disillusioned\",\n        \"disillusionment\",\n        \"hold on to\",\n        \"lead up to\",\n        \"sanity\",\n        \"slashing\",\n        \"swerve\",\n        \"dreaded\",\n        \"enormity\",\n        \"enormous\",\n        \"peer at\",\n        \"jack\",\n        \"jack up\",\n        \"frail\",\n        \"frailty\",\n        \"be all set\",\n        \"penetrate/in sth. penetration\",\n        \"penetrating look\",\n        \"fumble\",\n        \"fumble with/in sth. for sth.\",\n        \"be filled to overflowing with\",\n        \"indifference\",\n        \"indifferent\",\n        \"scriptural\",\n        \"admonition\",\n        \"admonitory\",\n        \"beat down\"\n      ]\n    },\n    {\n      \"heading\": \"Unit 13\",\n      \"entries\": [\n        \"adhere\",\n        \"disquieting\",\n        \"misapprehension\",\n        \"sulky\",\n        \"affirm\",\n        \"empower\",\n        \"optimist\",\n        \"supplement\",\n        \"atrocity\",\n        \"fluent\",\n        \"prowl\",\n        \"surge\",\n        \"cope\",\n        \"lag\",\n        \"recitation\",\n        \"trait\",\n        \"deter\",\n        \"mangle\",\n        \"stupefy\",\n        \"unscrupulous\"\n      ]\n    },\n    {\n      \"heading\": \"Unit 14\",\n      \"entries\": [\n        \"abstain\",\n        \"commemorate\",\n        \"glum\",\n        \"submissive\",\n        \"accommodate\",\n        \"enumerate\",\n        \"replica\",\n        \"tally\",\n        \"allegiance\",\n        \"exalt\",\n        \"responsive\",\n        \"taskmaster\",\n        \"amalgamate\",\n        \"far-fetched\",\n        \"sanctuary\",\n        \"transform\",\n        \"append\",\n        \"extort\",\n        \"self-seeking\",\n        \"upheaval\"\n      ]\n    },\n    {\n      \"heading\": \"Unit 15\",\n      \"entries\": [\n        \"beacon\",\n        \"data\",\n        \"pessimist\",\n        \"shameful\",\n        \"berserk\",\n        \"detract\",\n        \"precaution\",\n        \"uncouth\",\n        \"celestial\",\n        \"encounter\",\n        \"prosecute\",\n        \"underscore\",\n        \"chaste\",\n        \"epic\",\n        \"puncture\",\n        \"wholesome\",\n        \"confiscate\",\n        \"pantomime\",\n        \"retaliate\",\n        \"wistful\"\n      ]\n    }\n  ]\n}\n```",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1891,
+    "completion_tokens": 895,
+    "total_tokens": 2786
+  }
+}

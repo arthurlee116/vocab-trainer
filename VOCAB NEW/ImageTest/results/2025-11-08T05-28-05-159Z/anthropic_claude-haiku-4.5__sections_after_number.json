@@ -1,0 +1,161 @@
+{
+  "model": "anthropic/claude-haiku-4.5",
+  "variant": {
+    "key": "sections_after_number",
+    "description": "Sectioned extraction with numbered guidance (PROMPT_V4)",
+    "responseFormat": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "sections_list",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "order": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 80
+                        }
+                      },
+                      "required": [
+                        "order",
+                        "text"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "heading",
+                  "entries"
+                ]
+              }
+            }
+          },
+          "required": [
+            "sections"
+          ]
+        }
+      }
+    },
+    "system": "You transcribe study sheets section by section. Never mix headings into the entry text.",
+    "user": "Extract vocabulary words from this numbered list. For each numbered item, capture ONLY the text that appears after the number and the dot.\nExample: \"1. anthropology:\" → extract text \"anthropology\"\nExample: \"9. hangs in the balance:\" → extract \"hangs in the balance\"\n\nGroup your output by section heading and follow the provided JSON schema exactly.\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present."
+  },
+  "prompt": {
+    "system": "You transcribe study sheets section by section. Never mix headings into the entry text.",
+    "user": "Extract vocabulary words from this numbered list. For each numbered item, capture ONLY the text that appears after the number and the dot.\nExample: \"1. anthropology:\" → extract text \"anthropology\"\nExample: \"9. hangs in the balance:\" → extract \"hangs in the balance\"\n\nGroup your output by section heading and follow the provided JSON schema exactly.\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present."
+  },
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "sections_list",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "heading": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "entries": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "order": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "note": {
+                        "type": "string",
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "order",
+                      "text"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "heading",
+                "entries"
+              ]
+            }
+          }
+        },
+        "required": [
+          "sections"
+        ]
+      }
+    }
+  },
+  "result": {
+    "id": "gen-1762579696-GzjtaqczdsqYaetNHbd3",
+    "provider": "Amazon Bedrock",
+    "model": "anthropic/claude-haiku-4.5",
+    "object": "chat.completion",
+    "created": 1762579697,
+    "choices": [
+      {
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "```json\n{\n  \"Goalkeeper\": [\n    \"anthropology\",\n    \"philosophy\",\n    \"misanthrope\",\n    \"hold sb. accountable for\",\n    \"outlier\",\n    \"stunting\",\n    \"malnourished\",\n    \"phenomenal\",\n    \"hangs in the balance\",\n    \"balance the books\",\n    \"check and balance\",\n    \"balance out\",\n    \"throw off balance\",\n    \"magic wand\",\n    \"gut microbiome\"\n  ],\n  \"Hassan\": [\n    \"hovel\",\n    \"dank\",\n    \"covet\",\n    \"crave\",\n    \"spool\",\n    \"horde\",\n    \"shove\",\n    \"trophy\",\n    \"uncoil\",\n    \"coil\",\n    \"overcast\",\n    \"ragged\",\n    \"plummet\"\n  ],\n  \"14 Steps\": [\n    \"a cat has nine lives\",\n    \"be the cat's whiskers\",\n    \"let the cat out of the bag\",\n    \"put the cat among the pigeons\",\n    \"be inclined to\",\n    \"inclination\",\n    \"afflict\",\n    \"affliction\",\n    \"afflictive\",\n    \"be afflicted with/ by\",\n    \"progressive\",\n    \"with the aid of\",\n    \"to a degree\",\n    \"disillusioned\",\n    \"disillusionment\",\n    \"hold on to\",\n    \"lead up to\",\n    \"sanity\",\n    \"slashing\",\n    \"swerve\",\n    \"dreaded\",\n    \"enormity\",\n    \"enormous\",\n    \"peer at\",\n    \"jack\",\n    \"jack up\",\n    \"frail\",\n    \"frailty\",\n    \"be all set\",\n    \"penetrate\",\n    \"penetrating look\",\n    \"fumble\",\n    \"fumble with/in sth. for sth.\",\n    \"be filled to overflowing with\",\n    \"indifference\",\n    \"indifferent\",\n    \"scriptural\",\n    \"admonition\",\n    \"admonitory\",\n    \"beat down\"\n  ],\n  \"Unit 13\": [\n    \"adhere\",\n    \"affirm\",\n    \"atrocity\",\n    \"cope\",\n    \"deter\",\n    \"disquieting\",\n    \"empower\",\n    \"fluent\",\n    \"lag\",\n    \"mangle\",\n    \"misapprehension\",\n    \"optimist\",\n    \"prowl\",\n    \"recitation\",\n    \"stupefy\",\n    \"sulky\",\n    \"supplement\",\n    \"surge\",\n    \"trait\",\n    \"unscrupulous\"\n  ],\n  \"Unit 14\": [\n    \"abstain\",\n    \"accommodate\",\n    \"allegiance\",\n    \"amalgamate\",\n    \"append\",\n    \"commemorate\",\n    \"enumerate\",\n    \"exalt\",\n    \"far-fetched\",\n    \"extort\",\n    \"glum\",\n    \"replica\",\n    \"responsive\",\n    \"sanctuary\",\n    \"self-seeking\",\n    \"submissive\",\n    \"tally\",\n    \"taskmaster\",\n    \"transform\",\n    \"upheaval\"\n  ],\n  \"Unit 15\": [\n    \"beacony\",\n    \"berserk\",\n    \"celestial\",\n    \"chasten\",\n    \"confiscate\",\n    \"data\",\n    \"detract\",\n    \"encounter\",\n    \"epic\",\n    \"pantomime\",\n    \"pessimist\",\n    \"precaution\",\n    \"prosecute\",\n    \"puncture\",\n    \"retaliate\",\n    \"sham\",\n    \"uncouth\",\n    \"underscore\",\n    \"wholesome\",\n    \"wistful\"\n  ]\n}\n```",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1183,
+      "completion_tokens": 918,
+      "total_tokens": 2101
+    }
+  }
+}

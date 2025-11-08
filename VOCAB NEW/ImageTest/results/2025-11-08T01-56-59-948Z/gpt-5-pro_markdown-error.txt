@@ -1,0 +1,4 @@
+Error: OpenRouter request failed (402): {"error":{"message":"This request requires more credits, or fewer max_tokens. You requested up to 128000 tokens, but can only afford 83542. To increase, visit https://openrouter.ai/settings/credits an
+    at runExperiment (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:487:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:508:22)

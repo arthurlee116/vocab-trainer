@@ -1,0 +1,2355 @@
+[
+  {
+    "id": "openrouter/polaris-alpha",
+    "name": "Polaris Alpha",
+    "vendor": "openrouter",
+    "created": 1762451707,
+    "context_length": 256000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "This is a cloaked model provided to the community to gather feedback. A powerful, general-purpose model that excels across real-world tasks, with standout performance in coding, tool calling, and instruction following.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "amazon/nova-premier-v1",
+    "name": "Amazon: Nova Premier 1.0",
+    "vendor": "amazon",
+    "created": 1761950332,
+    "context_length": 1000000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Amazon Nova Premier is the most capable of Amazon’s multimodal models for complex reasoning tasks and for use as the best teacher for distilling custom models.",
+    "pricing": {
+      "prompt": "0.0000025",
+      "completion": "0.0000125",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000625"
+    }
+  },
+  {
+    "id": "perplexity/sonar-pro-search",
+    "name": "Perplexity: Sonar Pro Search",
+    "vendor": "perplexity",
+    "created": 1761854366,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Exclusively available on the OpenRouter API, Sonar Pro's new Pro Search mode is Perplexity's most advanced agentic search system. It is designed for deeper reasoning and analysis. Pricing is based on tokens plus $18 per thousand requests. This model powers the Pro Search mode on the Perplexity platform.",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0.018",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "nvidia/nemotron-nano-12b-v2-vl:free",
+    "name": "NVIDIA: Nemotron Nano 12B 2 VL (free)",
+    "vendor": "nvidia",
+    "created": 1761675565,
+    "context_length": 128000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "NVIDIA Nemotron Nano 2 VL is a 12-billion-parameter open multimodal reasoning model designed for video understanding and document intelligence. It introduces a hybrid Transformer-Mamba architecture, combining transformer-level accuracy with Mamba’s memory-efficient sequence modeling for significantly higher throughput and lower latency.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "nvidia/nemotron-nano-12b-v2-vl",
+    "name": "NVIDIA: Nemotron Nano 12B 2 VL",
+    "vendor": "nvidia",
+    "created": 1761675565,
+    "context_length": 131072,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "NVIDIA Nemotron Nano 2 VL is a 12-billion-parameter open multimodal reasoning model designed for video understanding and document intelligence. It introduces a hybrid Transformer-Mamba architecture, combining transformer-level accuracy with Mamba’s memory-efficient sequence modeling for significantly higher throughput and lower latency.",
+    "pricing": {
+      "prompt": "0.0000002",
+      "completion": "0.0000006",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-5-image-mini",
+    "name": "OpenAI: GPT-5 Image Mini",
+    "vendor": "openai",
+    "created": 1760624583,
+    "context_length": 400000,
+    "input_modalities": [
+      "file",
+      "image",
+      "text"
+    ],
+    "description": "GPT-5 Image Mini combines OpenAI's advanced language capabilities, powered by [GPT-5 Mini](https://openrouter.ai/openai/gpt-5-mini), with GPT Image 1 Mini for efficient image generation. This natively multimodal model features superior instruction following, text rendering, and detailed image editing with reduced latency and cost. It excels at high-quality visual creation while maintaining strong text understanding, making it ideal for applications that require both efficient image generation and text processing at scale.",
+    "pricing": {
+      "prompt": "0.0000025",
+      "completion": "0.000002",
+      "request": "0",
+      "image": "0.0000025",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000025"
+    }
+  },
+  {
+    "id": "anthropic/claude-haiku-4.5",
+    "name": "Anthropic: Claude Haiku 4.5",
+    "vendor": "anthropic",
+    "created": 1760547638,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Claude Haiku 4.5 is Anthropic’s fastest and most efficient model, delivering near-frontier intelligence at a fraction of the cost and latency of larger Claude models. Matching Claude Sonnet 4’s performance across reasoning, coding, and computer-use tasks, Haiku 4.5 brings frontier-level capability to real-time and high-volume applications.",
+    "pricing": {
+      "prompt": "0.000001",
+      "completion": "0.000005",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000001",
+      "input_cache_write": "0.00000125"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-8b-thinking",
+    "name": "Qwen: Qwen3 VL 8B Thinking",
+    "vendor": "qwen",
+    "created": 1760463746,
+    "context_length": 256000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Qwen3-VL-8B-Thinking is the reasoning-optimized variant of the Qwen3-VL-8B multimodal model, designed for advanced visual and textual reasoning across complex scenes, documents, and temporal sequences. It integrates enhanced multimodal alignment and long-context processing (native 256K, expandable to 1M tokens) for tasks such as scientific visual analysis, causal inference, and mathematical reasoning over image or video inputs.",
+    "pricing": {
+      "prompt": "0.00000018",
+      "completion": "0.0000021",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-8b-instruct",
+    "name": "Qwen: Qwen3 VL 8B Instruct",
+    "vendor": "qwen",
+    "created": 1760463308,
+    "context_length": 131072,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Qwen3-VL-8B-Instruct is a multimodal vision-language model from the Qwen3-VL series, built for high-fidelity understanding and reasoning across text, images, and video. It features improved multimodal fusion with Interleaved-MRoPE for long-horizon temporal reasoning, DeepStack for fine-grained visual-text alignment, and text-timestamp alignment for precise event localization.",
+    "pricing": {
+      "prompt": "0.00000008",
+      "completion": "0.0000005",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-5-image",
+    "name": "OpenAI: GPT-5 Image",
+    "vendor": "openai",
+    "created": 1760447986,
+    "context_length": 400000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's most advanced language model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following, text rendering, and detailed image editing.",
+    "pricing": {
+      "prompt": "0.00001",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.00001",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000125"
+    }
+  },
+  {
+    "id": "openai/o3-deep-research",
+    "name": "OpenAI: o3 Deep Research",
+    "vendor": "openai",
+    "created": 1760129661,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "o3-deep-research is OpenAI's advanced model for deep research, designed to tackle complex, multi-step research tasks.",
+    "pricing": {
+      "prompt": "0.00001",
+      "completion": "0.00004",
+      "request": "0",
+      "image": "0.00765",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000025"
+    }
+  },
+  {
+    "id": "openai/o4-mini-deep-research",
+    "name": "OpenAI: o4 Mini Deep Research",
+    "vendor": "openai",
+    "created": 1760129642,
+    "context_length": 200000,
+    "input_modalities": [
+      "file",
+      "image",
+      "text"
+    ],
+    "description": "o4-mini-deep-research is OpenAI's faster, more affordable deep research model—ideal for tackling complex, multi-step research tasks.",
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.000008",
+      "request": "0",
+      "image": "0.00153",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000005"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-image",
+    "name": "Google: Gemini 2.5 Flash Image (Nano Banana)",
+    "vendor": "google",
+    "created": 1759870431,
+    "context_length": 32768,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Gemini 2.5 Flash Image, a.k.a. \"Nano Banana,\" is now generally available. It is a state of the art image generation model with contextual understanding. It is capable of image generation, edits, and multi-turn conversations. Aspect ratios can be controlled with the [image_config API Parameter](https://openrouter.ai/docs/features/multimodal/image-generation#image-aspect-ratio-configuration)",
+    "pricing": {
+      "prompt": "0.0000003",
+      "completion": "0.0000025",
+      "request": "0",
+      "image": "0.001238",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-30b-a3b-thinking",
+    "name": "Qwen: Qwen3 VL 30B A3B Thinking",
+    "vendor": "qwen",
+    "created": 1759794479,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen3-VL-30B-A3B-Thinking is a multimodal model that unifies strong text generation with visual understanding for images and videos. Its Thinking variant enhances reasoning in STEM, math, and complex tasks. It excels in perception of real-world/synthetic categories, 2D/3D spatial grounding, and long-form visual comprehension, achieving competitive multimodal benchmark results. For agentic use, it handles multi-image multi-turn instructions, video timeline alignments, GUI automation, and visual coding from sketches to debugged UI. Text performance matches flagship Qwen3 models, suiting document AI, OCR, UI assistance, spatial tasks, and agent research.",
+    "pricing": {
+      "prompt": "0.0000002",
+      "completion": "0.000001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-30b-a3b-instruct",
+    "name": "Qwen: Qwen3 VL 30B A3B Instruct",
+    "vendor": "qwen",
+    "created": 1759794476,
+    "context_length": 262144,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen3-VL-30B-A3B-Instruct is a multimodal model that unifies strong text generation with visual understanding for images and videos. Its Instruct variant optimizes instruction-following for general multimodal tasks. It excels in perception of real-world/synthetic categories, 2D/3D spatial grounding, and long-form visual comprehension, achieving competitive multimodal benchmark results. For agentic use, it handles multi-image multi-turn instructions, video timeline alignments, GUI automation, and visual coding from sketches to debugged UI. Text performance matches flagship Qwen3 models, suiting document AI, OCR, UI assistance, spatial tasks, and agent research.",
+    "pricing": {
+      "prompt": "0.00000015",
+      "completion": "0.0000006",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-5-pro",
+    "name": "OpenAI: GPT-5 Pro",
+    "vendor": "openai",
+    "created": 1759776663,
+    "context_length": 400000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "GPT-5 Pro is OpenAI’s most advanced model, offering major improvements in reasoning, code quality, and user experience. It is optimized for complex tasks that require step-by-step reasoning, instruction following, and accuracy in high-stakes use cases. It supports test-time routing features and advanced prompt understanding, including user-specified intent like \"think hard about this.\" Improvements include reductions in hallucination, sycophancy, and better performance in coding, writing, and health-related tasks.",
+    "pricing": {
+      "prompt": "0.000015",
+      "completion": "0.00012",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "anthropic/claude-sonnet-4.5",
+    "name": "Anthropic: Claude Sonnet 4.5",
+    "vendor": "anthropic",
+    "created": 1759161676,
+    "context_length": 1000000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "Claude Sonnet 4.5 is Anthropic’s most advanced Sonnet model to date, optimized for real-world agents and coding workflows. It delivers state-of-the-art performance on coding benchmarks such as SWE-bench Verified, with improvements across system design, code security, and specification adherence. The model is designed for extended autonomous operation, maintaining task continuity across sessions and providing fact-based progress tracking.",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-preview-09-2025",
+    "name": "Google: Gemini 2.5 Flash Preview 09-2025",
+    "vendor": "google",
+    "created": 1758820178,
+    "context_length": 1048576,
+    "input_modalities": [
+      "image",
+      "file",
+      "text",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Flash Preview September 2025 Checkpoint is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling. ",
+    "pricing": {
+      "prompt": "0.0000003",
+      "completion": "0.0000025",
+      "request": "0",
+      "image": "0.001238",
+      "audio": "0.000001",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000075",
+      "input_cache_write": "0.0000003833"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-lite-preview-09-2025",
+    "name": "Google: Gemini 2.5 Flash Lite Preview 09-2025",
+    "vendor": "google",
+    "created": 1758819686,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Flash-Lite is a lightweight reasoning model in the Gemini 2.5 family, optimized for ultra-low latency and cost efficiency. It offers improved throughput, faster token generation, and better performance across common benchmarks compared to earlier Flash models. By default, \"thinking\" (i.e. multi-pass reasoning) is disabled to prioritize speed, but developers can enable it via the [Reasoning API parameter](https://openrouter.ai/docs/use-cases/reasoning-tokens) to selectively trade off cost for intelligence. ",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-235b-a22b-thinking",
+    "name": "Qwen: Qwen3 VL 235B A22B Thinking",
+    "vendor": "qwen",
+    "created": 1758668690,
+    "context_length": 262144,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen3-VL-235B-A22B Thinking is a multimodal model that unifies strong text generation with visual understanding across images and video. The Thinking model is optimized for multimodal reasoning in STEM and math. The series emphasizes robust perception (recognition of diverse real-world and synthetic categories), spatial understanding (2D/3D grounding), and long-form visual comprehension, with competitive results on public multimodal benchmarks for both perception and reasoning.",
+    "pricing": {
+      "prompt": "0.0000003",
+      "completion": "0.0000012",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen3-vl-235b-a22b-instruct",
+    "name": "Qwen: Qwen3 VL 235B A22B Instruct",
+    "vendor": "qwen",
+    "created": 1758668687,
+    "context_length": 262144,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen3-VL-235B-A22B Instruct is an open-weight multimodal model that unifies strong text generation with visual understanding across images and video. The Instruct model targets general vision-language use (VQA, document parsing, chart/table extraction, multilingual OCR). The series emphasizes robust perception (recognition of diverse real-world and synthetic categories), spatial understanding (2D/3D grounding), and long-form visual comprehension, with competitive results on public multimodal benchmarks for both perception and reasoning.",
+    "pricing": {
+      "prompt": "0.00000022",
+      "completion": "0.00000088",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-5-codex",
+    "name": "OpenAI: GPT-5 Codex",
+    "vendor": "openai",
+    "created": 1758643403,
+    "context_length": 400000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "GPT-5-Codex is a specialized version of GPT-5 optimized for software engineering and coding workflows. It is designed for both interactive development sessions and long, independent execution of complex engineering tasks. The model supports building projects from scratch, feature development, debugging, large-scale refactoring, and code review. Compared to GPT-5, Codex is more steerable, adheres closely to developer instructions, and produces cleaner, higher-quality code outputs. Reasoning effort can be adjusted with the `reasoning.effort` parameter. Read the [docs here](https://openrouter.ai/docs/use-cases/reasoning-tokens#reasoning-effort-level)",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000125"
+    }
+  },
+  {
+    "id": "x-ai/grok-4-fast",
+    "name": "xAI: Grok 4 Fast",
+    "vendor": "x-ai",
+    "created": 1758240090,
+    "context_length": 2000000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Grok 4 Fast is xAI's latest multimodal model with SOTA cost-efficiency and a 2M token context window. It comes in two flavors: non-reasoning and reasoning. Read more about the model on xAI's [news post](http://x.ai/news/grok-4-fast). Reasoning can be enabled using the `reasoning` `enabled` parameter in the API. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#controlling-reasoning-tokens)",
+    "pricing": {
+      "prompt": "0.0000002",
+      "completion": "0.0000005",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000005"
+    }
+  },
+  {
+    "id": "opengvlab/internvl3-78b",
+    "name": "OpenGVLab: InternVL3 78B",
+    "vendor": "opengvlab",
+    "created": 1757962555,
+    "context_length": 32768,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "The InternVL3 series is an advanced multimodal large language model (MLLM). Compared to InternVL 2.5, InternVL3 demonstrates stronger multimodal perception and reasoning capabilities. ",
+    "pricing": {
+      "prompt": "0.00000007",
+      "completion": "0.00000026",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "deepcogito/cogito-v2-preview-llama-109b-moe",
+    "name": "Cogito V2 Preview Llama 109B",
+    "vendor": "deepcogito",
+    "created": 1756831568,
+    "context_length": 32767,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "An instruction-tuned, hybrid-reasoning Mixture-of-Experts model built on Llama-4-Scout-17B-16E. Cogito v2 can answer directly or engage an extended “thinking” phase, with alignment guided by Iterated Distillation & Amplification (IDA). It targets coding, STEM, instruction following, and general helpfulness, with stronger multilingual, tool-calling, and reasoning performance than size-equivalent baselines. The model supports long-context use (up to 10M tokens) and standard Transformers workflows. Users can control the reasoning behaviour with the `reasoning` `enabled` boolean. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#enable-reasoning-with-default-config)",
+    "pricing": {
+      "prompt": "0.00000018",
+      "completion": "0.00000059",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "stepfun-ai/step3",
+    "name": "StepFun: Step3",
+    "vendor": "stepfun-ai",
+    "created": 1756415375,
+    "context_length": 65536,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Step3 is a cutting-edge multimodal reasoning model—built on a Mixture-of-Experts architecture with 321B total parameters and 38B active. It is designed end-to-end to minimize decoding costs while delivering top-tier performance in vision–language reasoning. Through the co-design of Multi-Matrix Factorization Attention (MFA) and Attention-FFN Disaggregation (AFD), Step3 maintains exceptional efficiency across both flagship and low-end accelerators.",
+    "pricing": {
+      "prompt": "0.00000057",
+      "completion": "0.00000142",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-image-preview",
+    "name": "Google: Gemini 2.5 Flash Image Preview (Nano Banana)",
+    "vendor": "google",
+    "created": 1756218977,
+    "context_length": 32768,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Gemini 2.5 Flash Image Preview, a.k.a. \"Nano Banana,\" is a state of the art image generation model with contextual understanding. It is capable of image generation, edits, and multi-turn conversations.",
+    "pricing": {
+      "prompt": "0.0000003",
+      "completion": "0.0000025",
+      "request": "0",
+      "image": "0.001238",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/mistral-medium-3.1",
+    "name": "Mistral: Mistral Medium 3.1",
+    "vendor": "mistralai",
+    "created": 1755095639,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Mistral Medium 3.1 is an updated version of Mistral Medium 3, which is a high-performance enterprise-grade language model designed to deliver frontier-level capabilities at significantly reduced operational cost. It balances state-of-the-art reasoning and multimodal performance with 8× lower cost compared to traditional large models, making it suitable for scalable deployments across professional and industrial use cases.",
+    "pricing": {
+      "prompt": "0.0000004",
+      "completion": "0.000002",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "baidu/ernie-4.5-vl-28b-a3b",
+    "name": "Baidu: ERNIE 4.5 VL 28B A3B",
+    "vendor": "baidu",
+    "created": 1755032836,
+    "context_length": 30000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "A powerful multimodal Mixture-of-Experts chat model featuring 28B total parameters with 3B activated per token, delivering exceptional text and vision understanding through its innovative heterogeneous MoE structure with modality-isolated routing. Built with scaling-efficient infrastructure for high-throughput training and inference, the model leverages advanced post-training techniques including SFT, DPO, and UPO for optimized performance, while supporting an impressive 131K context length and RLVR alignment for superior cross-modal reasoning and generation capabilities.",
+    "pricing": {
+      "prompt": "0.00000014",
+      "completion": "0.00000056",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "z-ai/glm-4.5v",
+    "name": "Z.AI: GLM 4.5V",
+    "vendor": "z-ai",
+    "created": 1754922288,
+    "context_length": 65536,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "GLM-4.5V is a vision-language foundation model for multimodal agent applications. Built on a Mixture-of-Experts (MoE) architecture with 106B parameters and 12B activated parameters, it achieves state-of-the-art results in video understanding, image Q&A, OCR, and document parsing, with strong gains in front-end web coding, grounding, and spatial reasoning. It offers a hybrid inference mode: a \"thinking mode\" for deep reasoning and a \"non-thinking mode\" for fast responses. Reasoning behavior can be toggled via the `reasoning` `enabled` boolean. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#enable-reasoning-with-default-config)",
+    "pricing": {
+      "prompt": "0.0000006",
+      "completion": "0.0000018",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000011"
+    }
+  },
+  {
+    "id": "openai/gpt-5-chat",
+    "name": "OpenAI: GPT-5 Chat",
+    "vendor": "openai",
+    "created": 1754587837,
+    "context_length": 128000,
+    "input_modalities": [
+      "file",
+      "image",
+      "text"
+    ],
+    "description": "GPT-5 Chat is designed for advanced, natural, multimodal, and context-aware conversations for enterprise applications.",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000125"
+    }
+  },
+  {
+    "id": "openai/gpt-5",
+    "name": "OpenAI: GPT-5",
+    "vendor": "openai",
+    "created": 1754587413,
+    "context_length": 400000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-5 is OpenAI’s most advanced model, offering major improvements in reasoning, code quality, and user experience. It is optimized for complex tasks that require step-by-step reasoning, instruction following, and accuracy in high-stakes use cases. It supports test-time routing features and advanced prompt understanding, including user-specified intent like \"think hard about this.\" Improvements include reductions in hallucination, sycophancy, and better performance in coding, writing, and health-related tasks.",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000125"
+    }
+  },
+  {
+    "id": "openai/gpt-5-mini",
+    "name": "OpenAI: GPT-5 Mini",
+    "vendor": "openai",
+    "created": 1754587407,
+    "context_length": 400000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-5 Mini is a compact version of GPT-5, designed to handle lighter-weight reasoning tasks. It provides the same instruction-following and safety-tuning benefits as GPT-5, but with reduced latency and cost. GPT-5 Mini is the successor to OpenAI's o4-mini model.",
+    "pricing": {
+      "prompt": "0.00000025",
+      "completion": "0.000002",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000025"
+    }
+  },
+  {
+    "id": "openai/gpt-5-nano",
+    "name": "OpenAI: GPT-5 Nano",
+    "vendor": "openai",
+    "created": 1754587402,
+    "context_length": 400000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-5-Nano is the smallest and fastest variant in the GPT-5 system, optimized for developer tools, rapid interactions, and ultra-low latency environments. While limited in reasoning depth compared to its larger counterparts, it retains key instruction-following and safety features. It is the successor to GPT-4.1-nano and offers a lightweight option for cost-sensitive or real-time applications.",
+    "pricing": {
+      "prompt": "0.00000005",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000005"
+    }
+  },
+  {
+    "id": "anthropic/claude-opus-4.1",
+    "name": "Anthropic: Claude Opus 4.1",
+    "vendor": "anthropic",
+    "created": 1754411591,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "Claude Opus 4.1 is an updated version of Anthropic’s flagship model, offering improved performance in coding, reasoning, and agentic tasks. It achieves 74.5% on SWE-bench Verified and shows notable gains in multi-file code refactoring, debugging precision, and detail-oriented reasoning. The model supports extended thinking up to 64K tokens and is optimized for tasks involving research, data analysis, and tool-assisted reasoning.",
+    "pricing": {
+      "prompt": "0.000015",
+      "completion": "0.000075",
+      "request": "0",
+      "image": "0.024",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000015",
+      "input_cache_write": "0.00001875"
+    }
+  },
+  {
+    "id": "bytedance/ui-tars-1.5-7b",
+    "name": "ByteDance: UI-TARS 7B ",
+    "vendor": "bytedance",
+    "created": 1753205056,
+    "context_length": 128000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "UI-TARS-1.5 is a multimodal vision-language agent optimized for GUI-based environments, including desktop interfaces, web browsers, mobile systems, and games. Built by ByteDance, it builds upon the UI-TARS framework with reinforcement learning-based reasoning, enabling robust action planning and execution across virtual interfaces.",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000002",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-lite",
+    "name": "Google: Gemini 2.5 Flash Lite",
+    "vendor": "google",
+    "created": 1753200276,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Flash-Lite is a lightweight reasoning model in the Gemini 2.5 family, optimized for ultra-low latency and cost efficiency. It offers improved throughput, faster token generation, and better performance across common benchmarks compared to earlier Flash models. By default, \"thinking\" (i.e. multi-pass reasoning) is disabled to prioritize speed, but developers can enable it via the [Reasoning API parameter](https://openrouter.ai/docs/use-cases/reasoning-tokens) to selectively trade off cost for intelligence. ",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000001",
+      "input_cache_write": "0.0000001833"
+    }
+  },
+  {
+    "id": "thudm/glm-4.1v-9b-thinking",
+    "name": "THUDM: GLM 4.1V 9B Thinking",
+    "vendor": "thudm",
+    "created": 1752244385,
+    "context_length": 65536,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "GLM-4.1V-9B-Thinking is a 9B parameter vision-language model developed by THUDM, based on the GLM-4-9B foundation. It introduces a reasoning-centric \"thinking paradigm\" enhanced with reinforcement learning to improve multimodal reasoning, long-context understanding (up to 64K tokens), and complex problem solving. It achieves state-of-the-art performance among models in its class, outperforming even larger models like Qwen-2.5-VL-72B on a majority of benchmark tasks. ",
+    "pricing": {
+      "prompt": "0.000000035",
+      "completion": "0.000000138",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "x-ai/grok-4",
+    "name": "xAI: Grok 4",
+    "vendor": "x-ai",
+    "created": 1752087689,
+    "context_length": 256000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Grok 4 is xAI's latest reasoning model with a 256k context window. It supports parallel tool calling, structured outputs, and both image and text inputs. Note that reasoning is not exposed, reasoning cannot be disabled, and the reasoning effort cannot be specified. Pricing increases once the total tokens in a given request is greater than 128k tokens. See more details on the [xAI docs](https://docs.x.ai/docs/models/grok-4-0709)",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000075"
+    }
+  },
+  {
+    "id": "baidu/ernie-4.5-vl-424b-a47b",
+    "name": "Baidu: ERNIE 4.5 VL 424B A47B ",
+    "vendor": "baidu",
+    "created": 1751300903,
+    "context_length": 123000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "ERNIE-4.5-VL-424B-A47B is a multimodal Mixture-of-Experts (MoE) model from Baidu’s ERNIE 4.5 series, featuring 424B total parameters with 47B active per token. It is trained jointly on text and image data using a heterogeneous MoE architecture and modality-isolated routing to enable high-fidelity cross-modal reasoning, image understanding, and long-context generation (up to 131k tokens). Fine-tuned with techniques like SFT, DPO, UPO, and RLVR, this model supports both “thinking” and non-thinking inference modes. Designed for vision-language tasks in English and Chinese, it is optimized for efficient scaling and can operate under 4-bit/8-bit quantization.",
+    "pricing": {
+      "prompt": "0.00000042",
+      "completion": "0.00000125",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/mistral-small-3.2-24b-instruct:free",
+    "name": "Mistral: Mistral Small 3.2 24B (free)",
+    "vendor": "mistralai",
+    "created": 1750443016,
+    "context_length": 131072,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Mistral-Small-3.2-24B-Instruct-2506 is an updated 24B parameter model from Mistral optimized for instruction following, repetition reduction, and improved function calling. Compared to the 3.1 release, version 3.2 significantly improves accuracy on WildBench and Arena Hard, reduces infinite generations, and delivers gains in tool use and structured output tasks.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/mistral-small-3.2-24b-instruct",
+    "name": "Mistral: Mistral Small 3.2 24B",
+    "vendor": "mistralai",
+    "created": 1750443016,
+    "context_length": 131072,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Mistral-Small-3.2-24B-Instruct-2506 is an updated 24B parameter model from Mistral optimized for instruction following, repetition reduction, and improved function calling. Compared to the 3.1 release, version 3.2 significantly improves accuracy on WildBench and Arena Hard, reduces infinite generations, and delivers gains in tool use and structured output tasks.",
+    "pricing": {
+      "prompt": "0.00000006",
+      "completion": "0.00000018",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash-lite-preview-06-17",
+    "name": "Google: Gemini 2.5 Flash Lite Preview 06-17",
+    "vendor": "google",
+    "created": 1750173831,
+    "context_length": 1048576,
+    "input_modalities": [
+      "file",
+      "image",
+      "text",
+      "audio"
+    ],
+    "description": "Gemini 2.5 Flash-Lite is a lightweight reasoning model in the Gemini 2.5 family, optimized for ultra-low latency and cost efficiency. It offers improved throughput, faster token generation, and better performance across common benchmarks compared to earlier Flash models. By default, \"thinking\" (i.e. multi-pass reasoning) is disabled to prioritize speed, but developers can enable it via the [Reasoning API parameter](https://openrouter.ai/docs/use-cases/reasoning-tokens) to selectively trade off cost for intelligence. ",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0",
+      "audio": "0.0000003",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000025",
+      "input_cache_write": "0.0000001833"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-flash",
+    "name": "Google: Gemini 2.5 Flash",
+    "vendor": "google",
+    "created": 1750172488,
+    "context_length": 1048576,
+    "input_modalities": [
+      "file",
+      "image",
+      "text",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Flash is Google's state-of-the-art workhorse model, specifically designed for advanced reasoning, coding, mathematics, and scientific tasks. It includes built-in \"thinking\" capabilities, enabling it to provide responses with greater accuracy and nuanced context handling. ",
+    "pricing": {
+      "prompt": "0.0000003",
+      "completion": "0.0000025",
+      "request": "0",
+      "image": "0.001238",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000003",
+      "input_cache_write": "0.0000003833"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-pro",
+    "name": "Google: Gemini 2.5 Pro",
+    "vendor": "google",
+    "created": 1750169544,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Pro is Google’s state-of-the-art AI model designed for advanced reasoning, coding, mathematics, and scientific tasks. It employs “thinking” capabilities, enabling it to reason through responses with enhanced accuracy and nuanced context handling. Gemini 2.5 Pro achieves top-tier performance on multiple benchmarks, including first-place positioning on the LMArena leaderboard, reflecting superior human-preference alignment and complex problem-solving abilities.",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.00516",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000125",
+      "input_cache_write": "0.000001625"
+    }
+  },
+  {
+    "id": "openai/o3-pro",
+    "name": "OpenAI: o3 Pro",
+    "vendor": "openai",
+    "created": 1749598352,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "file",
+      "image"
+    ],
+    "description": "The o-series of models are trained with reinforcement learning to think before they answer and perform complex reasoning. The o3-pro model uses more compute to think harder and provide consistently better answers.",
+    "pricing": {
+      "prompt": "0.00002",
+      "completion": "0.00008",
+      "request": "0",
+      "image": "0.0153",
+      "web_search": "0.01",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-pro-preview",
+    "name": "Google: Gemini 2.5 Pro Preview 06-05",
+    "vendor": "google",
+    "created": 1749137257,
+    "context_length": 1048576,
+    "input_modalities": [
+      "file",
+      "image",
+      "text",
+      "audio"
+    ],
+    "description": "Gemini 2.5 Pro is Google’s state-of-the-art AI model designed for advanced reasoning, coding, mathematics, and scientific tasks. It employs “thinking” capabilities, enabling it to reason through responses with enhanced accuracy and nuanced context handling. Gemini 2.5 Pro achieves top-tier performance on multiple benchmarks, including first-place positioning on the LMArena leaderboard, reflecting superior human-preference alignment and complex problem-solving abilities.",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.00516",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000031",
+      "input_cache_write": "0.000001625"
+    }
+  },
+  {
+    "id": "anthropic/claude-opus-4",
+    "name": "Anthropic: Claude Opus 4",
+    "vendor": "anthropic",
+    "created": 1747931245,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "Claude Opus 4 is benchmarked as the world’s best coding model, at time of release, bringing sustained performance on complex, long-running tasks and agent workflows. It sets new benchmarks in software engineering, achieving leading results on SWE-bench (72.5%) and Terminal-bench (43.2%). Opus 4 supports extended, agentic workflows, handling thousands of task steps continuously for hours without degradation. ",
+    "pricing": {
+      "prompt": "0.000015",
+      "completion": "0.000075",
+      "request": "0",
+      "image": "0.024",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000015",
+      "input_cache_write": "0.00001875"
+    }
+  },
+  {
+    "id": "anthropic/claude-sonnet-4",
+    "name": "Anthropic: Claude Sonnet 4",
+    "vendor": "anthropic",
+    "created": 1747930371,
+    "context_length": 1000000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "Claude Sonnet 4 significantly enhances the capabilities of its predecessor, Sonnet 3.7, excelling in both coding and reasoning tasks with improved precision and controllability. Achieving state-of-the-art performance on SWE-bench (72.7%), Sonnet 4 balances capability and computational efficiency, making it suitable for a broad range of applications from routine coding tasks to complex software development projects. Key enhancements include improved autonomous codebase navigation, reduced error rates in agent-driven workflows, and increased reliability in following intricate instructions. Sonnet 4 is optimized for practical everyday use, providing advanced reasoning capabilities while maintaining efficiency and responsiveness in diverse internal and external scenarios.",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.0048",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "openai/codex-mini",
+    "name": "OpenAI: Codex Mini",
+    "vendor": "openai",
+    "created": 1747409761,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "codex-mini-latest is a fine-tuned version of o4-mini specifically for use in Codex CLI. For direct use in the API, we recommend starting with gpt-4.1.",
+    "pricing": {
+      "prompt": "0.0000015",
+      "completion": "0.000006",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000375"
+    }
+  },
+  {
+    "id": "mistralai/mistral-medium-3",
+    "name": "Mistral: Mistral Medium 3",
+    "vendor": "mistralai",
+    "created": 1746627341,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Mistral Medium 3 is a high-performance enterprise-grade language model designed to deliver frontier-level capabilities at significantly reduced operational cost. It balances state-of-the-art reasoning and multimodal performance with 8× lower cost compared to traditional large models, making it suitable for scalable deployments across professional and industrial use cases.",
+    "pricing": {
+      "prompt": "0.0000004",
+      "completion": "0.000002",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.5-pro-preview-05-06",
+    "name": "Google: Gemini 2.5 Pro Preview 05-06",
+    "vendor": "google",
+    "created": 1746578513,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio",
+      "video"
+    ],
+    "description": "Gemini 2.5 Pro is Google’s state-of-the-art AI model designed for advanced reasoning, coding, mathematics, and scientific tasks. It employs “thinking” capabilities, enabling it to reason through responses with enhanced accuracy and nuanced context handling. Gemini 2.5 Pro achieves top-tier performance on multiple benchmarks, including first-place positioning on the LMArena leaderboard, reflecting superior human-preference alignment and complex problem-solving abilities.",
+    "pricing": {
+      "prompt": "0.00000125",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.00516",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000031",
+      "input_cache_write": "0.000001625"
+    }
+  },
+  {
+    "id": "arcee-ai/spotlight",
+    "name": "Arcee AI: Spotlight",
+    "vendor": "arcee-ai",
+    "created": 1746481552,
+    "context_length": 131072,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Spotlight is a 7‑billion‑parameter vision‑language model derived from Qwen 2.5‑VL and fine‑tuned by Arcee AI for tight image‑text grounding tasks. It offers a 32 k‑token context window, enabling rich multimodal conversations that combine lengthy documents with one or more images. Training emphasized fast inference on consumer GPUs while retaining strong captioning, visual‐question‑answering, and diagram‑analysis accuracy. As a result, Spotlight slots neatly into agent workflows where screenshots, charts or UI mock‑ups need to be interpreted on the fly. Early benchmarks show it matching or out‑scoring larger VLMs such as LLaVA‑1.6 13 B on popular VQA and POPE alignment tests. ",
+    "pricing": {
+      "prompt": "0.00000018",
+      "completion": "0.00000018",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "meta-llama/llama-guard-4-12b",
+    "name": "Meta: Llama Guard 4 12B",
+    "vendor": "meta-llama",
+    "created": 1745975193,
+    "context_length": 163840,
+    "input_modalities": [
+      "image",
+      "text"
+    ],
+    "description": "Llama Guard 4 is a Llama 4 Scout-derived multimodal pretrained model, fine-tuned for content safety classification. Similar to previous versions, it can be used to classify content in both LLM inputs (prompt classification) and in LLM responses (response classification). It acts as an LLM—generating text in its output that indicates whether a given prompt or response is safe or unsafe, and if unsafe, it also lists the content categories violated.",
+    "pricing": {
+      "prompt": "0.00000018",
+      "completion": "0.00000018",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/o4-mini-high",
+    "name": "OpenAI: o4 Mini High",
+    "vendor": "openai",
+    "created": 1744824212,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "OpenAI o4-mini-high is the same model as [o4-mini](/openai/o4-mini) with reasoning_effort set to high. ",
+    "pricing": {
+      "prompt": "0.0000011",
+      "completion": "0.0000044",
+      "request": "0",
+      "image": "0.0008415",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000275"
+    }
+  },
+  {
+    "id": "openai/o3",
+    "name": "OpenAI: o3",
+    "vendor": "openai",
+    "created": 1744823457,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "o3 is a well-rounded and powerful model across domains. It sets a new standard for math, science, coding, and visual reasoning tasks. It also excels at technical writing and instruction-following. Use it to think through multi-step problems that involve analysis across text, code, and images. ",
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.000008",
+      "request": "0",
+      "image": "0.00153",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000005"
+    }
+  },
+  {
+    "id": "openai/o4-mini",
+    "name": "OpenAI: o4 Mini",
+    "vendor": "openai",
+    "created": 1744820942,
+    "context_length": 200000,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "OpenAI o4-mini is a compact reasoning model in the o-series, optimized for fast, cost-efficient performance while retaining strong multimodal and agentic capabilities. It supports tool use and demonstrates competitive reasoning and coding performance across benchmarks like AIME (99.5% with Python) and SWE-bench, outperforming its predecessor o3-mini and even approaching o3 in some domains.",
+    "pricing": {
+      "prompt": "0.0000011",
+      "completion": "0.0000044",
+      "request": "0",
+      "image": "0.0008415",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000275"
+    }
+  },
+  {
+    "id": "openai/gpt-4.1",
+    "name": "OpenAI: GPT-4.1",
+    "vendor": "openai",
+    "created": 1744651385,
+    "context_length": 1047576,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "GPT-4.1 is a flagship large language model optimized for advanced instruction following, real-world software engineering, and long-context reasoning. It supports a 1 million token context window and outperforms GPT-4o and GPT-4.5 across coding (54.6% SWE-bench Verified), instruction compliance (87.4% IFEval), and multimodal understanding benchmarks. It is tuned for precise code diffs, agent reliability, and high recall in large document contexts, making it ideal for agents, IDE tooling, and enterprise knowledge retrieval.",
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.000008",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000005"
+    }
+  },
+  {
+    "id": "openai/gpt-4.1-mini",
+    "name": "OpenAI: GPT-4.1 Mini",
+    "vendor": "openai",
+    "created": 1744651381,
+    "context_length": 1047576,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "GPT-4.1 Mini is a mid-sized model delivering performance competitive with GPT-4o at substantially lower latency and cost. It retains a 1 million token context window and scores 45.1% on hard instruction evals, 35.8% on MultiChallenge, and 84.1% on IFEval. Mini also shows strong coding ability (e.g., 31.6% on Aider’s polyglot diff benchmark) and vision understanding, making it suitable for interactive applications with tight performance constraints.",
+    "pricing": {
+      "prompt": "0.0000004",
+      "completion": "0.0000016",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000001"
+    }
+  },
+  {
+    "id": "openai/gpt-4.1-nano",
+    "name": "OpenAI: GPT-4.1 Nano",
+    "vendor": "openai",
+    "created": 1744651369,
+    "context_length": 1047576,
+    "input_modalities": [
+      "image",
+      "text",
+      "file"
+    ],
+    "description": "For tasks that demand low latency, GPT‑4.1 nano is the fastest and cheapest model in the GPT-4.1 series. It delivers exceptional performance at a small size with its 1 million token context window, and scores 80.1% on MMLU, 50.3% on GPQA, and 9.8% on Aider polyglot coding – even higher than GPT‑4o mini. It’s ideal for tasks like classification or autocompletion.",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000025"
+    }
+  },
+  {
+    "id": "meta-llama/llama-4-maverick:free",
+    "name": "Meta: Llama 4 Maverick (free)",
+    "vendor": "meta-llama",
+    "created": 1743881822,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Llama 4 Maverick 17B Instruct (128E) is a high-capacity multimodal language model from Meta, built on a mixture-of-experts (MoE) architecture with 128 experts and 17 billion active parameters per forward pass (400B total). It supports multilingual text and image input, and produces multilingual text and code output across 12 supported languages. Optimized for vision-language tasks, Maverick is instruction-tuned for assistant-like behavior, image reasoning, and general-purpose multimodal interaction.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "meta-llama/llama-4-maverick",
+    "name": "Meta: Llama 4 Maverick",
+    "vendor": "meta-llama",
+    "created": 1743881822,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Llama 4 Maverick 17B Instruct (128E) is a high-capacity multimodal language model from Meta, built on a mixture-of-experts (MoE) architecture with 128 experts and 17 billion active parameters per forward pass (400B total). It supports multilingual text and image input, and produces multilingual text and code output across 12 supported languages. Optimized for vision-language tasks, Maverick is instruction-tuned for assistant-like behavior, image reasoning, and general-purpose multimodal interaction.",
+    "pricing": {
+      "prompt": "0.00000015",
+      "completion": "0.0000006",
+      "request": "0",
+      "image": "0.0006684",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "meta-llama/llama-4-scout:free",
+    "name": "Meta: Llama 4 Scout (free)",
+    "vendor": "meta-llama",
+    "created": 1743881519,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Llama 4 Scout 17B Instruct (16E) is a mixture-of-experts (MoE) language model developed by Meta, activating 17 billion parameters out of a total of 109B. It supports native multimodal input (text and image) and multilingual output (text and code) across 12 supported languages. Designed for assistant-style interaction and visual reasoning, Scout uses 16 experts per forward pass and features a context length of 10 million tokens, with a training corpus of ~40 trillion tokens.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "meta-llama/llama-4-scout",
+    "name": "Meta: Llama 4 Scout",
+    "vendor": "meta-llama",
+    "created": 1743881519,
+    "context_length": 327680,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Llama 4 Scout 17B Instruct (16E) is a mixture-of-experts (MoE) language model developed by Meta, activating 17 billion parameters out of a total of 109B. It supports native multimodal input (text and image) and multilingual output (text and code) across 12 supported languages. Designed for assistant-style interaction and visual reasoning, Scout uses 16 experts per forward pass and features a context length of 10 million tokens, with a training corpus of ~40 trillion tokens.",
+    "pricing": {
+      "prompt": "0.00000008",
+      "completion": "0.0000003",
+      "request": "0",
+      "image": "0.0003342",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen2.5-vl-32b-instruct:free",
+    "name": "Qwen: Qwen2.5 VL 32B Instruct (free)",
+    "vendor": "qwen",
+    "created": 1742839838,
+    "context_length": 16384,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen2.5-VL-32B is a multimodal vision-language model fine-tuned through reinforcement learning for enhanced mathematical reasoning, structured outputs, and visual problem-solving capabilities. It excels at visual analysis tasks, including object recognition, textual interpretation within images, and precise event localization in extended videos. Qwen2.5-VL-32B demonstrates state-of-the-art performance across multimodal benchmarks such as MMMU, MathVista, and VideoMME, while maintaining strong reasoning and clarity in text-based tasks like MMLU, mathematical problem-solving, and code generation.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen2.5-vl-32b-instruct",
+    "name": "Qwen: Qwen2.5 VL 32B Instruct",
+    "vendor": "qwen",
+    "created": 1742839838,
+    "context_length": 16384,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen2.5-VL-32B is a multimodal vision-language model fine-tuned through reinforcement learning for enhanced mathematical reasoning, structured outputs, and visual problem-solving capabilities. It excels at visual analysis tasks, including object recognition, textual interpretation within images, and precise event localization in extended videos. Qwen2.5-VL-32B demonstrates state-of-the-art performance across multimodal benchmarks such as MMMU, MathVista, and VideoMME, while maintaining strong reasoning and clarity in text-based tasks like MMLU, mathematical problem-solving, and code generation.",
+    "pricing": {
+      "prompt": "0.00000005",
+      "completion": "0.00000022",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/o1-pro",
+    "name": "OpenAI: o1-pro",
+    "vendor": "openai",
+    "created": 1742423211,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "The o1 series of models are trained with reinforcement learning to think before they answer and perform complex reasoning. The o1-pro model uses more compute to think harder and provide consistently better answers.",
+    "pricing": {
+      "prompt": "0.00015",
+      "completion": "0.0006",
+      "request": "0",
+      "image": "0.21675",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/mistral-small-3.1-24b-instruct:free",
+    "name": "Mistral: Mistral Small 3.1 24B (free)",
+    "vendor": "mistralai",
+    "created": 1742238937,
+    "context_length": 96000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Mistral Small 3.1 24B Instruct is an upgraded variant of Mistral Small 3 (2501), featuring 24 billion parameters with advanced multimodal capabilities. It provides state-of-the-art performance in text-based reasoning and vision tasks, including image analysis, programming, mathematical reasoning, and multilingual support across dozens of languages. Equipped with an extensive 128k token context window and optimized for efficient local inference, it supports use cases such as conversational agents, function calling, long-document comprehension, and privacy-sensitive deployments. The updated version is [Mistral Small 3.2](mistralai/mistral-small-3.2-24b-instruct)",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/mistral-small-3.1-24b-instruct",
+    "name": "Mistral: Mistral Small 3.1 24B",
+    "vendor": "mistralai",
+    "created": 1742238937,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Mistral Small 3.1 24B Instruct is an upgraded variant of Mistral Small 3 (2501), featuring 24 billion parameters with advanced multimodal capabilities. It provides state-of-the-art performance in text-based reasoning and vision tasks, including image analysis, programming, mathematical reasoning, and multilingual support across dozens of languages. Equipped with an extensive 128k token context window and optimized for efficient local inference, it supports use cases such as conversational agents, function calling, long-document comprehension, and privacy-sensitive deployments. The updated version is [Mistral Small 3.2](mistralai/mistral-small-3.2-24b-instruct)",
+    "pricing": {
+      "prompt": "0.00000005",
+      "completion": "0.0000001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-4b-it:free",
+    "name": "Google: Gemma 3 4B (free)",
+    "vendor": "google",
+    "created": 1741905510,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-4b-it",
+    "name": "Google: Gemma 3 4B",
+    "vendor": "google",
+    "created": 1741905510,
+    "context_length": 96000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling.",
+    "pricing": {
+      "prompt": "0.00000001703012",
+      "completion": "0.0000000681536",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-12b-it:free",
+    "name": "Google: Gemma 3 12B (free)",
+    "vendor": "google",
+    "created": 1741902625,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 12B is the second largest in the family of Gemma 3 models after [Gemma 3 27B](google/gemma-3-27b-it)",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-12b-it",
+    "name": "Google: Gemma 3 12B",
+    "vendor": "google",
+    "created": 1741902625,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 12B is the second largest in the family of Gemma 3 models after [Gemma 3 27B](google/gemma-3-27b-it)",
+    "pricing": {
+      "prompt": "0.00000003",
+      "completion": "0.0000001",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-27b-it:free",
+    "name": "Google: Gemma 3 27B (free)",
+    "vendor": "google",
+    "created": 1741756359,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 27B is Google's latest open source model, successor to [Gemma 2](google/gemma-2-27b-it)",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemma-3-27b-it",
+    "name": "Google: Gemma 3 27B",
+    "vendor": "google",
+    "created": 1741756359,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 27B is Google's latest open source model, successor to [Gemma 2](google/gemma-2-27b-it)",
+    "pricing": {
+      "prompt": "0.00000009",
+      "completion": "0.00000016",
+      "request": "0",
+      "image": "0.0000256",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "microsoft/phi-4-multimodal-instruct",
+    "name": "Microsoft: Phi 4 Multimodal Instruct",
+    "vendor": "microsoft",
+    "created": 1741396284,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Phi-4 Multimodal Instruct is a versatile 5.6B parameter foundation model that combines advanced reasoning and instruction-following capabilities across both text and visual inputs, providing accurate text outputs. The unified architecture enables efficient, low-latency inference, suitable for edge and mobile deployments. Phi-4 Multimodal Instruct supports text inputs in multiple languages including Arabic, Chinese, English, French, German, Japanese, Spanish, and more, with visual input optimized primarily for English. It delivers impressive performance on multimodal tasks involving mathematical, scientific, and document reasoning, providing developers and enterprises a powerful yet compact model for sophisticated interactive applications. For more information, see the [Phi-4 Multimodal blog post](https://azure.microsoft.com/en-us/blog/empowering-innovation-the-next-generation-of-the-phi-family/).",
+    "pricing": {
+      "prompt": "0.00000005",
+      "completion": "0.0000001",
+      "request": "0",
+      "image": "0.00017685",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "perplexity/sonar-reasoning-pro",
+    "name": "Perplexity: Sonar Reasoning Pro",
+    "vendor": "perplexity",
+    "created": 1741313308,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Note: Sonar Pro pricing includes Perplexity search pricing. See [details here](https://docs.perplexity.ai/guides/pricing#detailed-pricing-breakdown-for-sonar-reasoning-pro-and-sonar-pro)",
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.000008",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.005",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "perplexity/sonar-pro",
+    "name": "Perplexity: Sonar Pro",
+    "vendor": "perplexity",
+    "created": 1741312423,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Note: Sonar Pro pricing includes Perplexity search pricing. See [details here](https://docs.perplexity.ai/guides/pricing#detailed-pricing-breakdown-for-sonar-reasoning-pro-and-sonar-pro)",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.005",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "google/gemini-2.0-flash-lite-001",
+    "name": "Google: Gemini 2.0 Flash Lite",
+    "vendor": "google",
+    "created": 1740506212,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio"
+    ],
+    "description": "Gemini 2.0 Flash Lite offers a significantly faster time to first token (TTFT) compared to [Gemini Flash 1.5](/google/gemini-flash-1.5), while maintaining quality on par with larger models like [Gemini Pro 1.5](/google/gemini-pro-1.5), all at extremely economical token prices.",
+    "pricing": {
+      "prompt": "0.000000075",
+      "completion": "0.0000003",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.7-sonnet:thinking",
+    "name": "Anthropic: Claude 3.7 Sonnet (thinking)",
+    "vendor": "anthropic",
+    "created": 1740422110,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "Claude 3.7 Sonnet is an advanced large language model with improved reasoning, coding, and problem-solving capabilities. It introduces a hybrid reasoning approach, allowing users to choose between rapid responses and extended, step-by-step processing for complex tasks. The model demonstrates notable improvements in coding, particularly in front-end development and full-stack updates, and excels in agentic workflows, where it can autonomously navigate multi-step processes. ",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.0048",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.7-sonnet",
+    "name": "Anthropic: Claude 3.7 Sonnet",
+    "vendor": "anthropic",
+    "created": 1740422110,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "Claude 3.7 Sonnet is an advanced large language model with improved reasoning, coding, and problem-solving capabilities. It introduces a hybrid reasoning approach, allowing users to choose between rapid responses and extended, step-by-step processing for complex tasks. The model demonstrates notable improvements in coding, particularly in front-end development and full-stack updates, and excels in agentic workflows, where it can autonomously navigate multi-step processes. ",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.0048",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "google/gemini-2.0-flash-001",
+    "name": "Google: Gemini 2.0 Flash",
+    "vendor": "google",
+    "created": 1738769413,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image",
+      "file",
+      "audio"
+    ],
+    "description": "Gemini Flash 2.0 offers a significantly faster time to first token (TTFT) compared to [Gemini Flash 1.5](/google/gemini-flash-1.5), while maintaining quality on par with larger models like [Gemini Pro 1.5](/google/gemini-pro-1.5). It introduces notable enhancements in multimodal understanding, coding capabilities, complex instruction following, and function calling. These advancements come together to deliver more seamless and robust agentic experiences.",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0.0000258",
+      "audio": "0.0000007",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000025",
+      "input_cache_write": "0.0000001833"
+    }
+  },
+  {
+    "id": "qwen/qwen-vl-plus",
+    "name": "Qwen: Qwen VL Plus",
+    "vendor": "qwen",
+    "created": 1738731255,
+    "context_length": 7500,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen's Enhanced Large Visual Language Model. Significantly upgraded for detailed recognition capabilities and text recognition abilities, supporting ultra-high pixel resolutions up to millions of pixels and extreme aspect ratios for image input. It delivers significant performance across a broad range of visual tasks.",
+    "pricing": {
+      "prompt": "0.00000021",
+      "completion": "0.00000063",
+      "request": "0",
+      "image": "0.0002688",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen-vl-max",
+    "name": "Qwen: Qwen VL Max",
+    "vendor": "qwen",
+    "created": 1738434304,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen VL Max is a visual understanding model with 7500 tokens context length. It excels in delivering optimal performance for a broader spectrum of complex tasks.",
+    "pricing": {
+      "prompt": "0.0000008",
+      "completion": "0.0000032",
+      "request": "0",
+      "image": "0.001024",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen2.5-vl-72b-instruct",
+    "name": "Qwen: Qwen2.5 VL 72B Instruct",
+    "vendor": "qwen",
+    "created": 1738410311,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen2.5-VL is proficient in recognizing common objects such as flowers, birds, fish, and insects. It is also highly capable of analyzing texts, charts, icons, graphics, and layouts within images.",
+    "pricing": {
+      "prompt": "0.00000008",
+      "completion": "0.00000033",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "perplexity/sonar",
+    "name": "Perplexity: Sonar",
+    "vendor": "perplexity",
+    "created": 1738013808,
+    "context_length": 127072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Sonar is lightweight, affordable, fast, and simple to use — now featuring citations and the ability to customize sources. It is designed for companies seeking to integrate lightweight question-and-answer features optimized for speed.",
+    "pricing": {
+      "prompt": "0.000001",
+      "completion": "0.000001",
+      "request": "0.005",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "minimax/minimax-01",
+    "name": "MiniMax: MiniMax-01",
+    "vendor": "minimax",
+    "created": 1736915462,
+    "context_length": 1000192,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "MiniMax-01 is a combines MiniMax-Text-01 for text generation and MiniMax-VL-01 for image understanding. It has 456 billion parameters, with 45.9 billion parameters activated per inference, and can handle a context of up to 4 million tokens.",
+    "pricing": {
+      "prompt": "0.0000002",
+      "completion": "0.0000011",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/o1",
+    "name": "OpenAI: o1",
+    "vendor": "openai",
+    "created": 1734459999,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "The latest and strongest model family from OpenAI, o1 is designed to spend more time thinking before responding. The o1 model series is trained with large-scale reinforcement learning to reason using chain of thought. ",
+    "pricing": {
+      "prompt": "0.000015",
+      "completion": "0.00006",
+      "request": "0",
+      "image": "0.021675",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000075"
+    }
+  },
+  {
+    "id": "google/gemini-2.0-flash-exp:free",
+    "name": "Google: Gemini 2.0 Flash Experimental (free)",
+    "vendor": "google",
+    "created": 1733937523,
+    "context_length": 1048576,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Gemini Flash 2.0 offers a significantly faster time to first token (TTFT) compared to [Gemini Flash 1.5](/google/gemini-flash-1.5), while maintaining quality on par with larger models like [Gemini Pro 1.5](/google/gemini-pro-1.5). It introduces notable enhancements in multimodal understanding, coding capabilities, complex instruction following, and function calling. These advancements come together to deliver more seamless and robust agentic experiences.",
+    "pricing": {
+      "prompt": "0",
+      "completion": "0",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "amazon/nova-lite-v1",
+    "name": "Amazon: Nova Lite 1.0",
+    "vendor": "amazon",
+    "created": 1733437363,
+    "context_length": 300000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Amazon Nova Lite 1.0 is a very low-cost multimodal model from Amazon that focused on fast processing of image, video, and text inputs to generate text output. Amazon Nova Lite can handle real-time customer interactions, document analysis, and visual question-answering tasks with high accuracy.",
+    "pricing": {
+      "prompt": "0.00000006",
+      "completion": "0.00000024",
+      "request": "0",
+      "image": "0.00009",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "amazon/nova-pro-v1",
+    "name": "Amazon: Nova Pro 1.0",
+    "vendor": "amazon",
+    "created": 1733436303,
+    "context_length": 300000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Amazon Nova Pro 1.0 is a capable multimodal model from Amazon focused on providing a combination of accuracy, speed, and cost for a wide range of tasks. As of December 2024, it achieves state-of-the-art performance on key benchmarks including visual question answering (TextVQA) and video understanding (VATEX).",
+    "pricing": {
+      "prompt": "0.0000008",
+      "completion": "0.0000032",
+      "request": "0",
+      "image": "0.0012",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-4o-2024-11-20",
+    "name": "OpenAI: GPT-4o (2024-11-20)",
+    "vendor": "openai",
+    "created": 1732127594,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "The 2024-11-20 version of GPT-4o offers a leveled-up creative writing ability with more natural, engaging, and tailored writing to improve relevance & readability. It’s also better at working with uploaded files, providing deeper insights & more thorough responses.",
+    "pricing": {
+      "prompt": "0.0000025",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.003613",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000125"
+    }
+  },
+  {
+    "id": "mistralai/pixtral-large-2411",
+    "name": "Mistral: Pixtral Large 2411",
+    "vendor": "mistralai",
+    "created": 1731977388,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Pixtral Large is a 124B parameter, open-weight, multimodal model built on top of [Mistral Large 2](/mistralai/mistral-large-2411). The model is able to understand documents, charts and natural images.",
+    "pricing": {
+      "prompt": "0.000002",
+      "completion": "0.000006",
+      "request": "0",
+      "image": "0.002888",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.5-haiku",
+    "name": "Anthropic: Claude 3.5 Haiku",
+    "vendor": "anthropic",
+    "created": 1730678400,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Claude 3.5 Haiku features offers enhanced capabilities in speed, coding accuracy, and tool use. Engineered to excel in real-time applications, it delivers quick response times that are essential for dynamic tasks such as chat interactions and immediate coding suggestions.",
+    "pricing": {
+      "prompt": "0.0000008",
+      "completion": "0.000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0.01",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000008",
+      "input_cache_write": "0.000001"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.5-haiku-20241022",
+    "name": "Anthropic: Claude 3.5 Haiku (2024-10-22)",
+    "vendor": "anthropic",
+    "created": 1730678400,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "Claude 3.5 Haiku features enhancements across all skill sets including coding, tool use, and reasoning. As the fastest model in the Anthropic lineup, it offers rapid response times suitable for applications that require high interactivity and low latency, such as user-facing chatbots and on-the-fly code completions. It also excels in specialized tasks like data extraction and real-time content moderation, making it a versatile tool for a broad range of industries.",
+    "pricing": {
+      "prompt": "0.0000008",
+      "completion": "0.000004",
+      "request": "0",
+      "image": "0",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000008",
+      "input_cache_write": "0.000001"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.5-sonnet",
+    "name": "Anthropic: Claude 3.5 Sonnet",
+    "vendor": "anthropic",
+    "created": 1729555200,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "New Claude 3.5 Sonnet delivers better-than-Opus capabilities, faster-than-Sonnet speeds, at the same Sonnet prices. Sonnet is particularly good at:",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.0048",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "meta-llama/llama-3.2-90b-vision-instruct",
+    "name": "Meta: Llama 3.2 90B Vision Instruct",
+    "vendor": "meta-llama",
+    "created": 1727222400,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "The Llama 90B Vision model is a top-tier, 90-billion-parameter multimodal model designed for the most challenging visual reasoning and language tasks. It offers unparalleled accuracy in image captioning, visual question answering, and advanced image-text comprehension. Pre-trained on vast multimodal datasets and fine-tuned with human feedback, the Llama 90B Vision is engineered to handle the most demanding image-based AI tasks.",
+    "pricing": {
+      "prompt": "0.00000035",
+      "completion": "0.0000004",
+      "request": "0",
+      "image": "0.0005058",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "meta-llama/llama-3.2-11b-vision-instruct",
+    "name": "Meta: Llama 3.2 11B Vision Instruct",
+    "vendor": "meta-llama",
+    "created": 1727222400,
+    "context_length": 131072,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Llama 3.2 11B Vision is a multimodal model with 11 billion parameters, designed to handle tasks combining visual and textual data. It excels in tasks such as image captioning and visual question answering, bridging the gap between language generation and visual reasoning. Pre-trained on a massive dataset of image-text pairs, it performs well in complex, high-accuracy image analysis.",
+    "pricing": {
+      "prompt": "0.000000049",
+      "completion": "0.000000049",
+      "request": "0",
+      "image": "0.00007948",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "mistralai/pixtral-12b",
+    "name": "Mistral: Pixtral 12B",
+    "vendor": "mistralai",
+    "created": 1725926400,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "The first multi-modal, text+image-to-text model from Mistral AI. Its weights were launched via torrent: https://x.com/mistralai/status/1833758285167722836.",
+    "pricing": {
+      "prompt": "0.0000001",
+      "completion": "0.0000001",
+      "request": "0",
+      "image": "0.0001445",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "qwen/qwen-2.5-vl-7b-instruct",
+    "name": "Qwen: Qwen2.5-VL 7B Instruct",
+    "vendor": "qwen",
+    "created": 1724803200,
+    "context_length": 32768,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Qwen2.5 VL 7B is a multimodal LLM from the Qwen Team with the following key enhancements:",
+    "pricing": {
+      "prompt": "0.0000002",
+      "completion": "0.0000002",
+      "request": "0",
+      "image": "0.0001445",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/chatgpt-4o-latest",
+    "name": "OpenAI: ChatGPT-4o",
+    "vendor": "openai",
+    "created": 1723593600,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "OpenAI ChatGPT 4o is continually updated by OpenAI to point to the current version of GPT-4o used by ChatGPT. It therefore differs slightly from the API version of [GPT-4o](/models/openai/gpt-4o) in that it has additional RLHF. It is intended for research and evaluation.",
+    "pricing": {
+      "prompt": "0.000005",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.007225",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-4o-2024-08-06",
+    "name": "OpenAI: GPT-4o (2024-08-06)",
+    "vendor": "openai",
+    "created": 1722902400,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "The 2024-08-06 version of GPT-4o offers improved performance in structured outputs, with the ability to supply a JSON schema in the respone_format. Read more [here](https://openai.com/index/introducing-structured-outputs-in-the-api/).",
+    "pricing": {
+      "prompt": "0.0000025",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.003613",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000125"
+    }
+  },
+  {
+    "id": "openai/gpt-4o-mini",
+    "name": "OpenAI: GPT-4o-mini",
+    "vendor": "openai",
+    "created": 1721260800,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-4o mini is OpenAI's newest model after [GPT-4 Omni](/models/openai/gpt-4o), supporting both text and image inputs with text outputs.",
+    "pricing": {
+      "prompt": "0.00000015",
+      "completion": "0.0000006",
+      "request": "0",
+      "image": "0.000217",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000075"
+    }
+  },
+  {
+    "id": "openai/gpt-4o-mini-2024-07-18",
+    "name": "OpenAI: GPT-4o-mini (2024-07-18)",
+    "vendor": "openai",
+    "created": 1721260800,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-4o mini is OpenAI's newest model after [GPT-4 Omni](/models/openai/gpt-4o), supporting both text and image inputs with text outputs.",
+    "pricing": {
+      "prompt": "0.00000015",
+      "completion": "0.0000006",
+      "request": "0",
+      "image": "0.007225",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.000000075"
+    }
+  },
+  {
+    "id": "anthropic/claude-3.5-sonnet-20240620",
+    "name": "Anthropic: Claude 3.5 Sonnet (2024-06-20)",
+    "vendor": "anthropic",
+    "created": 1718841600,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "Claude 3.5 Sonnet delivers better-than-Opus capabilities, faster-than-Sonnet speeds, at the same Sonnet prices. Sonnet is particularly good at:",
+    "pricing": {
+      "prompt": "0.000003",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.0048",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000003",
+      "input_cache_write": "0.00000375"
+    }
+  },
+  {
+    "id": "openai/gpt-4o",
+    "name": "OpenAI: GPT-4o",
+    "vendor": "openai",
+    "created": 1715558400,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of [GPT-4 Turbo](/models/openai/gpt-4-turbo) while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.",
+    "pricing": {
+      "prompt": "0.0000025",
+      "completion": "0.00001",
+      "request": "0",
+      "image": "0.003613",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000125"
+    }
+  },
+  {
+    "id": "openai/gpt-4o:extended",
+    "name": "OpenAI: GPT-4o (extended)",
+    "vendor": "openai",
+    "created": 1715558400,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of [GPT-4 Turbo](/models/openai/gpt-4-turbo) while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.",
+    "pricing": {
+      "prompt": "0.000006",
+      "completion": "0.000018",
+      "request": "0",
+      "image": "0.007225",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-4o-2024-05-13",
+    "name": "OpenAI: GPT-4o (2024-05-13)",
+    "vendor": "openai",
+    "created": 1715558400,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "description": "GPT-4o (\"o\" for \"omni\") is OpenAI's latest AI model, supporting both text and image inputs with text outputs. It maintains the intelligence level of [GPT-4 Turbo](/models/openai/gpt-4-turbo) while being twice as fast and 50% more cost-effective. GPT-4o also offers improved performance in processing non-English languages and enhanced visual capabilities.",
+    "pricing": {
+      "prompt": "0.000005",
+      "completion": "0.000015",
+      "request": "0",
+      "image": "0.007225",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "openai/gpt-4-turbo",
+    "name": "OpenAI: GPT-4 Turbo",
+    "vendor": "openai",
+    "created": 1712620800,
+    "context_length": 128000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "The latest GPT-4 Turbo model with vision capabilities. Vision requests can now use JSON mode and function calling.",
+    "pricing": {
+      "prompt": "0.00001",
+      "completion": "0.00003",
+      "request": "0",
+      "image": "0.01445",
+      "web_search": "0",
+      "internal_reasoning": "0"
+    }
+  },
+  {
+    "id": "anthropic/claude-3-haiku",
+    "name": "Anthropic: Claude 3 Haiku",
+    "vendor": "anthropic",
+    "created": 1710288000,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Claude 3 Haiku is Anthropic's fastest and most compact model for",
+    "pricing": {
+      "prompt": "0.00000025",
+      "completion": "0.00000125",
+      "request": "0",
+      "image": "0.0004",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.00000003",
+      "input_cache_write": "0.0000003"
+    }
+  },
+  {
+    "id": "anthropic/claude-3-opus",
+    "name": "Anthropic: Claude 3 Opus",
+    "vendor": "anthropic",
+    "created": 1709596800,
+    "context_length": 200000,
+    "input_modalities": [
+      "text",
+      "image"
+    ],
+    "description": "Claude 3 Opus is Anthropic's most powerful model for highly complex tasks. It boasts top-level performance, intelligence, fluency, and understanding.",
+    "pricing": {
+      "prompt": "0.000015",
+      "completion": "0.000075",
+      "request": "0",
+      "image": "0.024",
+      "web_search": "0",
+      "internal_reasoning": "0",
+      "input_cache_read": "0.0000015",
+      "input_cache_write": "0.00001875"
+    }
+  }
+]

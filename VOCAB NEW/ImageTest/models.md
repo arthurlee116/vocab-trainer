@@ -1,0 +1,14 @@
+1. nvidia/nemotron-nano-12b-v2-vl
+2. anthropic/claude-haiku-4.5
+3. qwen/qwen3-vl-30b-a3b-thinking
+4. anthropic/claude-sonnet-4.5
+5. google/gemini-2.5-flash-preview-09-2025
+6. qwen/qwen3-vl-235b-a22b-thinking
+7. qwen/qwen3-vl-235b-a22b-instruct
+8. x-ai/grok-4-fast
+9. opengvlab/internvl3-78b
+10. z-ai/glm-4.5v
+11. openai/gpt-5-mini
+12. openai/gpt-5
+13. baidu/ernie-4.5-vl-424b-a47b
+14. google/gemini-2.5-pro

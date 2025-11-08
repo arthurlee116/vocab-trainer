@@ -1,0 +1,54 @@
+[
+  {
+    "experiment": "gpt-4o-mini_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5-chat_json",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5-mini_plaintext",
+    "success": true
+  },
+  {
+    "experiment": "claude-4.5-sonnet_json_schema",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5_double_pass_markdown",
+    "success": true
+  },
+  {
+    "experiment": "gpt-5-nano_markdown",
+    "success": true
+  },
+  {
+    "experiment": "gemini-2.5-flash_json",
+    "success": true
+  },
+  {
+    "experiment": "llama-11b-vision_markdown",
+    "success": true
+  },
+  {
+    "experiment": "claude-sonnet-4.5_json",
+    "success": true
+  },
+  {
+    "experiment": "gemini-2.5-pro_json",
+    "success": true
+  },
+  {
+    "experiment": "qwen3-vl-235b_markdown",
+    "success": true
+  },
+  {
+    "experiment": "nova-premier_json",
+    "success": true
+  },
+  {
+    "experiment": "polaris-alpha_markdown",
+    "success": true
+  }
+]

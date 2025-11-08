@@ -1,0 +1,18 @@
+{
+  "model": "openai/gpt-5-mini",
+  "timestamp": "2025-11-08T06-10-49-965Z",
+  "summary": [
+    {
+      "variant": "nopunct_words",
+      "success": true
+    },
+    {
+      "variant": "sections_after_number",
+      "success": true
+    },
+    {
+      "variant": "flat_objects",
+      "success": true
+    }
+  ]
+}

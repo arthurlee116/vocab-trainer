@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-11-08T06:15:16.673Z",
+  "truth_size": 129,
+  "summary": [
+    {
+      "file": "openai_gpt-5-mini__nopunct_words.json",
+      "totalExtracted": 129,
+      "matches": 128,
+      "extras": 1,
+      "coverage": 0.9922480620155039,
+      "unmatchedSamples": [
+        "beacony"
+      ],
+      "missingSamples": [
+        "beacon"
+      ]
+    }
+  ]
+}

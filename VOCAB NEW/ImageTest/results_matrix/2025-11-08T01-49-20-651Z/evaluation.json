@@ -1,0 +1,145 @@
+{
+  "timestamp": "2025-11-08T01:52:54.174Z",
+  "truth_size": 129,
+  "summary": [
+    {
+      "file": "claude35_sections.json",
+      "totalExtracted": 128,
+      "matches": 123,
+      "extras": 5,
+      "coverage": 0.9534883720930233,
+      "unmatchedSamples": [
+        "goalkeeper",
+        "tropic",
+        "be the cat's whiskers",
+        "affliction",
+        "uncount"
+      ],
+      "missingSamples": [
+        "misanthrope",
+        "trophy",
+        "be the cat’s whiskers",
+        "afflictions",
+        "penetrate",
+        "uncouth"
+      ]
+    },
+    {
+      "file": "claude45_sections.json",
+      "totalExtracted": 135,
+      "matches": 121,
+      "extras": 14,
+      "coverage": 0.937984496124031,
+      "unmatchedSamples": [
+        "goalkeeper",
+        "throw off",
+        "hassan",
+        "14 steps",
+        "be the cat's whiskers",
+        "affliction",
+        "afflicted",
+        "lack",
+        "awe",
+        "penetrate/penetration"
+      ],
+      "missingSamples": [
+        "phenomenally",
+        "be the cat’s whiskers",
+        "afflictions",
+        "afflictive",
+        "lead up to",
+        "swerve",
+        "penetrate",
+        "penetration"
+      ]
+    },
+    {
+      "file": "gemini25_flat.json",
+      "totalExtracted": 134,
+      "matches": 126,
+      "extras": 8,
+      "coverage": 0.9767441860465116,
+      "unmatchedSamples": [
+        "goalkeeper",
+        "hassan",
+        "14 steps",
+        "affliction(s)",
+        "penetrate penetration",
+        "unit 13",
+        "unit 14",
+        "unit 15"
+      ],
+      "missingSamples": [
+        "afflictions",
+        "penetrate",
+        "penetration"
+      ]
+    },
+    {
+      "file": "llama90_markdown.json",
+      "totalExtracted": 128,
+      "matches": 121,
+      "extras": 7,
+      "coverage": 0.937984496124031,
+      "unmatchedSamples": [
+        "outline",
+        "be the cat's whiskers",
+        "affliction",
+        "penetrating",
+        "be filled/overflowing with",
+        "beacons",
+        "sham(?)"
+      ],
+      "missingSamples": [
+        "outlier",
+        "be the cat’s whiskers",
+        "afflictions",
+        "penetration",
+        "penetrating look",
+        "be filled to overflowing with",
+        "beacon",
+        "sham"
+      ]
+    },
+    {
+      "file": "nova_sections.json",
+      "totalExtracted": 128,
+      "matches": 122,
+      "extras": 6,
+      "coverage": 0.9457364341085271,
+      "unmatchedSamples": [
+        "stunning",
+        "be the cat's whiskers",
+        "affliction(s)",
+        "swere",
+        "penetrate/v. penetration",
+        "shameful"
+      ],
+      "missingSamples": [
+        "stunting",
+        "be the cat’s whiskers",
+        "afflictions",
+        "swerve",
+        "penetrate",
+        "penetration",
+        "sham"
+      ]
+    },
+    {
+      "file": "qwen235_markdown.json",
+      "totalExtracted": 128,
+      "matches": 126,
+      "extras": 2,
+      "coverage": 0.9767441860465116,
+      "unmatchedSamples": [
+        "affliction",
+        "chaste"
+      ],
+      "missingSamples": [
+        "afflictions",
+        "penetration",
+        "chasten"
+      ]
+    }
+  ]
+}

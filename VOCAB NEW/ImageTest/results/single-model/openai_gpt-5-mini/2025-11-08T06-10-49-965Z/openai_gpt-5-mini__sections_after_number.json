@@ -1,0 +1,175 @@
+{
+  "model": "openai/gpt-5-mini",
+  "variant": {
+    "key": "sections_after_number",
+    "description": "Sectioned extraction with numbered guidance (PROMPT_V4)",
+    "responseFormat": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "sections_list",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sections": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "order": {
+                          "type": "integer",
+                          "minimum": 1
+                        },
+                        "text": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "note": {
+                          "type": "string",
+                          "maxLength": 80
+                        }
+                      },
+                      "required": [
+                        "order",
+                        "text",
+                        "note"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "heading",
+                  "entries"
+                ]
+              }
+            }
+          },
+          "required": [
+            "sections"
+          ]
+        }
+      }
+    },
+    "system": "You transcribe study sheets section by section. Never mix headings into the entry text.",
+    "user": "Extract vocabulary words from this numbered list. For each numbered item, capture ONLY the text that appears after the number and the dot.\nExample: \"1. anthropology:\" → extract text \"anthropology\"\nExample: \"30. penetrate (v.) penetration (n.)\" → output BOTH \"penetrate\" and \"penetration\" as separate entries within the same section (reuse the same order if needed).\n\nGroup your output by section heading and follow the provided JSON schema exactly. If you are confident about an item set note=\"\", otherwise set note=\"uncertain\".\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present.\nNormalization rules that MUST be followed:\n1. Replace straight apostrophes with RIGHT SINGLE QUOTATION MARK (’) so idioms like “cat’s” keep the curly mark.\n2. Remove spaces around slashes, e.g., convert \"with/ by\" → \"with/by\".\n3. When a term contains \"(s)\" or similar optional letters, output the fully spelled form (e.g., \"affliction(s)\" → \"afflictions\").\n4. When one numbered line contains multiple vocabulary items (e.g., \"penetrate (v.) penetration (n.)\"), emit each vocab item separately even if they share the same number.\n5. If you are confident in an item, set note=\"\" (empty string). If uncertain, set note=\"uncertain\" and explain briefly."
+  },
+  "prompt": {
+    "system": "You transcribe study sheets section by section. Never mix headings into the entry text.",
+    "user": "Extract vocabulary words from this numbered list. For each numbered item, capture ONLY the text that appears after the number and the dot.\nExample: \"1. anthropology:\" → extract text \"anthropology\"\nExample: \"30. penetrate (v.) penetration (n.)\" → output BOTH \"penetrate\" and \"penetration\" as separate entries within the same section (reuse the same order if needed).\n\nGroup your output by section heading and follow the provided JSON schema exactly. If you are confident about an item set note=\"\", otherwise set note=\"uncertain\".\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present.\nNormalization rules that MUST be followed:\n1. Replace straight apostrophes with RIGHT SINGLE QUOTATION MARK (’) so idioms like “cat’s” keep the curly mark.\n2. Remove spaces around slashes, e.g., convert \"with/ by\" → \"with/by\".\n3. When a term contains \"(s)\" or similar optional letters, output the fully spelled form (e.g., \"affliction(s)\" → \"afflictions\").\n4. When one numbered line contains multiple vocabulary items (e.g., \"penetrate (v.) penetration (n.)\"), emit each vocab item separately even if they share the same number.\n5. If you are confident in an item, set note=\"\" (empty string). If uncertain, set note=\"uncertain\" and explain briefly."
+  },
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "sections_list",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "heading": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "entries": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "order": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "note": {
+                        "type": "string",
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "order",
+                      "text",
+                      "note"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "heading",
+                "entries"
+              ]
+            }
+          }
+        },
+        "required": [
+          "sections"
+        ]
+      }
+    }
+  },
+  "result": {
+    "id": "gen-1762582307-JOCk4vvNjmSqupIDubcX",
+    "provider": "OpenAI",
+    "model": "openai/gpt-5-mini",
+    "object": "chat.completion",
+    "created": 1762582307,
+    "choices": [
+      {
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "completed",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"sections\":[{\"heading\":\"Goalkeeper\",\"entries\":[{\"order\":1,\"text\":\"anthropology\",\"note\":\"\"},{\"order\":2,\"text\":\"philosophy\",\"note\":\"\"},{\"order\":3,\"text\":\"misanthrope\",\"note\":\"\"},{\"order\":4,\"text\":\"hold sb. accountable for\",\"note\":\"\"},{\"order\":5,\"text\":\"outlier\",\"note\":\"\"},{\"order\":6,\"text\":\"stunting\",\"note\":\"\"},{\"order\":7,\"text\":\"malnourished\",\"note\":\"\"},{\"order\":8,\"text\":\"phenomenally\",\"note\":\"\"},{\"order\":9,\"text\":\"hangs in the balance\",\"note\":\"\"},{\"order\":10,\"text\":\"balance the books\",\"note\":\"\"},{\"order\":11,\"text\":\"check and balance\",\"note\":\"\"},{\"order\":12,\"text\":\"balance out\",\"note\":\"\"},{\"order\":13,\"text\":\"throw off balance\",\"note\":\"\"},{\"order\":14,\"text\":\"magic wand\",\"note\":\"\"},{\"order\":15,\"text\":\"gut microbiome\",\"note\":\"\"}]},{\"heading\":\"Hassan\",\"entries\":[{\"order\":1,\"text\":\"hovel\",\"note\":\"\"},{\"order\":2,\"text\":\"dank\",\"note\":\"\"},{\"order\":3,\"text\":\"covet\",\"note\":\"\"},{\"order\":4,\"text\":\"crave\",\"note\":\"\"},{\"order\":5,\"text\":\"spool\",\"note\":\"\"},{\"order\":6,\"text\":\"horde\",\"note\":\"\"},{\"order\":7,\"text\":\"shove\",\"note\":\"\"},{\"order\":8,\"text\":\"trophy\",\"note\":\"\"},{\"order\":9,\"text\":\"uncoil\",\"note\":\"\"},{\"order\":10,\"text\":\"coil\",\"note\":\"\"},{\"order\":11,\"text\":\"overcast\",\"note\":\"\"},{\"order\":12,\"text\":\"ragged\",\"note\":\"\"},{\"order\":13,\"text\":\"plummet\",\"note\":\"\"}]},{\"heading\":\"14 Steps\",\"entries\":[{\"order\":1,\"text\":\"a cat has nine lives\",\"note\":\"\"},{\"order\":2,\"text\":\"be the cat’s whiskers\",\"note\":\"\"},{\"order\":3,\"text\":\"let the cat out of the bag\",\"note\":\"\"},{\"order\":4,\"text\":\"put the cat among the pigeons\",\"note\":\"\"},{\"order\":5,\"text\":\"be inclined to\",\"note\":\"\"},{\"order\":6,\"text\":\"inclination\",\"note\":\"\"},{\"order\":7,\"text\":\"afflict\",\"note\":\"\"},{\"order\":8,\"text\":\"afflictions\",\"note\":\"\"},{\"order\":9,\"text\":\"afflictive\",\"note\":\"\"},{\"order\":10,\"text\":\"be afflicted with/by\",\"note\":\"\"},{\"order\":11,\"text\":\"progressive\",\"note\":\"\"},{\"order\":12,\"text\":\"with the aid of\",\"note\":\"\"},{\"order\":13,\"text\":\"to a degree\",\"note\":\"\"},{\"order\":14,\"text\":\"disillusioned\",\"note\":\"\"},{\"order\":15,\"text\":\"disillusionment\",\"note\":\"\"},{\"order\":16,\"text\":\"hold on to\",\"note\":\"\"},{\"order\":17,\"text\":\"lead up to\",\"note\":\"\"},{\"order\":18,\"text\":\"sanity\",\"note\":\"\"},{\"order\":19,\"text\":\"slashing\",\"note\":\"\"},{\"order\":20,\"text\":\"swerve\",\"note\":\"\"},{\"order\":21,\"text\":\"dreaded\",\"note\":\"\"},{\"order\":22,\"text\":\"enormity\",\"note\":\"\"},{\"order\":23,\"text\":\"enormous\",\"note\":\"\"},{\"order\":24,\"text\":\"peer at\",\"note\":\"\"},{\"order\":25,\"text\":\"jack\",\"note\":\"\"},{\"order\":26,\"text\":\"jack up\",\"note\":\"\"},{\"order\":27,\"text\":\"frail\",\"note\":\"\"},{\"order\":28,\"text\":\"frailty\",\"note\":\"\"},{\"order\":29,\"text\":\"be all set\",\"note\":\"\"},{\"order\":30,\"text\":\"penetrate\",\"note\":\"\"},{\"order\":30,\"text\":\"penetration\",\"note\":\"\"},{\"order\":31,\"text\":\"penetrating look\",\"note\":\"\"},{\"order\":32,\"text\":\"fumble\",\"note\":\"\"},{\"order\":33,\"text\":\"fumble with/in sth. for sth.\",\"note\":\"\"},{\"order\":34,\"text\":\"be filled to overflowing with\",\"note\":\"\"},{\"order\":35,\"text\":\"indifference\",\"note\":\"\"},{\"order\":36,\"text\":\"indifferent\",\"note\":\"\"},{\"order\":37,\"text\":\"scriptural\",\"note\":\"\"},{\"order\":38,\"text\":\"admonition\",\"note\":\"\"},{\"order\":39,\"text\":\"admonitory\",\"note\":\"\"},{\"order\":40,\"text\":\"beat down\",\"note\":\"\"}]},{\"heading\":\"Unit 13\",\"entries\":[{\"order\":1,\"text\":\"adhere\",\"note\":\"\"},{\"order\":2,\"text\":\"affirm\",\"note\":\"\"},{\"order\":3,\"text\":\"atrocity\",\"note\":\"\"},{\"order\":4,\"text\":\"cope\",\"note\":\"\"},{\"order\":5,\"text\":\"deter\",\"note\":\"\"},{\"order\":6,\"text\":\"disquieting\",\"note\":\"\"},{\"order\":7,\"text\":\"empower\",\"note\":\"\"},{\"order\":8,\"text\":\"fluent\",\"note\":\"\"},{\"order\":9,\"text\":\"lag\",\"note\":\"\"},{\"order\":10,\"text\":\"mangle\",\"note\":\"\"},{\"order\":11,\"text\":\"misapprehension\",\"note\":\"\"},{\"order\":12,\"text\":\"optimist\",\"note\":\"\"},{\"order\":13,\"text\":\"prowl\",\"note\":\"\"},{\"order\":14,\"text\":\"recitation\",\"note\":\"\"},{\"order\":15,\"text\":\"stupefy\",\"note\":\"\"},{\"order\":16,\"text\":\"sulky\",\"note\":\"\"},{\"order\":17,\"text\":\"supplement\",\"note\":\"\"},{\"order\":18,\"text\":\"surge\",\"note\":\"\"},{\"order\":19,\"text\":\"trait\",\"note\":\"\"},{\"order\":20,\"text\":\"unscrupulous\",\"note\":\"\"}]},{\"heading\":\"Unit 14\",\"entries\":[{\"order\":1,\"text\":\"abstain\",\"note\":\"\"},{\"order\":2,\"text\":\"accommodate\",\"note\":\"\"},{\"order\":3,\"text\":\"allegiance\",\"note\":\"\"},{\"order\":4,\"text\":\"amalgamate\",\"note\":\"\"},{\"order\":5,\"text\":\"append\",\"note\":\"\"},{\"order\":6,\"text\":\"commemorate\",\"note\":\"\"},{\"order\":7,\"text\":\"enumerate\",\"note\":\"\"},{\"order\":8,\"text\":\"exalt\",\"note\":\"\"},{\"order\":9,\"text\":\"far-fetched\",\"note\":\"\"},{\"order\":10,\"text\":\"extort\",\"note\":\"\"},{\"order\":11,\"text\":\"glum\",\"note\":\"\"},{\"order\":12,\"text\":\"replica\",\"note\":\"\"},{\"order\":13,\"text\":\"responsive\",\"note\":\"\"},{\"order\":14,\"text\":\"sanctuary\",\"note\":\"\"},{\"order\":15,\"text\":\"self-seeking\",\"note\":\"\"},{\"order\":16,\"text\":\"submissive\",\"note\":\"\"},{\"order\":17,\"text\":\"tally\",\"note\":\"\"},{\"order\":18,\"text\":\"taskmaster\",\"note\":\"\"},{\"order\":19,\"text\":\"transform\",\"note\":\"\"},{\"order\":20,\"text\":\"upheaval\",\"note\":\"\"}]},{\"heading\":\"Unit 15\",\"entries\":[{\"order\":1,\"text\":\"beacon\",\"note\":\"uncertain - original looks like \\\"beacony\\\" or has stray mark; likely \\\"beacon\\\"\"},{\"order\":2,\"text\":\"berserk\",\"note\":\"\"},{\"order\":3,\"text\":\"celestial\",\"note\":\"\"},{\"order\":4,\"text\":\"chasten\",\"note\":\"\"},{\"order\":5,\"text\":\"confiscate\",\"note\":\"\"},{\"order\":6,\"text\":\"data\",\"note\":\"\"},{\"order\":7,\"text\":\"detract\",\"note\":\"\"},{\"order\":8,\"text\":\"encounter\",\"note\":\"\"},{\"order\":9,\"text\":\"epic\",\"note\":\"\"},{\"order\":10,\"text\":\"pantomime\",\"note\":\"\"},{\"order\":11,\"text\":\"pessimist\",\"note\":\"\"},{\"order\":12,\"text\":\"precaution\",\"note\":\"\"},{\"order\":13,\"text\":\"prosecute\",\"note\":\"\"},{\"order\":14,\"text\":\"puncture\",\"note\":\"\"},{\"order\":15,\"text\":\"retaliate\",\"note\":\"\"},{\"order\":16,\"text\":\"sham\",\"note\":\"uncertain - word is partially obscured/scribbled in source image\"},{\"order\":17,\"text\":\"uncouth\",\"note\":\"\"},{\"order\":18,\"text\":\"underscore\",\"note\":\"\"},{\"order\":19,\"text\":\"wholesome\",\"note\":\"\"},{\"order\":20,\"text\":\"wistful\",\"note\":\"\"}]}]}",
+          "refusal": null,
+          "reasoning": null,
+          "reasoning_details": [
+            {
+              "type": "reasoning.encrypted",
+              "data": "gAAAAABpDt9EWZD_xTWdSxR5xrOYtLsP1wOeL5s1akG9najdALU9uL7FVArIa7rqvuxazhIlk07WVnmTRCiV6K1qejG1ltEplhzQX8JzPTO3Xsh7NzW5qC8iQT9EXjw9XYQuP8fUx71MlZDJZ6zvKyLmc3x1GVGfeUkmlJR9gfVL5Qd1a8EaGBGey3RGZ5zXhpld3La7zYlxe0pjAqMgAyivTNAVYpilG36YwBYvdLalwEUPS3najbK4ZDQmaTxKHVBAGRIcUowvcRw_GstHpJibfKS8V7eUST9B0fF_roeSHoFK5b-mryvCraJAxo7Ip8iKP68LsIZqs2yypgMnYq7_-IUXo4ezhiS-zYGgC7-3d4iF75i0lrVl6LIm2795g81eXpJUz9fKSfHxccjEigJZhJmGefkWeyy1cn7-Gr8b7n8pCV8R6JWgZurKPFYkZeOSfqyt_3YlhICtkZpWfuSfMOHN1wxZzXTDm7entDS9iS84z4fnkCccLtdRCZHluTn19ZLypbFZYKyngWRv5y7coC554Zx4UDhtVcvv_qsiJ3OYV6jpOFCjV-bZLJJz03dVhvIjCtgPseaqW_2fpPf8uZjOTPqLulBWR4nMBEWBso6Ln2oJ6VLDCtclNzJfzvXJDFm-JnLvXdN5YqnWuL1b5k9-Lg1DeO9JnV0eg3w11IRqRP3iFgQrTjeUpSCMrcJ2ImPigRVub2cDQ33TNf5r6PT8j2-75j33_cssHMUWTYteis1pj81dvcL6eHlISj8SzwxkXFkE6nk2rAxcs_QB0l41kFapciMgCtAVUMa5oMXRpDsJ95DtrayWF2A8RQOp_ID3Vf38kqsVJnzYyk5z0hghPCYgcetUHnkHJJJe_UXb-JazxwukBAXye2-xhBtH6JqIWotK1zXqwV05z_mT591TCK3KvQlxcwloP5nltdZL_P-lGhlPE7AnQ-4ix3HQ4SHRr5meubNW1pAjTiwS9LsIECHRAyvZ6VxfFkshNGO0gjv5yCPJVvgaHCVVD-Q1zDymHtOIe5dEpNpsI3FLibA0hjKdgyFW5xSc7ZbaNaj1BnLy6EJQojPzH5kici6sZXjXY2YqBPOuMuyqtFNqVPeDoxTW_wNns0VBCJ1ywWCt0Vuu8umsRIuk2YlJRc-vy8_FfzYWL_8xyPuZtqk9481QS3pU0HufxyejkV6lxFdxR4dF_ZC31XvOep1R3SO8cLetEFWikNMVSBa7BmIymLeut9UCZRkVcM6cjPqsvDS8xMgbVc8LVQypNVCb4DXwFMoxAtxAyWnekjOoKOujWgYoBlj-Vm3orsLtXfuPVbIVjWFUe0rrMsIlH51FvaPVw5yQGLBm0Gt8VQF_7xZ0xn07jdNRGELN79f7ion9idOOBVv2NELUDphaYVCm4hvxg0xiSXmWs4w-zCLBmEKV1o5ldsYf1O3iD773eDnxR42q6KTsgJgFnMjhFsNRY3xmZb_auhjmIZIOHRC7u58VqDwIQzW4B0w9gOGw7t0g4UctZh6pbkhz4wIib9jrPAelkqNBMMQnUymvcURm7g_8gsZ1xXM4hjGnAMaRpmQEdCqOtWkj1BtsqQEr9xNeGzCqPTmnfL8uNxHxGxB-U6CFPwv86mgq1ff5vKEzscLe69bk4AY4ssUxtpvTTeFnvwcE5yAlnN5tuttfWXIPpDLDRiZ1qZFyVopufkh5ECV0fgxb_7zHaDUTrFJWKWDWMOkZFsspX7dNZ69IoEFoDYP8aPSzawbwld_OikPlPEUo-KmCubEJFNK1yj-iJq5swDaOtnN3d-osRZyVp90UYO1c3akFLmo2TkH8ot_0CwkIeNcwW5Zekwa8r0gIa42QNmHPZX0s_PfRdOl2spIow8NlFIZaA4FX7etvRAgnHxyPTicNUqqAVIjDwhKKtaD6Otg5sy1VK0fwn3lrZuy2-v-cyi_bKlwmuJwBnkF7eTEvMcm-MtZUKBGMGcNtD7uC9tPrL39ZmDsxt719qrptucWSxjMhRoWzb6tIyC77Q_LhnY1zA4sShndB0gl7N2h_6PHRfZJws8u7yDWLYLsRnFwEUoTfc6s9Km-egK-gIk6AkzalWoou2bz6f4trZBPL6unjWiZEGZS5zKi75UaPumVAZfCxEvjgCkI5T-RF9gpBn57bozCs502DcNia1jsWqjd9LDdTLdZFc4If2xs60zQzbgGzlbqySy2lGrarfmY-oornOQ7Gornq7Oyhbjn1tV05alsj7YWecUIFng4Zs9YuxcMm0CVH3qyXAht71TL-XT6cJ0SWaoNsBcTyQk1-rYeZ0cFZ2zB37v8o7U0HZv7UhzgrJjuXFdHHHvT_mWCTuaS68XNSOxmUqYjqZEFpF6GYA7J30jewOelxoHKZtPYPa1tx8OvWIXdgwvYou9iU1FXoyTCQQlcVGrsP5VBEszWn9DN_73eaIF-UXIGke62ldbO3mjdjzp5Bn9BKe4_9SlG4V5Zo1Uwz0ZrHVX_zSEDhdCSDrnjkPW6Bx8l6FUQB7vaX4gJBIfXuGWDQ_0jT91p_qd9ieDYaU0--ceu5O_PbldlZJCrloGvqWuY3dodT2YJdUFzTGDKBK_K3jwa_kMYLMZ9i4J454258pLNoTkw0GCgx1gx4z4W6jdOKKUo0stpUM528txhF3X4MCL_1v1SRWnaBv9gD3zXM1tTT4Las0eg9D6-v9mo9gixWNuamZ92IVM5m2URl4eEVvCPqPAJunhvHWOoZ0G7JSgsqhyB7X7gNXyGGyzRmrxjpk5xjhb6ldPcmiskQE7OTN4pM7PJnwVNrBw_MuEZHiH1YO2dVWKr1iZ_vtuL7lD3WGtfcWATLrgwtje2CZvbtUPZs9-0Ug0ufNoTILBmgXX7TbpilC9RTOAymJHxrjSIN7O7YevJFI3oO4JGbgdrCbQjpm38P7sfwfgLuSMQ1R67_P1Stq_fApgElQEiB5T7oHrvcFNlnzS9Kfnehn3PO_lViBWQJpNukfPYz8sBdc9YWkm7ec8754ftBHaEg19pIKcrnMcyZfvpSU0FL5sJrCeOEN-OGEGXemKKBuS997XsC4OGx4z_MzOhNjbRP6bY2FLLnXj0KLEGLg-T0iOna2byn7emvMcwVk5mLOrFD0fvgVrfIXjbZUYmeZ1FnT4-IPKdMjCQhIQL5UaIh6o0I-MprbEwyj5nHcfeMozTsn95OB76HQUih6pSBtt_9cVvdJWo10o3YF4xCd_QJTmGnYOYiqSeDzXrN8x92gOXlrXTFsl99Klg37T4A1wIqWHVW4qjcw3VSgoSkY-LVjODutxwpPk4Yc_v8uk98ZQodpo94On1tHXdIK8yjVdnJ4NErbxrF3wFR-Bc0z-66r1dyLRKTW9U51XwOf1DpFMPolFeeqwSdXMM6X4Ga4hfJc8HcuS4edEA3bxVvIeq3xPZDFZW10FvoJhD0ccAsIeerOiEVz4NS7mn78tLsopvJRkv0RMCyM7-io20ByOUXz-bkLFPIK02rM51N4ZjA0ywqgp3OG4l7L3or0zOaweS5yAJtrQn-zI0EAj8rUdTReSOI4Deo-TJBKTeFqHD-Br3djV0IYRRbNEIAkK-L8sKt1xYSV81Ew5_7PBtm7aamfckLusymx7uHjHd03NkOy7zqaB83LwitZ-mNkG_4NL2-CzSJcjYjAqjFL5LXPxAK8uhRS-VdedMHVpsE47x0yTXFdagViCam9K8qFpSWz2SfTp9Do-UbPXIiynxXZIqW5i9t_KZ-yJgyWH47WJU0q7GDraU25Nv1BzUme2xB_ju-8Lv9Qserx-nSJxaH3dIu59--9n5EEN-CpvpK8IZ69pRkaMJFjkDFcAKat9bYMJOwvkXke7Vj8ZRAda7yCQHSM55jEl2y_cuK8l2vZ6ZibsdzbVvEUcDDV2jh7N2XXLbd8RO9Q5f4QBUjNJGLPY9vOOIjmcNv3fBcjEvtnoQ4QwtWcPhsPrhMHoNPYiJDMNfb6VkPcW8sBUrcsfhoK7sSpPFYXboXx0_hx1GYLsqw8R2p-DTaouC1wHONHpYI00HbjI0tPaXu1BLJPJ2ZHLdf3fBbOPpT-NpZyGkt3vprtUTX6f0SJJYEU24o-Ecl5E7ZxAlOze_vNgdXIicyKzomWNmz1hfxuq0R06mMn7quCn2RTo9aHhm6wjWV5oXvwyuDYJeehueBP_eaqQk1OhiY25ZIt4ISZEyjsVjmtscKgd0hPe4rktAhRkNiTIS394BRqCAcYb4IUB-lPsL7pcMmYNsOsENjfvAkOWmo7cN0Xwx3R3DgAyNizZL43eYulXQDYRZ63vBCYWF1wFJJAQdbYt0PKYjEvhjFuPQbMaIVMRoZg3NqHVqnobRRvgThAonbt40wCukR_wMtLIsD7CBAcPcVd_z48K9WwHzr-knquWwiPd4sRwyQcFJt1iHGqZJivdxhZEkOeYcTUCxVMvtkowCp7qt7U22vFvpBKhSxVIaiJbzvLaNFrg2-noklO-DrsPWmGVPpDwTkJGo33nEk8ukrK54JmnpgmxMuEmjFzXCvjkNzW-uRX1FwvUYub_YV17UvedLKTkBG7TsnMIzOi186JspOryYNAQt0yeg12S_6zMkKN75sf_6q04OdnX7RmQXz2PE5-foi0v1b0kjEItNTTFPlgGhno5JKRFUiQB9-DPVIa60D_tDCRaZ48R9GQPPpgWPIqNBHVvG1XaF_AM5qmnE8u2-ZUwHkrB78m06qI5MbAay4Lke4yKfmRCPf4GvCsdXkruLAKfNjoP-IBnNIxQjco2wrJXnEoanCYVKcA1T4XxaCG8YoXnVoW3GJv5h-2p22Tf5OWIOsytlDn8WVFO4MPtrGwNILlpq0K4AG1I5Gb6pq3EcI2uKtHh5OkbdBuL0isJOSjHXlrYMvdUL4JGtAqgy1ClyPcd-_AyRaHi_n5BuJA3vwy74vVSU9-EbHZJoVUJSfmLetoYnzIP6-2zpxrWzTqgeukICdKSG_XGvokEhb_BKItnwGR8Tuvlc4bIJ3HCqdww1Uw8rj3eqp6Oh5SbPjFC3-mVcvelNzzz4p0b7IzepXQvxcX_920LNRxd9Kk8LYZf9t40NAN-FW5PPT1DwPAuU5XRQ8UcDFlHhFlD-HKqCHkf-uw7ieCnIOWfVF13Q_kQOE8p94tYOWVSqz3SmdhJ2K9yRo_ZG3mMEu0aDKCx9lrNRdDHgf6HLqOVJrLvxe15h1vK1J9CnwXm-TZr3Sa4RaxJHVDz8rfeh6SpStkOwNsEyHACC-XqkSPhTHYqoLwFFuc2GBJRFfbJyToG1GvlaHFYe3aIhJ72s7xWLk-e7v5UW0hFIcZMEkan8OYY6c_hTKSOHrybLXCh3B6I_lqcuKtExZ6IGhcZPXET3j-qiEpF3nVK8ElFUzF4cuEI9r6XgPL7OqZECoEEl5yqT6pve_1A9JHNkTwRV9wPgQm1ox1fUjz9AFzkZCW6ezwwqe2QsXKBy4OQgI_ACXKR0-4_h8soNlo49QPEinLDg8OpIUEpqcYtOUZLu4uRm20LX3sag78u2_Zp-f7HBjUnYSjKO-ScmNvBOXjFx7KDFpyFcNiWso7Sw1Ke3ONwOvRnH9C4NMLmpdZ_3Ee6I5yqY39z1BzFCWa73mGJIuehwTN-92A66wj3FdG9UoLl9SkKRzGMz8f0ChgKUORXUfNIZ-UC-wkDIXWM-YACFEy9PZUw8CatOk8OwXUD4IJfViWn0oacFWLbLRf3vNPC6f37qZmJ0ekl27upKJmW1rzQuULBI0XWx7e7IPnQIhdeKoFA2UGUfpjyetRygbTi7qa-yxFGP0_yzUaH_caFweyRW0PrKdulm6yJOamSzbjZoHVsIsqMC9RTdIXFzI7lYR_qkyt9jC6hixwujUdjKgyUB1a0gZ5EYXkIKELIe_vRLaJCgZB40SrMrnxqyFK5YRaVfoYLRZO6txqGrPbOLaRFwhFjGDX9dVEPUyMMTb6t7fpPOlp3YvYyd4-HgLi-bOChxFIcfBZY00rIWOGM67zwwG7EH7l0PY_Xp1MouEKzZfYh4HyN-_eKhVP9DwZijPlOZLuui6QvarXniH7e0CD7FnvTcVqADQwjYZEVZK5oeVRStSDTQc0PcZT5Wtg6bb3pfsrlJEnm6pvlvqdMYznEkRxx8wNptxI4QEPB7iGXe_icrPpsIzg0TBWqqAfytMIcJo8OHtAAJis5krU9gywQX2vJWxI7P_XqWRjp8WWUDuVF0ByMftHc5x8QoNgawb7xEiiOIIS3GAuW_NmIy46CVs7MidOG4QbzhIW67m3KYxxp_NYLLjYNgo6-zE5KwrJ9JiU_jCGelm97ZsA0oyapv2TeMxGCUPKPlZ2ZdtPP8dxYjzy1dMJp4E1i0gDHXa7B3lm57ip4SsVhYXSHkGY6dLHE4kx4huuSeh3yRig3GPT_8123ipTP-LgKLaKUgT3fgjpeYQIYl9FoiUMmdXdux2LNusHnFE1Q1tHCvY6bxMkw8cFHquuIeYeluRdWNghVfOALUegks-Fl56ZzsVs9GIbcwXftFH4NFqoQrO2QtbzGD0NJ7kPMDx2CWZtdeET3jNK6jr3smZ-xHzZCemKd3oAZsdHfLDnIK9OgRQ-LMUJqAqFP8f1wvVxgBazZwU8uS45yufGAm4bEH2synWSk19I20-N6hOHyTTCRLkGEZf3d19Kbm_EueT1PJywxbabt959HP1Wrr25_UsbaXXDFazbQ2q9w0GeltsaVpOZrdcB_Y9e-tA2NofIc4z3Oa7v1jlxKaevFXjslGLLrZyi2PSxZx4RLuBhe9wlly_kWIElCTHPZp1Df_uPlhOO7sxCVgiFRSo6rSgasJ6JL7vl5QjROOODrzex3BXpUnFtRV9UYOOo7HYhzEHmXa5MibQhFUFEBn2FgNooJ0MRzWlsHa-1ekg48wmhUCvOZz9_KTUHAF5HzhNC1WdLpc__9EJvoc5WbdMpDfvhu3LyzyFJUfr8_QJUulUonuo-QO-78N0SPq_iINCQrhtmsIvWLQzwWp2__-UwHaLOcdC1sgrf-VNFntwN8LP-eWsXlki4fiEMPMcKyUthODZ4KX1YuTRhqrjZLxNIogAt3QmvpUW_lUM3M5esIE_IbXN-ZppAF4O1PIyWk6GcliuBBp3xnOWlafyokvjw7l5f5HKAbES2HHpI9Onk5O1MaSIH-z8KYJWKzEZFUHsdHpMKWZNzBy6Yaoavh_XQT0Tqvp1KXxNbmfFOEVfvVL1MgxVZLCx2_Ful__OEhit0Bm3IkilTaCc-yrraw9KhfzZV2ZH5CIk3gXHII8pvg8jLFKnQgVdl9ay-3HMdZzkLkWhiVN3XDl6YdBvNiMhlK2oehZf2bYCWbwq_k85mSYbuDaMPdWD8fJsT_ch3yOeO_b4fyioI0EwHUyUwbOOwh5-ozvClD-H8OchYcF90shNexAIWAA_0_i6kNsL8jkGkWETpk5BMNhyj6lzvuy-7fS-SfrRda9kTCwtTE9wzj-lGIJplXCSoYFmFn7NnGIGHPMjHIk5hPVG3tQpBSSFnnvwTwRHDMU-yLPg_Go8n46mCJLtZfICei8smL83uQAbHMa7j7UtJ8srFN5xyJIwTD9JsMuqPj3pZj9zEVxscOH4rHB8EDOxNK62We__xMLuqiQSh1_22x6Ht6iyCEru83ikKsX3W_5q2cpzJR3hQwMvWSzAzXBZc2GQQoAwHyVrEvUWOEWD-XeEgtNlJGONnET2t7MUvTnR7XCTW_sXBBISB-74-sJ8oGPO0U8kDiUmvP-cajGmHFX2D2dV40ldoP-9nowjmyTaCNTeSoG8YPdmRh5fTI3TBGYkIUKBAfhGw1S8jez8EnevCno215aDu5C_ZGbwQNUjtEQsPUb70_CD2ofPid0u4CuS_-j1rEo45ngRx-boBsSIt3ZgBVI7Ug8Ar3vKodSQEdkSze2-44HashqLSMGRh49oZXhuujzufl00uegfoZnwo0HJIu0Sj3V1szwxrmjJpXC8qMPtQwM82ZWTd6XG2F78KcQS42l04EXNTd4X-_7ZYIsMLkWkB_bCQnWvIxzk16spT29pk2LG9SqMZAzWwBonJBsGrkfSXBfM6N8RmsVp73zj3fYk0DPze0C_npXpAlFc0cD00olutw7W3gky5HmjZ3h-uu8ZVP50U_Ln28ufpNOr6lOYEbs84RgprZkbkGU8tvjanXe51TCDwVQcr9Whd_2hooTHUXqwJCQWXjMwtlww732A56NlihJycgWEzDZEzKCJZPb1ypmNyQfd1OPluBE9-F7tmIZCTwVPq-ZkxsLXlkKHLviP4ku8DCDgvu7xv9yebUIsshvsQ4H9XQGtsTgr0rbCpBUetXVYK6vhfVO37OIfUzhtZZVqJW0JwayeW_DNFbE48fbzwxSunTerMS0gVBp16h3rFUtzwpiHyA6fGIuS66JQCaNuP9Kmf3PkJ98nuZ3HgVMW8I9Z5IVGCJoMDIeg-dOM6NxVvRTzFXWnykypkMIOz37MwMmIb4jEdvQ2TLm8LltGhgKlRc8k6cRGFHiApb-T-U31hm3bdTxKMeOaJ3GOZJSClNiIF4NWSYJfxVtlrnHahndQBNl6Tno1z3MX6l694L61_yCpuuO3W9tuxfT5pXCSdTH_Uo_91Eh5OqiyF0h0RfS1247rNamXWBfpg9mDdvofFon6Fvgo7edP85qdhMfKMYyKAT9u90erKpLB6ay5QfDLoADImlZBIUeP2ELhSdVyzo5Z9UD_iKeQMy8dAhjMOqXZsj0-7W_xk46lwHIAYoSThWrZ42xRpdA6bTxkxhU_qumFGuPFLGzOUVK2LZkWJHJALhpryakJkQyfWDhEpXlfoo3KlVTL7UPBoS6vNWFuLFJQSCE5brhoEC6EheAmFY48pBNVXvZRrMrcoCAA_CTlRdXtQ4BjTFgu98hq-KsIBypTm-JDvwOsorRu5TzACKsjgBui6jr7jM9zrM5WLLrR3wMKHBTEdP6r-xJOYyJ8nzhHUNQyHtgVAoglSHup6QAxOCx5d5Msvj7G9cnOHKdeztdzq5MkgWXtNQ8ldkwIeQvs48NvYC9VIAWqXPBGRYUo6xgpuD1-4dcLI98kb6ScaNwVFAHpWGBYqKtOTP1A0vY6a7kv5nka5YE5S3xUKdnz-I04lvO6zkBvhrJE8UFQ8cb8wsxVdBuHZIlZqeYD4JZkdwMgM9cQJeCUM0wE_hSpR_bJl-w3KqVeI7oW4a9sGSLq32CO_SQgGSrivMY7CBwMXbCVpFMXUH7chsBEgkJ6bENrThxJhtmVOetxm0CTHrAwPA1eAKMA8Yc4u0iKDReVEAXWBrKRKnjGiAm9N4M3MiJRisY3EbhwIWQOsxhOZP2f92pMvxcjflXRXomndoix7GmjIVs2f3ya8NKdYpD-HZ_TxALCIDhujIauSrLEOAiogPTekJX2mQAx8sX6Tu7A8MPjoa0otXoyeBY_9X3crwSu2aWxlpDay6WK4cDh6KP3u4FnkGfog-pOP6Q_ZDkLrIw9aMIeiJ1OAojDjsJ2RmFwHLXTwyxRKUbJDDtvTOy-CzUe9Sy5ILXqEiM7HlSHiacZ9xp3eT0sxq6xrj4lWa1OqtA3nZ8A2l2kb-MKt5O7L7RUCpgqscwoF-xme9KCcd3jbg5dhMSXd5Jr2Wh8YBCfJeRB-XJjG9zg7suF-ZLdcbxzqkz9s4PES2K0-wquoSouw4iZRThtWLDZWi5LmKSZEexcbgwu9kCJ3kIevUCf1RJ6zzOEEbO2ynbALzdG1DRqoV1iH6NcHzoH39VdCfgncgf3Jel-iU_XjePLEHGTTkvD6t21Q0eOFz0yw8JcQoqB8kZEMFm7fIwpuGvRjxtiTo0P6zOXapdtY3A-87oR6vFTqQgI-x94hTh5Y3JOyISN1Kcl_wNkb9o0f8-9iQi0RGw34JWwKY4eRj_oT1TFCCldQwtpcLRnB4xO-vcSULm68sUZi8HDPm7b2MTpB8_AiUMl9Iq8Fqp1vKv2WsduA6DJmXXxgKZoilo5SbFIJGBVYI4z6YgosFvEsg4xdkCI0zrxxZCJyUkZVqYk4jMsuhRgfho_R1rXCe9i6y6rUjPGO7lCL6RF1ZJKnw4ZFgpEchpgRxlV3Virf-WjMLb6ljWAvtm9ReEpNL_3w7diwg_5OHgyroflA3qN3ZVtIC0fWw7ZXBZ4dbIDQ7ZmmuHb4rk4pX53f03juaxVdG-uMmoEP5gjGIVbcGE2PWSKUw-7umbfMwGurqZJtyEUmQr4QuDZYKJwxesYFEkQsJ80Tm1ON3m0Ig4ZrI39bbg-oiJtD41MD25Ava-u6lEJTE8VtKBKJfxMzEleoQH08LGu5gL3ubDvC1PE15y-LIPwSfa52YUnr5VXSv9BBbQRScR66zWezP2dAStDgkg90_RKfQEJ07xEhtRv8AZhUbrCAoX8hXnMRT-K53mJMHPaSywRBMr3eH1hPZWNmqo2uOmsewYPDGuT2ulcBmWh2uqQzMyQonAEV_JKIHQiY2KpDx1z1QqYrF3wNTi3ZWbusqU7RnbBHrQuCO6Wl253Bw_7Y8j2pOJL-lRNPK4x_75i07KUonDg6l_Efy0sKYTCVGQMxS5XG8o-5u6kQKdE-3j8HUIHCM0Rnie_8NQDl003mmxm7FMgxqx1MDqgtfevu5CGx9Mm2Jff2wSi2dxT4UACdVYKaymgQx7-6H19PKeBVP1WIBYjBr-huP9K9oNE8c_JhCqOEFqMEUfTiLarj7w6vjeO7tX3RzmMS54vUpLFwPuNkX-wfLk7ThMksVvfcD418KbIE8bRcdZ4v8J_TMBYvpL2FYSC81Ia-0YgD-gabhuOAlJQ6xKwQ8X79KHbdBL5GJ6OXoUr9hlRWO3Q_fjhlgl50wrQDOlud58Dqk36zXowCg1-0SYOJBgOeL43y0hn9xsGrg-1D-2myjaTlSYBnv7F7eYXO6b9xED90Tpuki6tIckSGoOxpN3KrkMdgBJ-3SryYzWYH_KrBSfGzDBM88Zdod4AjT9PtnabZ1LJsfkbpUNvoSxUoyNCfxeMIt2sh8EjHLMPl5tpOW0MYcoJsqNFgTp-bc2O4VIa4wKpVxSQzo0_jE6hgG5-bbPu5U0NZX-L6RnbkIU=",
+              "id": "rs_07f1f1209d4049b201690edf248d38819095e6fc8fc19fd2d1",
+              "format": "openai-responses-v1",
+              "index": 0
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1371,
+      "completion_tokens": 3905,
+      "total_tokens": 5276,
+      "completion_tokens_details": {
+        "reasoning_tokens": 2048
+      }
+    }
+  }
+}

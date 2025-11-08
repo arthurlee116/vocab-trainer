@@ -1,0 +1,125 @@
+{
+  "model": "anthropic/claude-haiku-4.5",
+  "variant": {
+    "key": "flat_objects",
+    "description": "Flat word objects with headings and indexes",
+    "responseFormat": {
+      "type": "json_schema",
+      "json_schema": {
+        "name": "flat_words",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "words": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "index": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                },
+                "required": [
+                  "index",
+                  "text"
+                ]
+              }
+            }
+          },
+          "required": [
+            "words"
+          ]
+        }
+      }
+    },
+    "system": "You are an OCR agent that outputs structured word objects with headings and indexes.",
+    "user": "Parse the entire worksheet and return JSON with `words` = [{index, heading, text}].\nindex = the numbering on the worksheet, heading = the group title (Goalkeeper, Unit 14, etc.).\ntext = the cleaned vocabulary entry without trailing punctuation.\nFollow the JSON schema exactly.\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present."
+  },
+  "prompt": {
+    "system": "You are an OCR agent that outputs structured word objects with headings and indexes.",
+    "user": "Parse the entire worksheet and return JSON with `words` = [{index, heading, text}].\nindex = the numbering on the worksheet, heading = the group title (Goalkeeper, Unit 14, etc.).\ntext = the cleaned vocabulary entry without trailing punctuation.\nFollow the JSON schema exactly.\nOnly transcribe the numbered vocabulary entries (ignore headings). Strip trailing part-of-speech labels like \"(n.)\" or \"(adj.)\", keep apostrophes/curly quotes, and never append punctuation that was not present."
+  },
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "flat_words",
+      "schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "words": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "heading": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              "required": [
+                "index",
+                "text"
+              ]
+            }
+          }
+        },
+        "required": [
+          "words"
+        ]
+      }
+    }
+  },
+  "result": {
+    "id": "gen-1762579708-azMQGrrbjU4ts9QDCZSe",
+    "provider": "Google",
+    "model": "anthropic/claude-haiku-4.5",
+    "object": "chat.completion",
+    "created": 1762579708,
+    "choices": [
+      {
+        "logprobs": null,
+        "finish_reason": "stop",
+        "native_finish_reason": "stop",
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "```json\n{\n  \"words\": [\n    {\"index\": 1, \"heading\": \"Goalkeeper\", \"text\": \"anthropology\"},\n    {\"index\": 2, \"heading\": \"Goalkeeper\", \"text\": \"philosophy\"},\n    {\"index\": 3, \"heading\": \"Goalkeeper\", \"text\": \"misanthrope\"},\n    {\"index\": 4, \"heading\": \"Goalkeeper\", \"text\": \"hold sb. accountable for\"},\n    {\"index\": 5, \"heading\": \"Goalkeeper\", \"text\": \"outlier\"},\n    {\"index\": 6, \"heading\": \"Goalkeeper\", \"text\": \"stunting\"},\n    {\"index\": 7, \"heading\": \"Goalkeeper\", \"text\": \"malnourished\"},\n    {\"index\": 8, \"heading\": \"Goalkeeper\", \"text\": \"phenomenal\"},\n    {\"index\": 9, \"heading\": \"Goalkeeper\", \"text\": \"hangs in the balance\"},\n    {\"index\": 10, \"heading\": \"Goalkeeper\", \"text\": \"balance the books\"},\n    {\"index\": 11, \"heading\": \"Goalkeeper\", \"text\": \"check and balance\"},\n    {\"index\": 12, \"heading\": \"Goalkeeper\", \"text\": \"balance out\"},\n    {\"index\": 13, \"heading\": \"Goalkeeper\", \"text\": \"throw off balance\"},\n    {\"index\": 14, \"heading\": \"Goalkeeper\", \"text\": \"magic wand\"},\n    {\"index\": 15, \"heading\": \"Goalkeeper\", \"text\": \"gut microbiome\"},\n    {\"index\": 1, \"heading\": \"Hassan\", \"text\": \"hovel\"},\n    {\"index\": 2, \"heading\": \"Hassan\", \"text\": \"dank\"},\n    {\"index\": 3, \"heading\": \"Hassan\", \"text\": \"covet\"},\n    {\"index\": 4, \"heading\": \"Hassan\", \"text\": \"crave\"},\n    {\"index\": 5, \"heading\": \"Hassan\", \"text\": \"spool\"},\n    {\"index\": 6, \"heading\": \"Hassan\", \"text\": \"horde\"},\n    {\"index\": 7, \"heading\": \"Hassan\", \"text\": \"shove\"},\n    {\"index\": 8, \"heading\": \"Hassan\", \"text\": \"trophy\"},\n    {\"index\": 9, \"heading\": \"Hassan\", \"text\": \"uncoil\"},\n    {\"index\": 10, \"heading\": \"Hassan\", \"text\": \"coil\"},\n    {\"index\": 11, \"heading\": \"Hassan\", \"text\": \"overcast\"},\n    {\"index\": 12, \"heading\": \"Hassan\", \"text\": \"ragged\"},\n    {\"index\": 13, \"heading\": \"Hassan\", \"text\": \"plummet\"},\n    {\"index\": 1, \"heading\": \"14 Steps\", \"text\": \"a cat has nine lives\"},\n    {\"index\": 2, \"heading\": \"14 Steps\", \"text\": \"be the cat's whiskers\"},\n    {\"index\": 3, \"heading\": \"14 Steps\", \"text\": \"let the cat out of the bag\"},\n    {\"index\": 4, \"heading\": \"14 Steps\", \"text\": \"put the cat among the pigeons\"},\n    {\"index\": 5, \"heading\": \"14 Steps\", \"text\": \"be inclined to\"},\n    {\"index\": 6, \"heading\": \"14 Steps\", \"text\": \"inclination\"},\n    {\"index\": 7, \"heading\": \"14 Steps\", \"text\": \"afflict\"},\n    {\"index\": 8, \"heading\": \"14 Steps\", \"text\": \"affliction\"},\n    {\"index\": 9, \"heading\": \"14 Steps\", \"text\": \"afflictive\"},\n    {\"index\": 10, \"heading\": \"14 Steps\", \"text\": \"be afflicted with/ by\"},\n    {\"index\": 11, \"heading\": \"14 Steps\", \"text\": \"progressive\"},\n    {\"index\": 12, \"heading\": \"14 Steps\", \"text\": \"with the aid of\"},\n    {\"index\": 13, \"heading\": \"14 Steps\", \"text\": \"to a degree\"},\n    {\"index\": 14, \"heading\": \"14 Steps\", \"text\": \"disillusioned\"},\n    {\"index\": 15, \"heading\": \"14 Steps\", \"text\": \"disillusionment\"},\n    {\"index\": 16, \"heading\": \"14 Steps\", \"text\": \"hold on to\"},\n    {\"index\": 17, \"heading\": \"14 Steps\", \"text\": \"lead up to\"},\n    {\"index\": 18, \"heading\": \"14 Steps\", \"text\": \"sanity\"},\n    {\"index\": 19, \"heading\": \"14 Steps\", \"text\": \"slashing\"},\n    {\"index\": 20, \"heading\": \"14 Steps\", \"text\": \"swerve\"},\n    {\"index\": 21, \"heading\": \"14 Steps\", \"text\": \"dreaded\"},\n    {\"index\": 22, \"heading\": \"14 Steps\", \"text\": \"enormity\"},\n    {\"index\": 23, \"heading\": \"14 Steps\", \"text\": \"enormous\"},\n    {\"index\": 24, \"heading\": \"14 Steps\", \"text\": \"peer at\"},\n    {\"index\": 25, \"heading\": \"14 Steps\", \"text\": \"jack\"},\n    {\"index\": 26, \"heading\": \"14 Steps\", \"text\": \"jack up\"},\n    {\"index\": 27, \"heading\": \"14 Steps\", \"text\": \"frail\"},\n    {\"index\": 28, \"heading\": \"14 Steps\", \"text\": \"frailty\"},\n    {\"index\": 29, \"heading\": \"14 Steps\", \"text\": \"be all set\"},\n    {\"index\": 30, \"heading\": \"14 Steps\", \"text\": \"penetrate\"},\n    {\"index\": 31, \"heading\": \"14 Steps\", \"text\": \"penetrating look\"},\n    {\"index\": 32, \"heading\": \"14 Steps\", \"text\": \"fumble\"},\n    {\"index\": 33, \"heading\": \"14 Steps\", \"text\": \"fumble with/in sth. for sth.\"},\n    {\"index\": 34, \"heading\": \"14 Steps\", \"text\": \"be filled to overflowing with\"},\n    {\"index\": 35, \"heading\": \"14 Steps\", \"text\": \"indifference\"},\n    {\"index\": 36, \"heading\": \"14 Steps\", \"text\": \"indifferent\"},\n    {\"index\": 37, \"heading\": \"14 Steps\", \"text\": \"scriptural\"},\n    {\"index\": 38, \"heading\": \"14 Steps\", \"text\": \"admonition\"},\n    {\"index\": 39, \"heading\": \"14 Steps\", \"text\": \"admonitory\"},\n    {\"index\": 40, \"heading\": \"14 Steps\", \"text\": \"beat down\"},\n    {\"index\": 1, \"heading\": \"Unit 13\", \"text\": \"adhere\"},\n    {\"index\": 2, \"heading\": \"Unit 13\", \"text\": \"affirm\"},\n    {\"index\": 3, \"heading\": \"Unit 13\", \"text\": \"atrocity\"},\n    {\"index\": 4, \"heading\": \"Unit 13\", \"text\": \"cope\"},\n    {\"index\": 5, \"heading\": \"Unit 13\", \"text\": \"deter\"},\n    {\"index\": 6, \"heading\": \"Unit 13\", \"text\": \"disquieting\"},\n    {\"index\": 7, \"heading\": \"Unit 13\", \"text\": \"empower\"},\n    {\"index\": 8, \"heading\": \"Unit 13\", \"text\": \"fluent\"},\n    {\"index\": 9, \"heading\": \"Unit 13\", \"text\": \"lag\"},\n    {\"index\": 10, \"heading\": \"Unit 13\", \"text\": \"mangle\"},\n    {\"index\": 11, \"heading\": \"Unit 13\", \"text\": \"misapprehension\"},\n    {\"index\": 12, \"heading\": \"Unit 13\", \"text\": \"optimist\"},\n    {\"index\": 13, \"heading\": \"Unit 13\", \"text\": \"prowl\"},\n    {\"index\": 14, \"heading\": \"Unit 13\", \"text\": \"recitation\"},\n    {\"index\": 15, \"heading\": \"Unit 13\", \"text\": \"stupefy\"},\n    {\"index\": 16, \"heading\": \"Unit 13\", \"text\": \"sulky\"},\n    {\"index\": 17, \"heading\": \"Unit 13\", \"text\": \"supplement\"},\n    {\"index\": 18, \"heading\": \"Unit 13\", \"text\": \"surge\"},\n    {\"index\": 19, \"heading\": \"Unit 13\", \"text\": \"trait\"},\n    {\"index\": 20, \"heading\": \"Unit 13\", \"text\": \"unscrupulous\"},\n    {\"index\": 1, \"heading\": \"Unit 14\", \"text\": \"abstain\"},\n    {\"index\": 2, \"heading\": \"Unit 14\", \"text\": \"accommodate\"},\n    {\"index\": 3, \"heading\": \"Unit 14\", \"text\": \"allegiance\"},\n    {\"index\": 4, \"heading\": \"Unit 14\", \"text\": \"amalgamate\"},\n    {\"index\": 5, \"heading\": \"Unit 14\", \"text\": \"append\"},\n    {\"index\": 6, \"heading\": \"Unit 14\", \"text\": \"commemorate\"},\n    {\"index\": 7, \"heading\": \"Unit 14\", \"text\": \"enumerate\"},\n    {\"index\": 8, \"heading\": \"Unit 14\", \"text\": \"exalt\"},\n    {\"index\": 9, \"heading\": \"Unit 14\", \"text\": \"far-fetched\"},\n    {\"index\": 10, \"heading\": \"Unit 14\", \"text\": \"extort\"},\n    {\"index\": 11, \"heading\": \"Unit 14\", \"text\": \"glum\"},\n    {\"index\": 12, \"heading\": \"Unit 14\", \"text\": \"replica\"},\n    {\"index\": 13, \"heading\": \"Unit 14\", \"text\": \"responsive\"},\n    {\"index\": 14, \"heading\": \"Unit 14\", \"text\": \"sanctuary\"},\n    {\"index\": 15, \"heading\": \"Unit 14\", \"text\": \"self-seeking\"},\n    {\"index\": 16, \"heading\": \"Unit 14\", \"text\": \"submissive\"},\n    {\"index\": 17, \"heading\": \"Unit 14\", \"text\": \"tally\"},\n    {\"index\": 18, \"heading\": \"Unit 14\", \"text\": \"taskmaster\"},\n    {\"index\": 19, \"heading\": \"Unit 14\", \"text\": \"transform\"},\n    {\"index\": 20, \"heading\": \"Unit 14\", \"text\": \"upheaval\"},\n    {\"index\": 1, \"heading\": \"Unit 15\", \"text\": \"beacony\"},\n    {\"index\": 2, \"heading\": \"Unit 15\", \"text\": \"berserk\"},\n    {\"index\": 3, \"heading\": \"Unit 15\", \"text\": \"celestial\"},\n    {\"index\": 4, \"heading\": \"Unit 15\", \"text\": \"chasten\"},\n    {\"index\": 5, \"heading\": \"Unit 15\", \"text\": \"confiscate\"},\n    {\"index\": 6, \"heading\": \"Unit 15\", \"text\": \"data\"},\n    {\"index\": 7, \"heading\": \"Unit 15\", \"text\": \"detract\"},\n    {\"index\": 8, \"heading\": \"Unit 15\", \"text\": \"encounter\"},\n    {\"index\": 9, \"heading\": \"Unit 15\", \"text\": \"epic\"},\n    {\"index\": 10, \"heading\": \"Unit 15\", \"text\": \"pantomime\"},\n    {\"index\": 11, \"heading\": \"Unit 15\", \"text\": \"pessimist\"},\n    {\"index\": 12, \"heading\": \"Unit 15\", \"text\": \"precaution\"},\n    {\"index\": 13, \"heading\": \"Unit 15\", \"text\": \"prosecute\"},\n    {\"index\": 14, \"heading\": \"Unit 15\", \"text\": \"puncture\"},\n    {\"index\": 15, \"heading\": \"Unit 15\", \"text\": \"retaliate\"},\n    {\"index\": 16, \"heading\": \"Unit 15\", \"text\": \"sham\"},\n    {\"index\": 17, \"heading\": \"Unit 15\", \"text\": \"uncouth\"},\n    {\"index\": 18, \"heading\": \"Unit 15\", \"text\": \"underscore\"},\n    {\"index\": 19, \"heading\": \"Unit 15\", \"text\": \"wholesome\"},\n    {\"index\": 20, \"heading\": \"Unit 15\", \"text\": \"wistful\"}\n  ]\n}\n```",
+          "refusal": null,
+          "reasoning": null
+        }
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1167,
+      "completion_tokens": 3000,
+      "total_tokens": 4167
+    }
+  }
+}

@@ -1,0 +1,4 @@
+Error: OpenRouter request failed (400): {"error":{"message":"google/gemini-1.5-flash is not a valid model ID","code":400},"user_id":"user_2vbe2cpITrdRaQHrwtbhY5NHtb9"}
+    at runExperiment (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:246:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:267:22)

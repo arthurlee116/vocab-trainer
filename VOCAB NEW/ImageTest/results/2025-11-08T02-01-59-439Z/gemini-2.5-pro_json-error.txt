@@ -1,0 +1,11 @@
+TypeError: terminated
+    at Fetch.onAborted (node:internal/deps/undici/undici:11132:53)
+    at Fetch.emit (node:events:518:28)
+    at Fetch.terminate (node:internal/deps/undici/undici:10290:14)
+    at Object.onError (node:internal/deps/undici/undici:11253:38)
+    at Request.onError (/Users/arthur/AI TEST/VOCAB NEW/node_modules/undici/lib/core/request.js:316:27)
+    at Object.errorRequest (/Users/arthur/AI TEST/VOCAB NEW/node_modules/undici/lib/core/util.js:800:13)
+    at TLSSocket.onHttpSocketClose (/Users/arthur/AI TEST/VOCAB NEW/node_modules/undici/lib/dispatcher/client-h1.js:941:10)
+    at TLSSocket.emit (node:events:530:35)
+    at node:net:346:12
+    at Socket.done (node:_tls_wrap:650:7)

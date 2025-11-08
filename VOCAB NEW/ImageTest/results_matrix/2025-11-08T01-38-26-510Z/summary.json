@@ -1,0 +1,38 @@
+[
+  {
+    "experiment": "claude45_sections",
+    "model": "anthropic/claude-sonnet-4.5",
+    "prompt": "strictSections",
+    "success": true
+  },
+  {
+    "experiment": "claude35_sections",
+    "model": "anthropic/claude-3.5-sonnet",
+    "prompt": "strictSections",
+    "success": true
+  },
+  {
+    "experiment": "gemini25_flat",
+    "model": "google/gemini-2.5-pro",
+    "prompt": "bilingualFlat",
+    "success": true
+  },
+  {
+    "experiment": "nova_sections",
+    "model": "amazon/nova-premier-v1",
+    "prompt": "strictSections",
+    "success": true
+  },
+  {
+    "experiment": "qwen235_markdown",
+    "model": "qwen/qwen3-vl-235b-a22b-instruct",
+    "prompt": "markdownDualPass",
+    "success": true
+  },
+  {
+    "experiment": "llama90_markdown",
+    "model": "meta-llama/llama-3.2-90b-vision-instruct",
+    "prompt": "markdownDualPass",
+    "success": true
+  }
+]

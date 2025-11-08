@@ -1,0 +1,27 @@
+{
+  "id": "gen-1762568247-vXSlv8zsFTGyj38Tg9gA",
+  "provider": "DeepInfra",
+  "model": "meta-llama/llama-3.2-11b-vision-instruct",
+  "object": "chat.completion",
+  "created": 1762568247,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "# Vocabulary\n\n1. **anthropology**\n2. **philosophy**\n3. **misanthrope**\n4. **hold sb. accountable for**\n5. **outlier**\n6. **stunting**\n7. **malnourished**\n8. **phenomenally**\n9. **hangs in the balance**\n10. **balance the books**\n11. **check and balance**\n12. **balance out**\n13. **throw off balance**\n14. **magic wand**\n15. **gut microbiome**\n16. **hovel**\n17. **crave**\n18. **shove**\n19. **coil**\n20. **plummet**\n21. **cat has nine lives**\n22. **be the cat’s whiskers**\n23. **let the cat out of the bag**\n24. **put the cat among the pigeons**\n25. **be inclined to**\n26. **inclination**\n27. **afflict (v.)**\n28. **affliction(s) (n.)**\n29. **afflictive (adj.)**\n30. **be afflicted with/ by**\n31. **progressive (adj.)**\n32. **with the aid of**\n33. **to a degree**\n34. **disillusioned (adj.)**\n35. **disillusionment (n.)**\n36. **hold on to**\n37. **lead up to**\n38. **sanity**\n39. **slashing (adj.)**\n40. **swerve (v.)**\n41. **dreaded (adj.)**\n42. **enormity (n.)**\n43. **enormous (adj.)**\n44. **peer at**\n45. **jack**\n46. **jack up**\n47. **frail (adj.)**\n48. **frailty (n.)**\n49. **disquieting**\n50. **misapprehension**\n51. **sulky**\n52. **affirm**\n53. **atrocity**\n54. **cope**\n55. **deter**\n56. **disquieting**\n57. **empower**\n58. **fluent**\n59. **lag**\n60. **mangle**\n61. **misapprehension**\n62. **sulky**\n63. **affirm**\n64. **atrocity**\n65. **cope**\n66. **deter**\n67. **disquieting**\n68. **empower**\n69. **fluent**\n70. **lag**\n71. **mangle**\n72. **abstain**\n73. **accommodate**\n74. **allegiance**\n75. **amalgamate**\n76. **append**\n77. **commemorate**\n78. **enumerate**\n79. **exalt**\n80. **far-fetched**\n81. **extort**\n82. **glum**\n83. **replica**\n84. **responsive**\n85. **sanctuary**\n86. **self-seeking**\n87. **submissive**\n88. **tally**\n89. **taskmaster**\n90. **transform**\n91. **upheaval**\n92. **beacon**\n93. **berserk**\n94. **celestial**\n95. **chasten**\n96. **confiscate**\n97. **data**\n98. **detract**\n99. **encounter**\n100. **epic**\n101. **pantomime**\n102. **pessimist**\n103. **precaution**\n104. **prosecute**\n105. **puncture**\n106. **retaliate**\n107. **sham**\n108. **uncouth**\n109. **underscore**\n110. **wholesome**\n111. **wistful**",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 6531,
+    "completion_tokens": 780,
+    "total_tokens": 7311,
+    "prompt_tokens_details": null
+  }
+}

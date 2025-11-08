@@ -1,0 +1,34 @@
+{
+  "id": "gen-1762560136-MA5CdxDpH1hGFFC9lmoe",
+  "provider": "Azure",
+  "model": "openai/gpt-4o",
+  "object": "chat.completion",
+  "created": 1762560136,
+  "choices": [
+    {
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```markdown\n## Goalkeeper\n1. anthropology\n2. philosophy\n3. misanthrope\n4. hold sb. accountable for\n5. outlier\n6. stunting\n7. malnourished\n8. phenomenally\n9. hangs in the balance\n10. balance the books\n11. check and balance\n12. balance out\n13. throw off balance\n14. magic wand\n15. gut microbiome\n\nTotal items: 15\n\n## Hassan\n1. hovel\n2. dank\n3. covet\n4. crave\n5. spool\n6. horde\n7. shove\n8. trophy\n9. uncoil\n10. coil\n11. overcast\n12. ragged\n13. plummet\n\nTotal items: 13\n\n## 14 Steps\n1. a cat has nine lives\n2. be the cat's whiskers\n3. let the cat out of the bag\n4. put the cat among the pigeons\n5. be inclined to\n6. inclination (n.)\n7. afflict (v.)\n8. affliction(s) (n.)\n9. afflictive (adj.)\n10. be afflicted with/by\n11. progressive (adj.)\n12. with the aid of\n13. to a degree\n14. disillusioned (adj.)\n15. disillusionment (n.)\n16. hold on to\n17. lead up to\n18. sanity: (n.)\n19. slashing (adj.)\n20. swerve (v.)\n21. dreaded (adj.)\n22. enormity (n.)\n23. enormous (adj.)\n24. peer at\n25. jack\n26. jack up\n27. frail (adj.)\n28. frailty (n.)\n29. be all set\n30. penetrate(v.) penetration (n.)\n31. penetrating look (adj.)\n32. fumble (v.)\n33. fumble with/in sth. for sth.\n34. be filled to overflowing with\n35. indifference (n.)\n36. indifferent (adj.)\n37. scriptural (adj.)\n38. admonition (n.)\n39. admonitory (adj.)\n40. beat down\n\nTotal items: 40\n\n## Unit 13\n1. adhere\n2. affirm\n3. atrocity\n4. cope\n5. deter\n6. disquieting\n7. empower\n8. fluent\n9. lag\n10. mangle\n11. misapprehension\n12. optimist\n13. prowl\n14. recitation\n15. stupefy\n16. sulky\n17. supplement\n18. surge\n19. trait\n20. unscrupulous\n\nTotal items: 20\n\n## Unit 14\n1. abstain\n2. accommodate\n3. allegiance\n4. amalgamate\n5. append\n6. commemorate\n7. enumerate\n8. exalt\n9. far-fetched\n10. extort\n11. glum\n12. replica\n13. responsive\n14. sanctuary\n15. self-seeking\n16. submissive\n17. tally\n18. taskmaster\n19. transform\n20. upheaval\n\nTotal items: 20\n\n## Unit 15\n1. beacon\n2. berserk\n3. celestial\n4. chasten\n5. confiscate\n6. data\n7. detract\n8. encounter\n9. epic\n10. pantomime\n11. pessimist\n12. precaution\n13. prosecute\n14. puncture\n15. retaliate\n16. sham\n17. uncouth\n18. underscore\n19. wholesome\n20. wistful\n\nTotal items: 20\n```",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "system_fingerprint": "fp_4a331a0222",
+  "usage": {
+    "prompt_tokens": 1005,
+    "completion_tokens": 772,
+    "total_tokens": 1777,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  }
+}
