@@ -1,0 +1,194 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Common Commands
+
+### Development
+- `npm run dev` — Starts both server (http://localhost:4000) and client (http://localhost:5173) concurrently using workspace scripts
+- `npm run dev:server` — Run only the backend with hot reload (uses `tsx watch`)
+- `npm run dev:client` — Run only the frontend Vite dev server
+- `npm run build` — Build both workspaces; server runs TypeScript compilation, client runs Vite build
+- `npm run lint --workspace=client` — Run ESLint on React/TypeScript code
+- `npm run typecheck --workspace=server` — Type-check server code without emitting JS
+
+### Server-specific
+```bash
+# In server/ directory
+npm run dev          # tsx watch (auto-restarts on changes)
+npm run build        # tsc -p tsconfig.json (outputs to dist/)
+npm run start        # node dist/index.js (production)
+npm run typecheck    # tsc --noEmit (validate types only)
+```
+
+### Client-specific
+```bash
+# In client/ directory
+npm run dev          # vite (dev server)
+npm run build        # tsc -b && vite build
+npm run lint         # eslint .
+npm run preview      # vite preview (preview production build)
+```
+
+## Environment Configuration
+
+**Required:** Copy `server/.env.example` to `server/.env` and configure:
+- `OPENROUTER_API_KEY` — Your OpenRouter API key (keep secret, never commit)
+- `JWT_SECRET` — Strong secret for JWT token signing
+- `CLIENT_ORIGIN` — Frontend URL (http://localhost:5173 for dev)
+- `PORT` — Server port (default: 4000)
+- `DATABASE_PATH` — SQLite database path (default: ./storage/vocab.db)
+
+## High-Level Architecture
+
+This is a full-stack AI-powered vocabulary training application with three core data flows:
+
+### 1. Frontend (client/)
+**Tech Stack:** React 19 + TypeScript + Vite + React Router + Zustand + Axios
+
+**Structure:**
+- `src/pages/` — Route components: LandingPage, DashboardPage, UploadPage, ConfirmWordsPage, QuizPage, ReportPage, HistoryPage
+- `src/store/` — Zustand state management: useAuthStore (auth mode & JWT), usePracticeStore (words, super JSON, answers)
+- `src/lib/` — API client (Axios), LocalStorage utilities, file-to-base64 conversion
+- `src/types/` — TypeScript definitions for SuperJson, SessionSnapshot, AnswerRecord, AnalysisSummary
+
+**Route Guards (client/src/App.tsx:16-49):**
+- `ProtectedRoute` — Requires authentication or guest mode
+- `RequireWords` — Redirects to upload if no word list exists
+- `RequireSuperJson` — Redirects to confirmation if questions not generated
+- `RequireResult` — Redirects to dashboard if no quiz results
+
+**State Flow:**
+1. User uploads image → `UploadPage` → converts to base64 → POST `/api/vlm/extract`
+2. Word list confirmed → `ConfirmWordsPage` → POST `/api/generation/super-json` → store in `usePracticeStore`
+3. Quiz execution → `QuizPage` → records answers in `usePracticeStore.answers[]`
+4. Results → POST `/api/analysis/report` → stores in `usePracticeStore.lastResult`
+5. Save session: guest mode → LocalStorage, authenticated → POST `/api/history`
+
+### 2. Backend (server/)
+**Tech Stack:** Node.js + Express + TypeScript + SQLite (better-sqlite3) + JWT + bcryptjs
+
+**Structure:**
+- `src/index.ts` — Express app setup, CORS, routes, error handling
+- `src/routes/` — API endpoints: auth.ts, vlm.ts, generation.ts, analysis.ts, history.ts
+- `src/services/` — AI integration: openrouter.ts (OpenRouter API client), superGenerator.ts (Polaris Alpha), vlm.ts (GPT-5 Vision), analysis.ts (report generation)
+- `src/db/client.ts` — SQLite connection & migrations
+- `src/middleware/auth.ts` — JWT authentication middleware
+- `src/utils/httpError.ts` — Custom error class
+
+**API Endpoints:**
+- `POST /api/auth/register` — Register user, return JWT
+- `POST /api/auth/login` — Login with email/password
+- `GET /api/auth/me` — Get current user from JWT
+- `POST /api/vlm/extract` — GPT-5 Vision: extract words from image base64
+- `POST /api/generation/super-json` — Polaris Alpha: generate 3 question types with JSON schema validation
+- `POST /api/analysis/report` — Polaris Alpha: analyze answers, return Chinese report + recommendations
+- `POST /api/history` — Save authenticated user's session
+- `GET /api/history` — List user's session history
+- `GET /api/history/:id` — Get specific session with full details
+
+**Key Services:**
+
+**openrouter.ts (server/src/services/openrouter.ts:36-67):**
+- HTTP client for OpenRouter API with proper headers
+- Parses JSON responses from structured output
+- Throws HttpError on API failures or invalid JSON
+
+**superGenerator.ts (server/src/services/superGenerator.ts:4-106):**
+- Enforces strict JSON schema for 3 question types
+- Generates shuffled questions with natural distractors
+- Temperature varies by difficulty (0.65 beginner/intermediate, 0.85 advanced)
+- Outputs `SuperJson` with metadata, questions_type_1/2/3 arrays
+
+**Database Schema (server/src/db/client.ts):**
+- Auto-migrates on server start
+- Users table: id, email, password_hash, created_at
+- Sessions table: id, user_id, difficulty, words_json, super_json_json, answers_json, score, analysis_json, created_at
+
+### 3. AI Integration (OpenRouter)
+
+**Models:**
+- `openai/gpt-5` — VLM for word extraction from images (server/src/services/vlm.ts)
+- `openrouter/polaris-alpha` — Question generation and analysis (server/src/services/superGenerator.ts, analysis.ts)
+- Both use `response_format.json_schema` for structured output
+
+**Security:**
+- API key stored only in server/.env (never in frontend)
+- JWT tokens for authentication
+- CORS restricted to CLIENT_ORIGIN
+- Passwords hashed with bcryptjs
+
+## Important Implementation Details
+
+### Super JSON Structure (client/src/types/index.ts:23-33)
+```typescript
+{
+  metadata: { totalQuestions, words[], difficulty, generatedAt },
+  questions_type_1: SuperQuestion[],  // English meaning from Chinese
+  questions_type_2: SuperQuestion[],  // Chinese meaning from English
+  questions_type_3: SuperQuestion[]   // Sentence fill-in-the-blank
+}
+```
+
+### Guest vs Authenticated Mode
+- **Guest mode:** Data in `localStorage` (STORAGE_KEYS), max 12 sessions
+- **Authenticated mode:** JWT + SQLite storage, unlimited history across devices
+- Auth state managed in `useAuthStore.ts` with `hydrate()` on app load
+
+### State Management (Zustand)
+- **useAuthStore:** mode ('guest'|'authenticated'|'unauthenticated'), user, token, JWT persistence
+- **usePracticeStore:** words[], superJson, answers[], status flow, lastResult with score/analysis
+
+### Error Handling
+- Global error handler in `server/src/index.ts:36-47`
+- Custom `HttpError` class for API errors
+- Frontend displays error messages in UI components
+
+## Development Workflow
+
+1. **Start dev environment:** `npm run dev` (runs both workspaces)
+2. **Make changes:** Frontend hot-reloads, server auto-restarts with `tsx watch`
+3. **Test flow:** Upload image → confirm words → generate quiz → take quiz → view report
+4. **Check types:** `npm run typecheck --workspace=server`
+5. **Lint code:** `npm run lint --workspace=client`
+6. **Build for production:** `npm run build`
+
+## Testing Notes
+No automated test suite exists yet. Manual testing via `npm run dev` is required for all features. The quiz flow should be tested end-to-end: image upload → word confirmation → question generation → quiz taking → report viewing → history check.
+
+## Common Development Patterns
+
+- **API calls:** Use `lib/api.ts` Axios instance with JWT interceptors
+- **Type validation:** Server uses `zod` for external data validation
+- **Error responses:** `{ message: string }` JSON with appropriate HTTP status
+- **State updates:** Use Zustand setters, never mutate state directly
+- **File handling:** Images converted to base64 before API calls
+- **Schema enforcement:** OpenRouter `json_schema` response_format ensures valid output
+
+## Build & Deployment
+- **Client:** Vite build outputs to `client/dist/` (static files)
+- **Server:** TypeScript compilation outputs to `server/dist/` (Node.js app)
+- **Database:** SQLite file at `server/storage/vocab.db` (included in deployments)
+- **Production:** Use `npm run build` then `npm run start` for server, serve client dist/ with static host
+
+## Recent Updates & Expectations
+- **2025-11-08 稳定版本**  
+  - `CLIENT_ORIGINS` 支持多端口，CORS 不再因 Vite 自动换端口失败。  
+  - 所有 OpenRouter 请求都走 `undici` 的 `ProxyAgent`，需要本地 7890 代理保持开启。  
+  - 题库生成使用 Moonshot → Gemini → Polaris 的多级降级策略，并在三大题型内部执行 Fisher–Yates 打乱。  
+  - 新增 `PROJECT_BOARD.md` 作为项目看板，请在重大调整后同步更新。  
+  - `server/tsconfig.json` 仅编译 `src/**/*`，避免脚本目录触发 rootDir 报错。
+
+> 规则：只要做了影响代理、模型、题库、CORS 或流程的改动，务必把变更写进 `PROJECT_BOARD.md`、`AGENTS.md`、`CLAUDE.md`，并说明验证方式。
+
+## Key Files Reference
+- Frontend routing: `client/src/App.tsx`
+- Auth state: `client/src/store/useAuthStore.ts`
+- Practice state: `client/src/store/usePracticeStore.ts`
+- API client: `client/src/lib/api.ts`
+- Types: `client/src/types/index.ts`
+- Server bootstrap: `server/src/index.ts`
+- OpenRouter integration: `server/src/services/openrouter.ts`
+- Question generation: `server/src/services/superGenerator.ts`
+- Database: `server/src/db/client.ts`
+- Environment example: `server/.env.example`
