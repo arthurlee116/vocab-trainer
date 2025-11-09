@@ -1,4 +1,0 @@
-Error: OpenRouter request failed (400): {"error":{"message":"Provider returned error","code":400,"metadata":{"raw":"{\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'flat_words': In context=('properties', 'words', 'items'), 'required' is required to be supplied and to be an array including every key in properties. Missing 'heading'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"text.format.schema
-    at runRequest (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/scripts/run-model-base.mjs:89:11)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async runModel (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/scripts/run-model-base.mjs:137:22)

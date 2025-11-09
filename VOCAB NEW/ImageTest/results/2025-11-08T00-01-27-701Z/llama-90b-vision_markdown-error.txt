@@ -1,4 +1,0 @@
-Error: OpenRouter request failed (429): {"error":{"message":"Provider returned error","code":429,"metadata":{"raw":"meta-llama/llama-3.2-90b-vision-instruct is temporarily rate-limited upstream. Please retry shortly, or add your own key to 
-    at runExperiment (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:246:11)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:267:22)

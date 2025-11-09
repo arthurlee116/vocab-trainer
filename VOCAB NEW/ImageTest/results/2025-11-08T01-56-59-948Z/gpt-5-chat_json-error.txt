@@ -1,4 +1,0 @@
-Error: OpenRouter request failed (400): {"error":{"message":"Provider returned error","code":400,"metadata":{"raw":"{\n  \"error\": {\n    \"message\": \"Invalid schema for response_format 'gpt5_sections': In context=('properties', 'section
-    at runExperiment (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:487:11)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:508:22)

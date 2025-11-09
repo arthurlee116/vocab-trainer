@@ -1,4 +1,0 @@
-Error: OpenRouter request failed (403): {"error":{"message":"Provider returned error","code":403,"metadata":{"raw":"{\"error\":{\"code\":\"unsupported_country_region_territory\",\"message\":\"Country, region, or territory not supported\",\"
-    at runExperiment (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:396:11)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async main (file:///Users/arthur/AI%20TEST/VOCAB%20NEW/ImageTest/runExperiments.mjs:417:22)
