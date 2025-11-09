@@ -1,10 +1,12 @@
 import { DifficultyLevel, QuestionType, SuperJson, SuperQuestion } from '../types';
 import { openRouterChat } from './openrouter';
 import { logger } from '../utils/logger';
+import { shuffleQuestionChoices } from '../lib/shuffleChoices';
 
 const MODEL_FALLBACKS = [
-  'moonshotai/kimi-linear-48b-a3b-instruct',
   'google/gemini-2.5-flash-preview-09-2025',
+  'x-ai/grok-4-fast',
+  'moonshotai/kimi-linear-48b-a3b-instruct',
   'openrouter/polaris-alpha',
 ] as const;
 
@@ -22,6 +24,15 @@ const shuffleWithin = <T>(items: T[]): T[] => {
   }
   return copy;
 };
+
+const sanitizeQuestions = (questions?: SuperQuestion[]): SuperQuestion[] =>
+  (questions ?? []).map((question) => {
+    if (question.type !== 'questions_type_2' || typeof question.translation === 'undefined') {
+      return question;
+    }
+    const { translation, ...rest } = question;
+    return rest as SuperQuestion;
+  });
 
 const questionSchema = {
   type: 'object',
@@ -106,7 +117,7 @@ export const generateSuperJson = async (
 - questions_type_2: 展示英文释义或例句，要求选择正确的中文释义或翻译。
 - questions_type_3: 句子填空，必须包含 "_____" 的英文例句、中文翻译以及提示（词性/定义/词根），并给出 4 个英文候选词。
 
-题目顺序务必打乱，choices 数组必须 4 选 1。解释和提示请使用中文，并让每个题目的 type 字段标记为所属的 questions_type_x。严格遵守 JSON Schema。
+生成过程中务必执行以下变换：先在句子中用 "[BLANK]" 和 "[/BLANK]" 包裹要测试的完整英文短语（使用原始词形，例如 「be the cat's whiskers」），等到最终响应前再把整段占位符连同内部文本一起替换为连续的 "_____"。这可以避免因为 am/is/are 等变形而漏掉空格。无论哪个题型，只要题干或 sentence 字段出现英文例句，都要遵守这个标记→替换流程，且 translation/hint 字段绝不能直接泄露答案。题目顺序务必打乱，choices 数组必须 4 选 1，并且返回前请把 4 个选项彻底打乱，确保正确答案不会持续落在同一位置（例如连续多题都在第一个）。解释和提示请使用中文，并让每个题目的 type 字段标记为所属的 questions_type_x。严格遵守 JSON Schema。
 `;
 
   const messages = [
@@ -140,11 +151,23 @@ export const generateSuperJson = async (
       const responseTime = Date.now() - startTime;
       const totalQuestions = result.metadata?.totalQuestions || 0;
 
+      const type1Source = sanitizeQuestions(result.questions_type_1);
+      const type2Source = sanitizeQuestions(result.questions_type_2);
+      const type3Source = sanitizeQuestions(result.questions_type_3);
+
+      const type1 = shuffleQuestionChoices(shuffleWithin(type1Source));
+      const type2 = shuffleQuestionChoices(shuffleWithin(type2Source), {
+        initialPrevIndex: type1.lastCorrectIndex,
+      });
+      const type3 = shuffleQuestionChoices(shuffleWithin(type3Source), {
+        initialPrevIndex: type2.lastCorrectIndex,
+      });
+
       const shuffledResult: SuperJson = {
         ...result,
-        questions_type_1: shuffleWithin(result.questions_type_1 ?? []),
-        questions_type_2: shuffleWithin(result.questions_type_2 ?? []),
-        questions_type_3: shuffleWithin(result.questions_type_3 ?? []),
+        questions_type_1: type1.questions,
+        questions_type_2: type2.questions,
+        questions_type_3: type3.questions,
       };
 
       logger.info(`SuperGenerator: Successfully generated ${totalQuestions} total questions in ${responseTime}ms`, {
@@ -180,11 +203,11 @@ export const generateSuperJson = async (
 
 const QUESTION_TYPE_RULES: Record<QuestionType, string> = {
   questions_type_1:
-    '- 题干使用清晰的中文释义、情境或例句，要求考生从 4 个英文中选出正确单词，正确答案必须出自单词表，其余干扰项需贴近语义但可以不在单词表中。',
+    '- 题干使用清晰的中文释义、情境或例句，要求考生从 4 个英文中选出正确单词，正确答案必须出自单词表，其余干扰项需贴近语义但可以不在单词表中。若题干包含英文 sentence，请先用 "[BLANK]...[/BLANK]" 包住待考短语，再把整个标记替换为 "_____"。',
   questions_type_2:
-    '- 题干使用英文释义或例句，要求考生选择对应的中文释义或翻译，可结合常见误区设计干扰项。',
+    '- 题干使用英文释义或例句，要求考生选择对应的中文释义或翻译，可结合常见误区设计干扰项。若包含例句，必须按照 "[BLANK] → _____" 的流程隐藏正确答案。',
   questions_type_3:
-    '- 题干为包含 “_____” 的英文句子，并附中文翻译与提示（词性/定义/词根），提供 4 个英文候选词，仅有一个能正确填空。',
+    '- 题干为包含 “_____” 的英文句子，并附中文翻译与提示（词性/定义/词根），提供 4 个英文候选词，仅有一个能正确填空。句子中不得出现原单词，务必使用 "[BLANK]" 标记后再统一换成 “_____”。',
 };
 
 const buildTypeResponseSchema = (questionType: QuestionType, count: number) => ({
@@ -206,7 +229,7 @@ const buildTypeResponseSchema = (questionType: QuestionType, count: number) => (
 });
 
 const SHARED_TYPE_RULES = `
-- 所有题目都必须提供 4 个选项 (choices[4])，且 correctChoiceId 对应其中一个选项。
+- 所有题目都必须提供 4 个选项 (choices[4])，且 correctChoiceId 对应其中一个选项，同时返回前要把 4 个选项随机打乱，避免正确答案总出现在同一位置。
 - explanation 与 hint 必须使用中文，提示需要给出方向性的点（词性/词根/记忆法）。
 - 每个题目的 type 字段固定写为本题型的标识，且 id/choices.id 不得重复。
 - 题干与选项要自然流畅，严禁输出 markdown/额外文本，只能返回 JSON。`;
@@ -267,6 +290,8 @@ ${SHARED_TYPE_RULES}
         ...question,
         type: questionType,
       }));
+      const sanitizedBundle = sanitizeQuestions(normalizedBundle);
+      const { questions: randomizedChoices } = shuffleQuestionChoices(sanitizedBundle);
 
       logger.info(
         `SuperGenerator: ${questionType} succeeded with ${normalizedBundle.length} questions in ${responseTime}ms (${model})`,
@@ -277,7 +302,7 @@ ${SHARED_TYPE_RULES}
         },
       );
 
-      return normalizedBundle;
+      return randomizedChoices;
     } catch (error) {
       lastError = error;
       logger.warn(`SuperGenerator: ${questionType} failed`, {
