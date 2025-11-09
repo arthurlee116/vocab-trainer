@@ -74,7 +74,7 @@ This is a full-stack AI-powered vocabulary training application with three core 
 **Structure:**
 - `src/index.ts` — Express app setup, CORS, routes, error handling
 - `src/routes/` — API endpoints: auth.ts, vlm.ts, generation.ts, analysis.ts, history.ts
-- `src/services/` — AI integration: openrouter.ts (OpenRouter API client), superGenerator.ts (Polaris Alpha), vlm.ts (GPT-5 Vision), analysis.ts (report generation)
+- `src/services/` — AI integration: openrouter.ts (OpenRouter API client), superGenerator.ts (Polaris Alpha), vlm.ts (Google Gemini 2.5), analysis.ts (report generation)
 - `src/db/client.ts` — SQLite connection & migrations
 - `src/middleware/auth.ts` — JWT authentication middleware
 - `src/utils/httpError.ts` — Custom error class
@@ -83,7 +83,7 @@ This is a full-stack AI-powered vocabulary training application with three core 
 - `POST /api/auth/register` — Register user, return JWT
 - `POST /api/auth/login` — Login with email/password
 - `GET /api/auth/me` — Get current user from JWT
-- `POST /api/vlm/extract` — GPT-5 Vision: extract words from image base64
+- `POST /api/vlm/extract` — Gemini 2.5 Flash: extract words from image base64
 - `POST /api/generation/super-json` — Polaris Alpha: generate 3 question types with JSON schema validation
 - `POST /api/analysis/report` — Polaris Alpha: analyze answers, return Chinese report + recommendations
 - `POST /api/history` — Save authenticated user's session
@@ -111,7 +111,7 @@ This is a full-stack AI-powered vocabulary training application with three core 
 ### 3. AI Integration (OpenRouter)
 
 **Models:**
-- `openai/gpt-5-mini` — VLM for word extraction from images (server/src/services/vlm.ts)
+- `google/gemini-2.5-flash-preview-09-2025` — VLM for word extraction from images (server/src/services/vlm.ts)
 - `openrouter/polaris-alpha` — Question generation and analysis (server/src/services/superGenerator.ts, analysis.ts)
 - Both use `response_format.json_schema` for structured output
 
@@ -175,8 +175,11 @@ No automated test suite exists yet. Manual testing via `npm run dev` is required
 - **Production:** Use `npm run build` then `npm run start` for server, serve client dist/ with static host
 
 ## Recent Updates & Expectations
-- **2025-11-11 VLM 统一 GPT-5 mini**
-  - `/api/vlm/extract` 继续使用 `openai/gpt-5-mini` + ProxyAgent，将所有说明、README 与 docs 统一为 GPT-5 mini 识别词表。  
+- **2025-02-14 句子遮挡策略**  
+  - `server/src/services/superGenerator.ts` 先用 `[BLANK]...[/BLANK]` 包裹待考短语再整体替换为 `_____`，并在 translation/hint 禁止泄露答案；该流程写入通用 prompt 与 `QUESTION_TYPE_RULES`。  
+  - `client/src/pages/QuizPage.tsx` 若 sentence 尚未包含 `_____`，会按答案首词（含 be/have/do 及常见时态/变形）生成多组匹配模式进行遮挡；老题或失控题仍兜底。上线前务必跑一次 `/api/generation/session` + Quiz 流程确认不会露题。  
+- **2025-11-11 VLM 统一 Gemini 2.5 Flash**
+  - `/api/vlm/extract` 使用 `google/gemini-2.5-flash-preview-09-2025` + ProxyAgent，并将 README、AGENTS、PROJECT_BOARD 等文档统一为 Gemini 2.5 Flash 识别词表。  
   - 验证：`npm run dev` 下上传词表图片并确认 `/api/vlm/extract` 返回 `words` 列表，无解码报错。  
 - **2025-11-10 分段生成上线**  
   - `POST /api/generation/session` 仅等待第一大题即可返回，服务器后台串行生成第二/三大题，并提供 `GET /session/:id`、`POST /session/:id/retry` 追踪/重试。  
@@ -186,11 +189,11 @@ No automated test suite exists yet. Manual testing via `npm run dev` is required
   - 根 `.env` 成为唯一配置源，`OPENROUTER_PROXY`/`VITE_MAX_VLM_IMAGES` 统一驱动客户端与服务端。  
   - 所有 OpenRouter 请求统一由 `server/src/services/openrouter.ts` 注入 ProxyAgent；上传图片数量限制在前后端同步校验。  
   - 移除 `ImageTest/` 与 `ExtractTest/` 实验脚本，避免提示词和依赖重复。  
-  - Vite 通过 `envDir: '../'` 读取根变量，文档同步升级至 React 19 + GPT-5 mini。
+  - Vite 通过 `envDir: '../'` 读取根变量，文档同步升级至 React 19 + Gemini 2.5 Flash。
 - **2025-11-08 稳定版本**  
   - `CLIENT_ORIGINS` 支持多端口，CORS 不再因 Vite 自动换端口失败。  
   - 所有 OpenRouter 请求都走 `undici` 的 `ProxyAgent`，需要本地 7890 代理保持开启。  
-  - 题库生成使用 Moonshot → Gemini → Polaris 的多级降级策略，并在三大题型内部执行 Fisher–Yates 打乱。  
+  - 题库生成使用 Gemini → Grok-4 Fast → Moonshot → Polaris 的多级降级策略，并在三大题型内部执行 Fisher–Yates 打乱。  
   - 新增 `PROJECT_BOARD.md` 作为项目看板，请在重大调整后同步更新。  
   - `server/tsconfig.json` 仅编译 `src/**/*`，避免脚本目录触发 rootDir 报错。
 

@@ -101,7 +101,7 @@ const LandingPage = () => {
           </button>
         </div>
       </div>
-      <p className="landing-footnote">使用 VLM（GPT-5 mini）识别词表，Polaris Alpha 生成题目与报告。</p>
+      <p className="landing-footnote">使用 VLM（google/gemini-2.5-flash-preview-09-2025）识别词表，Polaris Alpha 生成题目与报告。</p>
     </div>
   );
 };

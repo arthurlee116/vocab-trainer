@@ -28,7 +28,7 @@ const NORMALIZATION_RULES = `Normalization rules that MUST be followed:
 8. For short nouns toward the end of the worksheet (often 3–5 letters), copy the letters exactly—never expand them into longer English words. The first Unit 15 entry is the noun “beacon”; ensure the normalized output stays “beacon”. Likewise, when you see the four-letter noun “sham”, do not expand it.
 9. If you mark an entry with confident=false, you still must provide your best corrected normalized value (do not leave obvious noise like trailing letters); use confident=false only when you cannot be 100% certain even after correction.`;
 
-const OPTIMIZED_PROMPT = `You are GPT-5 mini operating as a meticulous OCR specialist for vocabulary extraction.
+const OPTIMIZED_PROMPT = `You are Gemini 2.5 operating as a meticulous OCR specialist for vocabulary extraction.
 
 TASK:
 1. Extract ALL vocabulary words and phrases from the numbered word-list images.
@@ -54,7 +54,7 @@ export const extractWordsFromImage = async (imageBase64List: string[]): Promise<
   const startTime = Date.now();
   const imageCount = imageBase64List.length;
 
-  logger.info(`VLM: Starting word extraction from ${imageCount} image(s) using GPT-5 mini`);
+  logger.info(`VLM: Starting word extraction from ${imageCount} image(s) using Gemini 2.5 Flash`);
 
   // JSON Schema for structured output (required for consistent parsing)
   const schema = {
@@ -95,7 +95,7 @@ export const extractWordsFromImage = async (imageBase64List: string[]): Promise<
   try {
     const result = await openRouterChat<ExtractWordsResponse>(
       {
-        model: 'openai/gpt-5-mini', // Updated: GPT-5 mini (vision-language model, not image generation)
+        model: 'google/gemini-2.5-flash-preview-09-2025', // Updated: Gemini 2.5 Flash (vision-language model, not image generation)
         messages: [
           {
             role: 'user', // Image in user role with text prompt (better format)
@@ -109,7 +109,7 @@ export const extractWordsFromImage = async (imageBase64List: string[]): Promise<
           type: 'json_schema',
           json_schema: schema,
         },
-        // Note: GPT-5 mini supports temperature, but GPT-5 (full) does not
+        // Note: Gemini 2.5 Flash supports temperature, but GPT-5 (full) does not
         temperature: 0.1, // Low temperature for consistent, accurate results
       },
       { dispatcher: proxyAgent } // Proxy to bypass geographic restrictions
@@ -131,7 +131,7 @@ export const extractWordsFromImage = async (imageBase64List: string[]): Promise<
     logger.error(`VLM: Word extraction failed after ${responseTime}ms`, {
       error: error instanceof Error ? error.message : error,
       imageCount,
-      model: 'openai/gpt-5-mini'
+      model: 'google/gemini-2.5-flash-preview-09-2025'
     });
     throw error;
   }

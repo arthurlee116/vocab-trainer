@@ -23,8 +23,12 @@ History follows Conventional Commits (`chore(project): …`), so keep using `<ty
 Copy the repository root `.env.example` to `.env` (root only), fill in real API keys, and keep the file out of Git. Define `CLIENT_ORIGINS` with every allowed frontend URL, configure `OPENROUTER_PROXY` if you need a local proxy, and keep shared limits such as `VITE_MAX_VLM_IMAGES` in this same file. Scrub vocab screenshots or AI transcripts before posting them outside the team.
 
 ## Collaboration Log
+- **2025-02-14**  
+  - superGenerator 提示词要求先用 `[BLANK]...[/BLANK]` 包裹待考短语，再把整段标记替换成 `_____`，translation/hint 禁止泄露答案，并已写进 `QUESTION_TYPE_RULES`。  
+  - Quiz 页面在 sentence 自带 `_____` 时跳过前端替换；否则会根据答案首词（含 be/have/do 及常见时态/变形）生成多组匹配模式，再动态遮挡，提示按钮也升级为胶囊样式。  
+  - 记得发版前重新跑 `/api/generation/session` 与 Quiz 手动题流，确认为三大题型都能正确隐藏答案。
 - **2025-11-11**  
-  - VLM 词表提取统一使用 `openai/gpt-5-mini`（带 ProxyAgent），`/api/vlm/extract`、文档与说明已同步说明 GPT-5 mini 作为 VLM 模型。  
+  - VLM 词表提取统一使用 `google/gemini-2.5-flash-preview-09-2025`（带 ProxyAgent），`/api/vlm/extract`、文档与说明已同步说明 `google/gemini-2.5-flash-preview-09-2025` 作为 VLM 模型。  
   - 验证：`npm run dev` 并上传样例词表图片，确保 `/api/vlm/extract` 返回标准格式词表与对应日志。  
 - **2025-11-10**  
   - 题库改为 Session 化的分段生成：新增 `/api/generation/session`/`GET session/:id`/`POST session/:id/retry`，一次只等待第一大题，其余题型后台串行生成。
@@ -34,11 +38,11 @@ Copy the repository root `.env.example` to `.env` (root only), fill in real API 
   - 合并根 `.env` 为唯一配置源，新增 `OPENROUTER_PROXY`/`VITE_MAX_VLM_IMAGES`，并让所有 OpenRouter 请求强制走代理。  
   - 删除 `ImageTest/` 与 `ExtractTest/` 实验目录，避免重复提示词与依赖。  
   - Vite 通过 `envDir: '../'` 直接读取根环境变量；CORS 限制统一读取 `CLIENT_ORIGINS`。  
-  - 文档更新为 React 19 + GPT-5 mini，上传图片数量配置与后端校验保持一致。
+  - 文档更新为 React 19 + Gemini 2.5 Flash，上传图片数量配置与后端校验保持一致。
 - **2025-11-08**  
   - 增加 `CLIENT_ORIGINS` 支持 5173-5176，解决 Vite 端口变化造成的 CORS 无日志失败。  
-  - `server/src/services/vlm.ts` + `openrouter.ts` 使用 `undici` 的 `ProxyAgent`，确保在中国大陆网络通过本地代理访问 GPT-5 mini。  
-  - `superGenerator` 新增 `moonshotai/kimi-linear-48b-a3b-instruct → google/gemini-2.5-flash-preview-09-2025 → openrouter/polaris-alpha` 多模型降级，并在题型内部随机题目顺序。  
+  - `server/src/services/vlm.ts` + `openrouter.ts` 使用 `undici` 的 `ProxyAgent`，确保在中国大陆网络通过本地代理访问 Gemini 2.5 Flash。  
+  - `superGenerator` 新增 `google/gemini-2.5-flash-preview-09-2025 → x-ai/grok-4-fast → moonshotai/kimi-linear-48b-a3b-instruct → openrouter/polaris-alpha` 多模型降级，并在题型内部随机题目顺序。  
   - 新增 `PROJECT_BOARD.md` 记录项目概况、稳定版本与未来任务。  
   - `server/tsconfig.json` 限定编译源为 `src/**/*`，消除脚本目录的 rootDir 警告。
 

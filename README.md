@@ -1,11 +1,11 @@
 ## AI 动态词汇练习应用
 
-一个完全由 AI 实时驱动的词汇训练应用：上传单词表图片，GPT-5 mini 读取词汇，Polaris Alpha 生成 3 大题型（共 60 题）的“超级 JSON”，并在练习结束后用中文输出 100 字左右的分析报告。游客模式使用浏览器 LocalStorage 保存历史，登录用户的记录则写入本地 SQLite 数据库。
+一个完全由 AI 实时驱动的词汇训练应用：上传单词表图片，Gemini 2.5 Flash 读取词汇，Polaris Alpha 生成 3 大题型（共 60 题）的“超级 JSON”，并在练习结束后用中文输出 100 字左右的分析报告。游客模式使用浏览器 LocalStorage 保存历史，登录用户的记录则写入本地 SQLite 数据库。
 
 ### 核心特性
 
 - ⚙️ **React + TypeScript SPA**：包含登录/注册、游客入口、Dashboard、题流练习、报告与历史等完整流程。
-- 🧠 **VLM 识别**：服务端通过 `openai/gpt-5-mini` 读取图片中的词汇，前端展示为标签，可手动增删。
+- 🧠 **VLM 识别**：服务端通过 `google/gemini-2.5-flash-preview-09-2025` 读取图片中的词汇，前端展示为标签，可手动增删。
 - 🧩 **超级 JSON 生成**：调用 `openrouter/polaris-alpha`，一次性生成 3×N 题、所有干扰项与提示，强制遵守 JSON Schema。
 - 🚴 **题流体验**：严格单向流，无法回退，进度条实时反馈。
 - 📊 **AI 中文分析**：提交后把答题记录与超级 JSON 发给 Polaris Alpha，输出中文报告与 2-4 条建议。
@@ -16,7 +16,7 @@
 
 - 前端：React 19（Vite）、React Router、Zustand、TypeScript、Axios
 - 后端：Node.js + Express + TypeScript、SQLite（better-sqlite3 同步驱动）
-- AI：OpenRouter `openai/gpt-5-mini`（VLM）与 `openrouter/polaris-alpha`（题目与分析），使用 `response_format.json_schema` 获取结构化输出
+- AI：OpenRouter `google/gemini-2.5-flash-preview-09-2025`（VLM）与 `openrouter/polaris-alpha`（题目与分析），使用 `response_format.json_schema` 获取结构化输出
 
 ---
 
@@ -116,7 +116,7 @@ client/src
 | `POST /api/auth/register` | 注册并返回 JWT |
 | `POST /api/auth/login` | 登录 |
 | `GET /api/auth/me` | 返回当前用户（若 token 可用） |
-| `POST /api/vlm/extract` | 调用 GPT-5 mini 识别词表图片（body: `{ imageBase64 }`） |
+| `POST /api/vlm/extract` | 调用  google/gemini-2.5-flash-preview-09-2025 识别词表图片（body: `{ imageBase64 }`） |
 | `POST /api/generation/super-json` | 使用 Polaris Alpha 生成 3×N 题的超级 JSON |
 | `POST /api/analysis/report` | 发送答题记录，返回中文报告与建议 |
 | `POST /api/history` | 保存登录用户的练习快照 |
@@ -125,7 +125,7 @@ client/src
 
 ### OpenRouter 约束
 
-- **VLM 提词**：`model: openai/gpt-5-mini`，`response_format` 限制输出 `{ words: string[] }`
+- **VLM 提词**：`model: google/gemini-2.5-flash-preview-09-2025`，`response_format` 限制输出 `{ words: string[] }`
 - **超级 JSON**：`model: openrouter/polaris-alpha`，严格的 JSON Schema（3 个题组、4 选 1、中文解释）
 - **分析报告**：同样使用 Polaris Alpha，schema 要求 `{ report: string, recommendations: string[] }`
 

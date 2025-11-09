@@ -87,7 +87,7 @@ const UploadPage = () => {
       <div className="panel">
         <h2>上传单词表图片</h2>
         <p className="sub">
-          支持手写或打印照片，VLM (GPT-5 mini) 会将识别结果转换为标签列表。您可以上传多张图片来识别更多词汇。
+          支持手写或打印照片，VLM (google/gemini-2.5-flash-preview-09-2025) 会将识别结果转换为标签列表。您可以上传多张图片来识别更多词汇。
         </p>
         <form className="upload-form" onSubmit={handleSubmit}>
           <div
