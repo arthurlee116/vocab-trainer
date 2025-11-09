@@ -6,6 +6,7 @@ import type { AnswerRecord, QuestionType, SectionStatus, SessionSnapshot, SuperQ
 import { fetchGenerationSession, requestAnalysis, retryGenerationSection, saveAuthenticatedSession } from '../lib/api';
 import { getErrorMessage } from '../lib/errors';
 import { saveGuestSession } from '../lib/storage';
+import { buildSentenceParts } from '../lib/sentenceMask';
 
 const sectionOrder: QuestionType[] = ['questions_type_1', 'questions_type_2', 'questions_type_3'];
 
@@ -36,6 +37,7 @@ const QuizPage = () => {
   const [pendingAdvance, setPendingAdvance] = useState(false);
   const [retryingSection, setRetryingSection] = useState<QuestionType | null>(null);
   const [pollError, setPollError] = useState('');
+  const [isHintOpen, setIsHintOpen] = useState(false);
 
   const queue = useMemo(() => {
     if (!superJson) return [];
@@ -103,11 +105,33 @@ const QuizPage = () => {
     }
   }, [pendingAdvance, queue.length, index]);
 
+  const current = queue[index];
+  const currentId = current?.id;
+  const sentenceHasProvidedBlank = current?.sentence?.includes('_____') ?? false;
+  const correctChoiceText = current?.choices.find((choice) => choice.id === current.correctChoiceId)?.text;
+  const canMaskSentence = Boolean(current?.sentence && !sentenceHasProvidedBlank && correctChoiceText);
+  const sentenceMaskResult = canMaskSentence && current?.sentence && correctChoiceText
+    ? buildSentenceParts(current.sentence, correctChoiceText)
+    : null;
+  const sentenceParts = sentenceMaskResult?.parts ?? null;
+  const matchedSentenceVariant = sentenceMaskResult?.matchedVariant;
+  const currentChoices = useMemo(() => {
+    if (!current) return [];
+    if (!matchedSentenceVariant || !correctChoiceText) return current.choices;
+    return current.choices.map((choice) =>
+      choice.id === current.correctChoiceId
+        ? { ...choice, text: matchedSentenceVariant }
+        : choice,
+    );
+  }, [current, matchedSentenceVariant, correctChoiceText]);
+
+  useEffect(() => {
+    setIsHintOpen(false);
+  }, [currentId]);
+
   if (!superJson) {
     return null;
   }
-
-  const current = queue[index];
   const progressCurrent = Math.min(index + 1, totalTarget);
   const progressPercent = Math.min((progressCurrent / totalTarget) * 100, 100);
   const sectionQuestions: Record<QuestionType, SuperQuestion[]> = {
@@ -253,14 +277,16 @@ const QuizPage = () => {
   return (
     <div className="quiz-shell">
       <div className="quiz-progress">
-        <p>{progressLabel}</p>
-        <p>
-          第 {progressCurrent} / {totalTarget} 题
-        </p>
+        <div className="progress-header">
+          <p className="progress-label">{progressLabel}</p>
+          <p className="progress-count">
+            第 {progressCurrent} / {totalTarget} 题
+          </p>
+        </div>
         <div className="progress-track">
           <div className="progress-thumb" style={{ width: `${progressPercent}%` }} />
         </div>
-        <div className="section-status-list">
+        <div className="section-capsule-row">
           {sectionStates.map((section) => {
             const statusText =
               section.status === 'error'
@@ -268,15 +294,15 @@ const QuizPage = () => {
                 : getSectionStatusText(section.status, section.count);
             const canRetry = section.status === 'error' && section.type !== 'questions_type_1' && !!sessionId;
             return (
-              <div key={section.type} className={`section-status section-${section.status}`}>
+              <div key={section.type} className={`section-status section-${section.status} section-capsule`}>
                 <div>
-                  <strong>{section.label}</strong>
-                  <p className="section-status-text">{statusText}</p>
+                  <strong className="capsule-title">{section.label}</strong>
+                  <p className="section-status-text capsule-status">{statusText}</p>
                 </div>
                 {canRetry && (
                   <button
                     type="button"
-                    className="secondary"
+                    className="secondary capsule-retry"
                     onClick={() => handleRetry(section.type)}
                     disabled={retryingSection === section.type}
                   >
@@ -312,14 +338,52 @@ const QuizPage = () => {
             <h3>{current.prompt}</h3>
             {current.sentence && (
               <p className="sentence">
-                {current.sentence}
+                {sentenceParts
+                  ? sentenceParts.map((part, idx) =>
+                      part.type === 'blank' ? (
+                        <span
+                          key={`blank-${idx}`}
+                          className="answer-blank"
+                          style={{ width: `${part.length}ch` }}
+                          aria-label="填空"
+                        />
+                      ) : (
+                        <span key={`text-${idx}`}>{part.value}</span>
+                      ),
+                    )
+                  : current.sentence}
                 {current.translation && <span>（{current.translation}）</span>}
               </p>
             )}
-            {current.hint && <p className="hint">提示：{current.hint}</p>}
+            {current.hint && (
+              <div className="hint-toggle">
+                <button
+                  type="button"
+                  className={`pill-toggle ${isHintOpen ? 'open' : ''}`}
+                  onClick={() => setIsHintOpen((prev) => !prev)}
+                  aria-expanded={isHintOpen}
+                  aria-controls={`hint-${current.id}`}
+                >
+                  <span>{isHintOpen ? '收起提示' : '查看提示'}</span>
+                  <svg
+                    className={`pill-toggle-icon ${isHintOpen ? 'rotated' : ''}`}
+                    viewBox="0 0 24 24"
+                    role="presentation"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                {isHintOpen && (
+                  <p className="hint" id={`hint-${current.id}`}>
+                    提示：{current.hint}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="choices">
-              {current.choices.map((choice) => (
+              {currentChoices.map((choice) => (
                 <button
                   type="button"
                   key={choice.id}
