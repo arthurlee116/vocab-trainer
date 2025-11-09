@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { History, Clock, Trophy } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { fetchAuthenticatedHistory } from '../lib/api';
 import { loadGuestHistory } from '../lib/storage';
@@ -39,15 +40,24 @@ const HistoryPage = () => {
   return (
     <div className="page-section">
       <div className="panel">
-        <h2>历史记录</h2>
+        <h2>
+          <History size={24} className="page-title-icon" />
+          历史记录
+        </h2>
         {error && <p className="form-error">{error}</p>}
         {!records.length && <p>暂无记录</p>}
         <div className="history-list">
           {records.map((record) => (
             <article key={record.id} className="history-item">
               <header>
-                <h3>{Math.round(record.score)} 分 · {record.difficulty}</h3>
-                <span>{dayjs(record.createdAt).format('YYYY-MM-DD HH:mm')}</span>
+                <h3>
+                  <Trophy size={18} className="inline-icon" />
+                  {Math.round(record.score)} 分 · {record.difficulty}
+                </h3>
+                <span>
+                  <Clock size={16} className="inline-icon" />
+                  {dayjs(record.createdAt).format('YYYY-MM-DD HH:mm')}
+                </span>
               </header>
               <p>{record.analysis.report}</p>
               <ul>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User, LogIn } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { getErrorMessage } from '../lib/errors';
 
@@ -14,7 +15,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authMode === 'guest' || authMode === 'authenticated') {
+    if (authMode === 'authenticated') {
       navigate('/dashboard', { replace: true });
     }
   }, [authMode, navigate]);
@@ -90,10 +91,12 @@ const LandingPage = () => {
             </label>
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="primary" disabled={pending}>
+              <LogIn size={18} className="btn-icon" />
               {mode === 'login' ? '登录' : '注册并登录'}
             </button>
           </form>
           <button type="button" className="ghost" onClick={handleGuest}>
+            <User size={18} className="btn-icon" />
             先逛逛（游客模式）
           </button>
         </div>

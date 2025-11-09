@@ -160,6 +160,8 @@
   padding: 1.8rem;
   border: 1px solid #eceef5;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate3d(0, 0, 0);
 }
 
 .panel.question-card {
@@ -209,6 +211,111 @@
 
 .header-user {
   color: #7b849c;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.login-marquee-shell {
+  --ring-width: 4px;
+  --ring-color-a: #7dff72;
+  --ring-color-b: #3fd0a7;
+  --ring-color-c: #9dff5a;
+  position: relative;
+  padding: calc(var(--ring-width) + 2px);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: loginGlow 4s ease-in-out infinite;
+  isolation: isolate;
+}
+
+.login-marquee-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(125, 255, 114, 0.12);
+  pointer-events: none;
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 0.5px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 0.5px));
+  filter: blur(0.5px);
+}
+
+.login-marquee-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  animation: loginDotOrbit 3s linear infinite;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(231, 255, 199, 0.95) 0 3px, rgba(231, 255, 199, 0.18) 5px, transparent 7px),
+    conic-gradient(
+      from -25deg,
+      transparent 0deg 280deg,
+      rgba(125, 255, 114, 0.05) 290deg,
+      rgba(125, 255, 114, 0.25) 320deg,
+      rgba(125, 255, 114, 0.45) 350deg,
+      rgba(125, 255, 114, 0.6) 360deg
+    );
+  mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 1px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 1px));
+}
+
+.login-marquee-button {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: #f2fffa;
+  color: #0f5134;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  min-width: 94px;
+  transition: transform 200ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+
+.login-marquee-button:hover,
+.login-marquee-button:focus-visible {
+  background: #eafff4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(63, 208, 167, 0.25);
+}
+
+.login-marquee-button:focus-visible {
+  outline: none;
+}
+
+@keyframes loginDotOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loginGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(63, 208, 167, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 14px rgba(63, 208, 167, 0.45),
+      0 0 32px rgba(157, 255, 90, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(63, 208, 167, 0.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-marquee-shell,
+  .login-marquee-shell::before,
+  .login-marquee-shell::after {
+    animation: none;
+  }
 }
 
 .panel.warning {
@@ -319,20 +426,17 @@
   flex-direction: column;
   gap: 0.75rem;
 }
-
 .progress-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
 }
-
 .progress-label {
   font-size: 1rem;
   font-weight: 600;
   color: #111;
 }
-
 .progress-count {
   font-size: 0.95rem;
   color: #4b5563;
@@ -356,7 +460,6 @@
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 0.75rem;
 }
-
 .section-capsule {
   padding: 0.9rem 1rem;
   border-radius: 18px;
@@ -400,39 +503,32 @@
     transform: none !important;
   }
 }
-
 .section-status-text {
   margin: 0;
   font-size: 0.9rem;
   color: #4b5563;
 }
-
 .section-status.section-generating.section-capsule {
   background: #fffbeb;
   border-color: #fde68a;
 }
-
 .section-status.section-pending.section-capsule {
   background: #fdf2f8;
   border-color: #f9a8d4;
 }
-
 .section-status.section-error.section-capsule {
   background: #fef2f2;
   border-color: #fecaca;
 }
-
 .capsule-title {
   font-size: 0.95rem;
   display: block;
 }
-
 .capsule-status {
   font-size: 0.9rem;
   color: #4b5563;
   margin: 0;
 }
-
 .capsule-retry {
   align-self: flex-start;
   padding: 0.35rem 0.65rem;
@@ -559,69 +655,6 @@
 
 .pill-toggle-icon.rotated {
   transform: rotate(180deg);
-}
-
-.quiz-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.quiz-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.progress-track {
-  flex: 1;
-  background: #e5e7f3;
-  border-radius: 999px;
-  height: 6px;
-  margin-left: 1rem;
-}
-
-.progress-thumb {
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #6366f1, #4338ca);
-}
-
-.question-card h3 {
-  margin-top: 0;
-}
-
-.choices {
-  display: grid;
-  gap: 0.75rem;
-  margin: 1.5rem 0;
-}
-
-.choice {
-  text-align: left;
-  border: 1px solid #cad1e0;
-  background: #fff;
-  padding: 0.9rem 1rem;
-  border-radius: 14px;
-}
-
-.choice.selected {
-  border-color: #111;
-  background: #111;
-  color: #fff;
-}
-
-.sentence {
-  color: #1f2937;
-  background: #f5f6fc;
-  padding: 0.9rem;
-  border-radius: 12px;
-}
-
-.hint {
-  color: #7b849c;
-  margin-top: 0.5rem;
 }
 
 .form-error {
@@ -788,4 +821,75 @@
 
 .form-error::before {
   content: '⚠';
+}
+
+/* 图标样式 */
+.nav-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  color: currentColor;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.login-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  color: currentColor;
+}
+
+.score-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  color: #fbbf24;
+}
+
+.header-nav a.active .nav-icon,
+.header-nav button.active .nav-icon {
+  color: #3b82f6;
+}
+
+.header-nav a:hover:not(.active) .nav-icon,
+.header-nav button:hover:not(.active) .nav-icon {
+  color: #3b82f6;
+  transition: color 0.2s ease;
+}
+
+.button .btn-icon {
+  color: inherit;
+}
+
+.page-title-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  color: #3b82f6;
+}
+
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  color: currentColor;
+}
+
+.history-item header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.history-item header h3,
+.history-item header span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

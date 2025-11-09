@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Plus, BookOpen, Trophy, BarChart3 } from 'lucide-react';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -23,10 +24,12 @@ const DashboardPage = () => {
         </div>
         <div className="hero-actions">
           <button type="button" className="primary" onClick={handleStart}>
-            + 开始新的练习
+            <Plus size={20} className="btn-icon" />
+            开始新的练习
           </button>
           <button type="button" className="ghost" onClick={() => navigate('/history')}>
-            📚 查看历史记录
+            <BookOpen size={18} className="btn-icon" />
+            查看历史记录
           </button>
         </div>
       </div>
@@ -42,9 +45,13 @@ const DashboardPage = () => {
           <div className="panel-header">
             <div>
               <p className="eyebrow">最近一次练习</p>
-              <h3>{Math.round(lastResult.score)} 分</h3>
+              <h3>
+                <Trophy size={24} className="score-icon" />
+                {Math.round(lastResult.score)} 分
+              </h3>
             </div>
             <button type="button" className="text-button" onClick={() => navigate('/practice/report')}>
+              <BarChart3 size={18} className="btn-icon" />
               回看报告
             </button>
           </div>
