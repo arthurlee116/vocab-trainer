@@ -3,6 +3,9 @@ node_modules
 client/node_modules
 server/node_modules
 server/storage/*.db
+server/storage/*.db-shm
+server/storage/*.db-wal
+server/storage/*.db-journal
 dist
 .DS_Store
 *.log
