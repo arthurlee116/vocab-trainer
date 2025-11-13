@@ -23,6 +23,10 @@ History follows Conventional Commits (`chore(project): …`), so keep using `<ty
 Copy the repository root `.env.example` to `.env` (root only), fill in real API keys, and keep the file out of Git. Define `CLIENT_ORIGINS` with every allowed frontend URL, configure `OPENROUTER_PROXY` if you need a local proxy, and keep shared limits such as `VITE_MAX_VLM_IMAGES` in this same file. Scrub vocab screenshots or AI transcripts before posting them outside the team.
 
 ## Collaboration Log
+- **2025-11-12**  
+  - 新增“词汇详情”强制页面：确认难度后并行请求 `/api/generation/session` 与新接口 `/api/generation/details`，前端在详情页展示词性/释义/双语例句并继续轮询大题进度。  
+  - Quiz 页面与新详情页共用 `SectionProgressCapsules` + `useGenerationPolling`，并在路由层要求完成词典预览后才能进入答题。  
+  - Server 侧新增 `generateVocabularyDetails`（复用模型降级顺序）与 `/api/generation/details`，文档/README/PROJECT_BOARD/CLAUDE 均已同步词典流程。  
 - **2025-02-14**  
   - superGenerator 提示词要求先用 `[BLANK]...[/BLANK]` 包裹待考短语，再把整段标记替换成 `_____`，translation/hint 禁止泄露答案，并已写进 `QUESTION_TYPE_RULES`。  
   - Quiz 页面在 sentence 自带 `_____` 时跳过前端替换；否则会根据答案首词（含 be/have/do 及常见时态/变形）生成多组匹配模式，再动态遮挡，提示按钮也升级为胶囊样式。  

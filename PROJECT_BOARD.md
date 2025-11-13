@@ -8,6 +8,7 @@
 - **环境命令**：`npm run dev`（全栈）、`npm run dev:client`、`npm run dev:server`、`npm run build`、`npm run typecheck --workspace=server`、`npm run lint --workspace=client`。
 
 ### 近期关键修复
+- **词汇详情页（2025-11-12）**：确认难度后并行触发题库 Session 与 `/api/generation/details`，新增 VocabularyDetailsPage 展示词性/释义/双语例句并继续轮询三大题状态；路由层限制未查看词典不得进入 Quiz。Documentation（README/AGENTS/CLAUDE）同步更新。
 - **句子遮挡双保险（2025-02-14）**：superGenerator 提示词要求先用 `[BLANK]...[/BLANK]` 包裹待考短语再改成 `_____`，translation/hint 禁止泄露；Quiz 前端先检测 sentence 是否已有 `_____`，如无则按答案首词（含 be/have/do 及常规时态）生成多种匹配模式动态遮挡，兼容旧 Session。
 - **单一环境文件**：仅允许根 `.env`，新增 `OPENROUTER_PROXY`、`VITE_MAX_VLM_IMAGES`，Vite 借助 `envDir: '../'` 与后端读取同一份配置。
 - **统一代理**：`server/src/services/openrouter.ts` 默认挂载 `ProxyAgent`，VLM、题库与分析请求都走同一代理链路。
@@ -29,10 +30,11 @@
 
 ## 3. 关键工作流
 1. **图片上传**：`UploadPage` → `filesToBase64Array` → POST `/api/vlm/extract`。
-2. **词表确认**：`ConfirmWordsPage` → POST `/api/generation/session`，立即拿到第一大题与 Session 信息，`usePracticeStore` 记录 sessionId/状态。
-3. **练习**：`QuizPage` 轮询 `/api/generation/session/:id` 获取后续大题，显示生成状态/错误与重试按钮；题型仍按 1→2→3 顺序，内部题目打乱。
-4. **结果分析**：POST `/api/analysis/report` → 显示分析并可保存历史。
-5. **历史**：`/api/history` CRUD + SQLite `sessions` 表。
+2. **词表确认**：`ConfirmWordsPage` 并行触发 `POST /api/generation/session`（分段题库）与 `POST /api/generation/details`（词典），`usePracticeStore` 记录 sessionId/状态/词典。
+3. **词典预览**：`VocabularyDetailsPage` 展示词性/释义/双语例句并继续轮询题库进度，必须点击“开始练习”才可继续。
+4. **练习**：`QuizPage` 轮询 `/api/generation/session/:id` 获取后续大题，显示生成状态/错误与重试按钮；题型仍按 1→2→3 顺序，内部题目打乱。
+5. **结果分析**：POST `/api/analysis/report` → 显示分析并可保存历史。
+6. **历史**：`/api/history` CRUD + SQLite `sessions` 表。
 
 ## 4. 当前稳定版本（2025-11-09）
 - ✅ 根 `.env` + `envDir` 配置验证通过，前后端共享同一环境文件。

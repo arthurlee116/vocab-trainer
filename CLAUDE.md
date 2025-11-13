@@ -62,11 +62,11 @@ This is a full-stack AI-powered vocabulary training application with three core 
 - `RequireResult` — Redirects to dashboard if no quiz results
 
 **State Flow:**
-1. User uploads image → `UploadPage` → converts to base64 → POST `/api/vlm/extract`
-2. Word list confirmed → `ConfirmWordsPage` → POST `/api/generation/super-json` → store in `usePracticeStore`
-3. Quiz execution → `QuizPage` → records answers in `usePracticeStore.answers[]`
-4. Results → POST `/api/analysis/report` → stores in `usePracticeStore.lastResult`
-5. Save session: guest mode → LocalStorage, authenticated → POST `/api/history`
+1. Upload image(s) → `UploadPage` → convert to base64 → POST `/api/vlm/extract` 获取词表。
+2. `ConfirmWordsPage` 确认/编辑单词并选择难度 → 并行触发 `POST /api/generation/session`（分段题库）与 `POST /api/generation/details`（词汇详情），将 snapshot + 词典写入 `usePracticeStore`。
+3. 进入 `VocabularyDetailsPage` 查看词性/释义/双语例句，同时继续轮询 session 状态；详情生成失败可在此页重试，未完成该步骤无法开始答题。
+4. 点击“开始练习”后进入 `QuizPage`，消费 `superJson` 里的题目并持续轮询后续题型，答案记录写入 `usePracticeStore.answers[]`。
+5. 作答完成 → POST `/api/analysis/report` 生成中文总结，guest 模式存 LocalStorage，登录用户 POST `/api/history` 持久化 Session。
 
 ### 2. Backend (server/)
 **Tech Stack:** Node.js + Express + TypeScript + SQLite (better-sqlite3) + JWT + bcryptjs
@@ -80,15 +80,15 @@ This is a full-stack AI-powered vocabulary training application with three core 
 - `src/utils/httpError.ts` — Custom error class
 
 **API Endpoints:**
-- `POST /api/auth/register` — Register user, return JWT
-- `POST /api/auth/login` — Login with email/password
-- `GET /api/auth/me` — Get current user from JWT
-- `POST /api/vlm/extract` — Gemini 2.5 Flash: extract words from image base64
-- `POST /api/generation/super-json` — Polaris Alpha: generate 3 question types with JSON schema validation
-- `POST /api/analysis/report` — Polaris Alpha: analyze answers, return Chinese report + recommendations
-- `POST /api/history` — Save authenticated user's session
-- `GET /api/history` — List user's session history
-- `GET /api/history/:id` — Get specific session with full details
+- `POST /api/auth/register` / `/api/auth/login` / `GET /api/auth/me` — JWT auth lifecycle
+- `POST /api/vlm/extract` — Gemini 2.5 Flash 提取词表
+- `POST /api/generation/session` — 启动分段题库生成（立即返回第一大题 + sessionId）
+- `GET /api/generation/session/:id` — 轮询 session 状态（题型 ready/pending/error）
+- `POST /api/generation/session/:id/retry` — 针对指定题型重新生成
+- `POST /api/generation/details` — 生成词性/中文释义/双语例句的词典详情
+- `POST /api/generation/super-json` — 旧版一次性题库输出，仅作 fallback
+- `POST /api/analysis/report` — 生成中文分析报告
+- `POST /api/history` / `GET /api/history` / `GET /api/history/:id` — 会话存档与查询
 
 **Key Services:**
 
