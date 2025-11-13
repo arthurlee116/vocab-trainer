@@ -8,6 +8,7 @@ import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
 import ConfirmWordsPage from './pages/ConfirmWordsPage';
+import VocabularyDetailsPage from './pages/VocabularyDetailsPage';
 import QuizPage from './pages/QuizPage';
 import ReportPage from './pages/ReportPage';
 import HistoryPage from './pages/HistoryPage';
@@ -36,6 +37,22 @@ const RequireSuperJson = ({ children }: { children: ReactNode }) => {
   const { superJson } = usePracticeStore();
   if (!superJson) {
     return <Navigate to="/practice/confirm" replace />;
+  }
+  return children;
+};
+
+const RequireSession = ({ children }: { children: ReactNode }) => {
+  const { sessionId } = usePracticeStore();
+  if (!sessionId) {
+    return <Navigate to="/practice/confirm" replace />;
+  }
+  return children;
+};
+
+const RequireDetailsReady = ({ children }: { children: ReactNode }) => {
+  const { detailsStatus, vocabDetails } = usePracticeStore();
+  if (detailsStatus !== 'ready' || !vocabDetails?.length) {
+    return <Navigate to="/practice/details" replace />;
   }
   return children;
 };
@@ -92,13 +109,29 @@ function App() {
           }
         />
         <Route
+          path="/practice/details"
+          element={
+            <ProtectedRoute>
+              <RequireWords>
+                <RequireSession>
+                  <AppLayout fullWidth>
+                    <VocabularyDetailsPage />
+                  </AppLayout>
+                </RequireSession>
+              </RequireWords>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/practice/run"
           element={
             <ProtectedRoute>
               <RequireSuperJson>
-                <AppLayout fullWidth>
-                  <QuizPage />
-                </AppLayout>
+                <RequireDetailsReady>
+                  <AppLayout fullWidth>
+                    <QuizPage />
+                  </AppLayout>
+                </RequireDetailsReady>
               </RequireSuperJson>
             </ProtectedRoute>
           }

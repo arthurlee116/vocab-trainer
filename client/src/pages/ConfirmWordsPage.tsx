@@ -2,12 +2,20 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
-import { startGenerationSession } from '../lib/api';
+import { fetchVocabularyDetails, startGenerationSession } from '../lib/api';
 import { getErrorMessage } from '../lib/errors';
 import type { DifficultyLevel } from '../types';
 
 const ConfirmWordsPage = () => {
-  const { words, addWord, removeWord, applySessionSnapshot, startGenerating } = usePracticeStore();
+  const {
+    words,
+    addWord,
+    removeWord,
+    applySessionSnapshot,
+    startGenerating,
+    setVocabDetails,
+    setDetailsError,
+  } = usePracticeStore();
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,11 +42,21 @@ const ConfirmWordsPage = () => {
     setLoading(true);
     startGenerating();
     try {
-      const snapshot = await startGenerationSession({ words, difficulty });
-      applySessionSnapshot(snapshot);
-      navigate('/practice/run');
+      const sessionPromise = startGenerationSession({ words, difficulty }).then((snapshot) => {
+        applySessionSnapshot(snapshot);
+        return snapshot;
+      });
+      const detailsPromise = fetchVocabularyDetails({ words, difficulty }).then((details) => {
+        setVocabDetails(details);
+        return details;
+      });
+
+      await Promise.all([sessionPromise, detailsPromise]);
+      navigate('/practice/details');
     } catch (err) {
-      setError(getErrorMessage(err, '生成题目失败，请重试'));
+      const message = getErrorMessage(err, '生成词汇详情失败，请重试');
+      setError(message);
+      setDetailsError(message);
       setSelecting(false);
     } finally {
       setLoading(false);

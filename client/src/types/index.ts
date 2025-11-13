@@ -83,3 +83,15 @@ export interface ImageValidationResult {
   valid: ImageFile[];
   errors: string[];
 }
+
+export interface VocabularyExample {
+  en: string;
+  zh: string;
+}
+
+export interface VocabularyDetail {
+  word: string;
+  partsOfSpeech: string[];
+  definitions: string[];
+  examples: VocabularyExample[];
+}

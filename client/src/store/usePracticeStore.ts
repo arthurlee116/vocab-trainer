@@ -9,12 +9,14 @@ import type {
   GenerationSessionSnapshot,
   QuestionType,
   SectionStatus,
+  VocabularyDetail,
 } from '../types';
 import { revokeObjectUrls } from '../lib/file';
 
 interface PracticeState {
   words: string[];
   images: ImageFile[];
+  vocabDetails?: VocabularyDetail[];
   difficulty?: DifficultyLevel;
   sessionId?: string;
   perType?: number;
@@ -24,6 +26,8 @@ interface PracticeState {
   status: 'idle' | 'uploading' | 'confirm' | 'generating' | 'inProgress' | 'report';
   sectionStatus: Record<QuestionType, SectionStatus>;
   sectionErrors: Record<QuestionType, string | undefined>;
+  detailsStatus: 'idle' | 'loading' | 'ready' | 'error';
+  detailsError?: string;
   lastResult?: {
     score: number;
     analysis: AnalysisSummary;
@@ -42,6 +46,9 @@ interface PracticeState {
   addImages: (newImages: ImageFile[]) => void;
   removeImage: (id: string) => void;
   clearImages: () => void;
+  beginDetailsFetch: () => void;
+  setVocabDetails: (details: VocabularyDetail[]) => void;
+  setDetailsError: (message: string) => void;
 }
 
 const createInitialSectionStatus = (): Record<QuestionType, SectionStatus> => ({
@@ -63,6 +70,7 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
   status: 'idle',
   sectionStatus: createInitialSectionStatus(),
   sectionErrors: createInitialSectionErrors(),
+  detailsStatus: 'idle',
   setWords: (words) =>
     set({
       words: Array.from(new Set(words.map((w) => w.trim().toLowerCase()))).filter(Boolean),
@@ -93,6 +101,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       sessionId: undefined,
       perType: undefined,
       estimatedTotalQuestions: undefined,
+      vocabDetails: undefined,
+      detailsStatus: 'loading',
+      detailsError: undefined,
     }),
   applySessionSnapshot: (snapshot) =>
     set((state) => {
@@ -151,6 +162,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       estimatedTotalQuestions: undefined,
       sectionStatus: createInitialSectionStatus(),
       sectionErrors: createInitialSectionErrors(),
+      vocabDetails: undefined,
+      detailsStatus: 'idle',
+      detailsError: undefined,
     });
   },
   recordAnswer: (answer) =>
@@ -183,4 +197,20 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
     }
     set({ images: [] });
   },
+  beginDetailsFetch: () =>
+    set({
+      detailsStatus: 'loading',
+      detailsError: undefined,
+    }),
+  setVocabDetails: (details) =>
+    set({
+      vocabDetails: details,
+      detailsStatus: 'ready',
+      detailsError: undefined,
+    }),
+  setDetailsError: (message) =>
+    set({
+      detailsStatus: 'error',
+      detailsError: message,
+    }),
 }));

@@ -7,6 +7,7 @@ import type {
   SessionSnapshot,
   GenerationSessionSnapshot,
   QuestionType,
+  VocabularyDetail,
 } from '../types';
 import { STORAGE_KEYS } from '../constants/storage';
 
@@ -52,6 +53,9 @@ export const retryGenerationSection = (sessionId: string, type: QuestionType) =>
   api
     .post<GenerationSessionSnapshot>(`/generation/session/${sessionId}/retry`, { type })
     .then((res) => res.data);
+
+export const fetchVocabularyDetails = (params: { words: string[]; difficulty: DifficultyLevel }) =>
+  api.post<{ details: VocabularyDetail[] }>('/generation/details', params).then((res) => res.data.details);
 
 export const requestAnalysis = (payload: {
   difficulty: DifficultyLevel;
