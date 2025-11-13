@@ -56,3 +56,15 @@ export interface AnalysisSummary {
   report: string;
   recommendations: string[];
 }
+
+export interface VocabularyExample {
+  en: string;
+  zh: string;
+}
+
+export interface VocabularyDetail {
+  word: string;
+  partsOfSpeech: string[];
+  definitions: string[];
+  examples: VocabularyExample[];
+}

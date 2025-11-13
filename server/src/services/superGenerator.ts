@@ -2,13 +2,7 @@ import { DifficultyLevel, QuestionType, SuperJson, SuperQuestion } from '../type
 import { openRouterChat } from './openrouter';
 import { logger } from '../utils/logger';
 import { shuffleQuestionChoices } from '../lib/shuffleChoices';
-
-const MODEL_FALLBACKS = [
-  'google/gemini-2.5-flash-preview-09-2025',
-  'x-ai/grok-4-fast',
-  'moonshotai/kimi-linear-48b-a3b-instruct',
-  'openrouter/polaris-alpha',
-] as const;
+import { MODEL_FALLBACKS } from '../constants/model-fallbacks';
 
 const shuffleWithin = <T>(items: T[]): T[] => {
   if (items.length <= 1) {

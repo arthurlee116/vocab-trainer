@@ -7,6 +7,7 @@ import {
   retryGenerationSection,
   startGenerationSession,
 } from '../services/generation-session';
+import { generateVocabularyDetails } from '../services/vocab-details';
 import { HttpError } from '../utils/httpError';
 import { logger, logError, logApiRequest } from '../utils/logger';
 
@@ -20,6 +21,11 @@ const payloadSchema = z.object({
 
 const retrySchema = z.object({
   type: z.enum(['questions_type_1', 'questions_type_2', 'questions_type_3']),
+});
+
+const detailsSchema = z.object({
+  words: z.array(z.string().min(1)).min(1),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
 });
 
 router.post(
@@ -83,6 +89,25 @@ router.post(
     } catch (error) {
       logError('Generation API: /api/generation/session/:sessionId/retry failed', error);
       logApiRequest('POST', '/api/generation/session/:sessionId/retry', 500);
+      throw error;
+    }
+  }),
+);
+
+router.post(
+  '/details',
+  asyncHandler(async (req, res) => {
+    try {
+      const { words, difficulty } = detailsSchema.parse(req.body);
+      logger.info(
+        `Generation API: POST /api/generation/details - Generating vocabulary details (${difficulty}) for ${words.length} words from ${req.ip}`,
+      );
+      const details = await generateVocabularyDetails(words, difficulty);
+      logApiRequest('POST', '/api/generation/details', 200);
+      res.json({ details });
+    } catch (error) {
+      logError('Generation API: /api/generation/details failed', error);
+      logApiRequest('POST', '/api/generation/details', 500);
       throw error;
     }
   }),
