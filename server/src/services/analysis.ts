@@ -68,7 +68,7 @@ export const buildAnalysis = async (params: {
 
   try {
     const result = await openRouterChat<AnalysisSummary>({
-      model: 'openrouter/polaris-alpha',
+      model: 'google/gemini-2.5-flash-preview-09-2025',
       messages,
       response_format: {
         type: 'json_schema',
