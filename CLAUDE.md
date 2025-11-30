@@ -149,15 +149,20 @@ This is a full-stack AI-powered vocabulary training application with three core 
 
 ## Development Workflow
 
-1. **Start dev environment:** `npm run dev` (runs both workspaces)
-2. **Make changes:** Frontend hot-reloads, server auto-restarts with `tsx watch`
-3. **Test flow:** Upload image → confirm words → generate quiz → take quiz → view report
-4. **Check types:** `npm run typecheck --workspace=server`
-5. **Lint code:** `npm run lint --workspace=client`
-6. **Build for production:** `npm run build`
+1. **Start dev environment:** `npm run dev`（打包 server + client）
+2. **Make changes:** 前端热加载、后端 `tsx watch` 自动重启
+3. **单元/组件测试：** `npm run test --workspace=client`（Vitest + RTL，Quiz/SectionProgressCapsules/useGenerationPolling/句子遮挡等，覆盖率≥90）或 `npm run test --workspace=server`（Vitest + better-sqlite3，验证 `history` 服务）
+4. **端到端烟测：** `npm run test:e2e`（Playwright，当前覆盖游客从 Landing 到 Dashboard 的流程）
+5. **手动全链路：** `npm run dev` → 上传图片 → 确认词表 → 查看词典 → Quiz → 报告 → 历史
+6. **Check types:** `npm run typecheck --workspace=server`
+7. **Lint code:** `npm run lint --workspace=client`
+8. **Build for production:** `npm run build`
 
 ## Testing Notes
-No automated test suite exists yet. Manual testing via `npm run dev` is required for all features. The quiz flow should be tested end-to-end: image upload → word confirmation → question generation → quiz taking → report viewing → history check.
+- `client`: Vitest + React Testing Library，测试位于 `client/src/__tests__/`、`client/src/hooks/__tests__/` 与 `client/src/lib/__tests__/`。`vitest.config.ts` 将覆盖率统计限制在 Quiz 相关模块并要求 Statements/Branches/Functions/Lines ≥90%。运行 `npm run test --workspace=client` 或 `npm run test:coverage --workspace=client`。
+- `server`: Vitest + better-sqlite3，`server/src/services/__tests__/history.spec.ts` 会为每个测试生成独立 SQLite 文件，并写入虚拟用户后验证 `saveSession`/`listSessions`/`getSession`。运行 `npm run test --workspace=server`，如切换 Node 版本记得 `npm rebuild --workspace=server better-sqlite3`。
+- `e2e`: Playwright（配置见根目录 `playwright.config.ts`）在 `npm run test:e2e` 内部自动启动 `npm run dev` 并执行 `e2e/landing.spec.ts`。可通过新增 spec 扩展场景，必要时用 `page.route` mock API。
+- 以上测试为准仍需搭配一次手动 `/practice` 全流程烟测，确保 Gemini/OpenRouter 请求在真实环境中可用。
 
 ## Common Development Patterns
 
@@ -196,6 +201,10 @@ No automated test suite exists yet. Manual testing via `npm run dev` is required
   - 题库生成使用 Gemini → Grok-4 Fast → Moonshot → Polaris 的多级降级策略，并在三大题型内部执行 Fisher–Yates 打乱。  
   - 新增 `PROJECT_BOARD.md` 作为项目看板，请在重大调整后同步更新。  
   - `server/tsconfig.json` 仅编译 `src/**/*`，避免脚本目录触发 rootDir 报错。
+- **2025-02-15 自动化测试基座**  
+  - `client` 配置 Vitest + React Testing Library，对 Quiz 主要路径、`SectionProgressCapsules`、`useGenerationPolling` 与 `sentenceMask` 提供覆盖，使用 `npm run test --workspace=client` 触发并强制 90% 覆盖率。  
+  - `server` 使用 Vitest + better-sqlite3 在 `server/src/services/__tests__/history.spec.ts` 中验证 SQLite 持久化逻辑，运行前确保 `better-sqlite3` 与 Node 版本匹配。  
+  - Playwright `e2e/landing.spec.ts` 覆盖游客从 Landing→Dashboard 的流程，`npm run test:e2e` 会自动启动全栈 dev server。请在后续需求中为新的端到端路径补充 spec。
 
 > 规则：只要做了影响代理、模型、题库、CORS 或流程的改动，务必把变更写进 `PROJECT_BOARD.md`、`AGENTS.md`、`CLAUDE.md`，并说明验证方式。
 

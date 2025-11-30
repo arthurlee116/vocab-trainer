@@ -9,12 +9,18 @@ Workspaces split the React SPA under `client/` and the Express API under `server
 - `npm run build` — runs `tsc` for the server and `vite build` for the client; fails fast if `.env` is missing required keys.
 - `npm run lint --workspace=client` — ESLint + TypeScript rules for React; run before you push.
 - `npm run typecheck --workspace=server` — validates request/response types without emitting JS.
+- `npm run test --workspace=client` / `npm run test:coverage --workspace=client` — Vitest + React Testing Library，覆盖 Quiz 页面、SectionProgressCapsules、hook/工具并要求 90% 覆盖率。
+- `npm run test --workspace=server` / `npm run test:coverage --workspace=server` — Vitest + better-sqlite3，使用独立 SQLite 文件验证 `history` 服务读写（需 `npm rebuild --workspace=server` 后再跑）。
+- `npm run test:e2e` — Playwright 端到端烟测（默认 Chromium），自动拉起 `npm run dev` 全栈环境并执行 `e2e/` 目录的场景。
 
 ## Coding Style & Naming Conventions
 Stick to TypeScript, 2-space indentation, and single quotes to match the existing files. Components, hooks, and Zustand stores use PascalCase filenames (`QuizPage.tsx`, `useAuthStore.ts`), while backend modules favor kebab-case (`vlm-router.ts`). Keep logic near its consumer, export strongly typed functions, and validate external data with `zod` before returning it through `/api/*` routes.
 
 ## Testing Guidelines
-No automated suite exists yet, so bootstrap Vitest + React Testing Library under `client/src/__tests__/ComponentName.spec.tsx` and mock Zustand stores when needed. Server units can use plain Vitest or Jest inside `server/src/__tests__/`, focusing on validators and SQLite writes. Each feature should land with at least one happy path test plus an error branch, and manual smoke tests of the `/practice` flow via `npm run dev` remain mandatory until CI is in place.
+- 前端：Vitest + React Testing Library 已接入，测试集中在 `client/src/__tests__/`、`hooks/__tests__/` 与 `lib/__tests__/`，目前对 Quiz 主流程（选择/等待/提示/完成）、`useGenerationPolling` 与 `sentenceMask` 进行分支覆盖，运行 `npm run test --workspace=client` 即可。覆盖率门槛为 90%，仅统计 Quiz 相关模块；新增页面/组件时请按照现有模式添加测试与 mock（Zustand store 可直接 `usePracticeStore.setState` 控制）。
+- 后端：Vitest + better-sqlite3 放在 `server/src/services/__tests__/`。`history.spec.ts` 会为每个测试创建独立的 SQLite DB，并写入虚拟用户后再验证 `saveSession` / `listSessions` / `getSession`。若切换 Node 版本，请先执行 `npm rebuild --workspace=server better-sqlite3`。
+- 端到端：`npm run test:e2e` 调用 Playwright（配置在根 `playwright.config.ts`），当前 `e2e/landing.spec.ts` 检查游客从 Landing→Dashboard 的流程，可在测试中用 `page.route` 拦截 API 来模拟更多复杂场景。
+- 手动烟测依旧需要：在合并前至少用 `npm run dev` 完整走一遍上传→确认→详情→练习→报告，确保 VLM/Session/分析接口可用。
 
 ## Commit & Pull Request Guidelines
 History follows Conventional Commits (`chore(project): …`), so keep using `<type>(scope): summary` with present-tense English. Submit focused commits (UI vs API vs infra) and list validation steps in the PR description (`npm run lint`, manual quiz run, screenshots). Link related issues, note data migrations, and double-check that secrets remain in `.env` rather than source files.
@@ -23,6 +29,10 @@ History follows Conventional Commits (`chore(project): …`), so keep using `<ty
 Copy the repository root `.env.example` to `.env` (root only), fill in real API keys, and keep the file out of Git. Define `CLIENT_ORIGINS` with every allowed frontend URL, configure `OPENROUTER_PROXY` if you need a local proxy, and keep shared limits such as `VITE_MAX_VLM_IMAGES` in this same file. Scrub vocab screenshots or AI transcripts before posting them outside the team.
 
 ## Collaboration Log
+- **2025-02-15**  
+  - 引入自动化测试：`client` 使用 Vitest + RTL 覆盖 Quiz、SectionProgressCapsules、`useGenerationPolling` 与句子遮挡逻辑，并在 `vitest.config.ts` 中对 Quiz 相关模块施加 90% 覆盖率阈值。  
+  - `server` 侧通过 Vitest + better-sqlite3 创建临时数据库验证 `history` 服务的保存/排序/缺省分支；注意重新编译 `better-sqlite3` 以匹配本地 Node。  
+  - 根目录新增 Playwright 配置与 `e2e/landing.spec.ts`，执行 `npm run test:e2e` 会自动启动全栈 dev server 并以游客模式验证 Landing→Dashboard 流。
 - **2025-11-12**  
   - 新增“词汇详情”强制页面：确认难度后并行请求 `/api/generation/session` 与新接口 `/api/generation/details`，前端在详情页展示词性/释义/双语例句并继续轮询大题进度。  
   - Quiz 页面与新详情页共用 `SectionProgressCapsules` + `useGenerationPolling`，并在路由层要求完成词典预览后才能进入答题。  

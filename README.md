@@ -794,29 +794,40 @@ router.post('/example', asyncHandler(async (req, res) => {
 
 ### 测试指南
 
-#### 前端测试
+#### 前端（Vitest + React Testing Library）
 
 ```bash
-# 运行前端测试
-npm test --workspace=client
+# 单元/组件测试，覆盖 Quiz/SectionProgressCapsules/useGenerationPolling/句子遮挡
+npm run test --workspace=client
 
-# 创建组件测试
-# client/src/__tests__/ComponentName.spec.tsx
+# 带覆盖率（受限于 Quiz 相关模块，阈值 90%）
+npm run test:coverage --workspace=client
+
+# 新增测试文件：client/src/__tests__/*.spec.tsx、client/src/hooks/__tests__、client/src/lib/__tests__
 ```
 
-#### 后端测试
+#### 后端（Vitest + better-sqlite3）
 
 ```bash
-# 运行后端测试
-npm test --workspace=server
+# 使用真实 SQLite 临时库验证 history 服务（需确保 better-sqlite3 已针对当前 Node 编译）
+npm run test --workspace=server
+npm run test:coverage --workspace=server
 
-# 创建单元测试
-# server/src/__tests__/serviceName.spec.ts
+# 测试文件示例：server/src/services/__tests__/history.spec.ts
+```
+
+#### 端到端（Playwright）
+
+```bash
+# 自动拉起 npm run dev（server+client），并执行 e2e/landing.spec.ts
+npm run test:e2e
+
+# 配置：根目录 playwright.config.ts，可按需新增 e2e/*.spec.ts 扩展场景
 ```
 
 #### 手动测试流程
 
-每次代码变更后，请执行以下测试：
+在自动化测试之外，仍需进行一次完整人工流程确认：
 
 1. **启动开发环境**
    ```bash

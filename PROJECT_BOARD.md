@@ -5,9 +5,10 @@
 ## 1. 当前概况
 - **产品定位**：AI 驱动的词汇练习，用 VLM 识别词表 → LLM 生成题库 → 练习 + 分析。
 - **工作区**：前端 `client/`（React + Vite），后端 `server/`（Express + SQLite），共享 `.env` 控制 OpenRouter。
-- **环境命令**：`npm run dev`（全栈）、`npm run dev:client`、`npm run dev:server`、`npm run build`、`npm run typecheck --workspace=server`、`npm run lint --workspace=client`。
+- **环境命令**：`npm run dev`（全栈）、`npm run dev:client`、`npm run dev:server`、`npm run build`、`npm run typecheck --workspace=server`、`npm run lint --workspace=client`。新增测试命令：`npm run test --workspace=client`（Vitest + RTL）、`npm run test --workspace=server`（Vitest + better-sqlite3）、`npm run test:e2e`（Playwright，全栈烟测）。若需覆盖率，分别使用 `test:coverage`。
 
 ### 近期关键修复
+- **自动化测试基座（2025-02-15）**：`client` 全面接入 Vitest + React Testing Library，可覆盖 Quiz 流程（`client/src/__tests__` + hooks/lib 专用目录）并强制 90% 覆盖率；`server` 使用 Vitest + better-sqlite3 创建临时数据库验证 `history` 服务读写，Playwright `e2e/landing.spec.ts` 覆盖游客→Dashboard 的端到端流程。新增命令：`npm run test --workspace=client`、`npm run test:coverage --workspace=client`、`npm run test --workspace=server`、`npm run test:coverage --workspace=server`、`npm run test:e2e`。
 - **词汇详情页（2025-11-12）**：确认难度后并行触发题库 Session 与 `/api/generation/details`，新增 VocabularyDetailsPage 展示词性/释义/双语例句并继续轮询三大题状态；路由层限制未查看词典不得进入 Quiz。Documentation（README/AGENTS/CLAUDE）同步更新。
 - **句子遮挡双保险（2025-02-14）**：superGenerator 提示词要求先用 `[BLANK]...[/BLANK]` 包裹待考短语再改成 `_____`，translation/hint 禁止泄露；Quiz 前端先检测 sentence 是否已有 `_____`，如无则按答案首词（含 be/have/do 及常规时态）生成多种匹配模式动态遮挡，兼容旧 Session。
 - **单一环境文件**：仅允许根 `.env`，新增 `OPENROUTER_PROXY`、`VITE_MAX_VLM_IMAGES`，Vite 借助 `envDir: '../'` 与后端读取同一份配置。
@@ -44,7 +45,7 @@
 
 ## 5. 待跟进 / 观察
 - ⏳ `better-sqlite3` 与 Node 版本需保持一致；更换 Node 后必须 `npm rebuild --workspace=server`。
-- ⏳ 仍缺少自动化测试，可按 `client/src/__tests__` / `server/src/__tests__` 模板补齐。
+- ⏳ Playwright 目前仅覆盖 Landing→Dashboard 流，后续需要针对完整“上传→确认→Quiz→报告”补充更多场景，并为 Quiz 之外的页面完善 Vitest 覆盖。
 - ⏳ OpenRouter 某些模型（例如 Stealth）偶发 4xx，需要继续观察是否要加入更多降级模型或错误提示。
 
 ## 6. 记录规范
