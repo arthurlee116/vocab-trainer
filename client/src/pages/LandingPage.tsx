@@ -91,12 +91,12 @@ const LandingPage = () => {
             </label>
             {error && <p className="form-error">{error}</p>}
             <button type="submit" className="primary" disabled={pending}>
-              <LogIn size={18} className="btn-icon" />
+              <LogIn size={18} />
               {mode === 'login' ? '登录' : '注册并登录'}
             </button>
           </form>
           <button type="button" className="ghost" onClick={handleGuest}>
-            <User size={18} className="btn-icon" />
+            <User size={18} />
             先逛逛（游客模式）
           </button>
         </div>

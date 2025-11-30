@@ -27,6 +27,7 @@ const getStatusText = (status: SectionStatus, count: number, error?: string) => 
     case 'pending':
       return '等待上一大题';
     default:
+      /* c8 ignore next -- SectionStatus 已限定候选值 */
       return '';
   }
 };

@@ -42,21 +42,27 @@ const ConfirmWordsPage = () => {
     setLoading(true);
     startGenerating();
     try {
-      const sessionPromise = startGenerationSession({ words, difficulty }).then((snapshot) => {
-        applySessionSnapshot(snapshot);
-        return snapshot;
-      });
+      // 启动词汇详情生成（不等待）
       const detailsPromise = fetchVocabularyDetails({ words, difficulty }).then((details) => {
         setVocabDetails(details);
         return details;
+      }).catch((err) => {
+        const message = getErrorMessage(err, '词汇详情生成失败，请重试');
+        setDetailsError(message);
       });
 
-      await Promise.all([sessionPromise, detailsPromise]);
+      // 启动并等待题库生成（只需等待第一大题）
+      const sessionSnapshot = await startGenerationSession({ words, difficulty });
+      applySessionSnapshot(sessionSnapshot);
+
+      // 立即导航到词汇详情页面，词汇详情在后台继续加载
       navigate('/practice/details');
+
+      // 词汇详情继续在后台处理
+      void detailsPromise;
     } catch (err) {
-      const message = getErrorMessage(err, '生成词汇详情失败，请重试');
+      const message = getErrorMessage(err, '生成题库失败，请重试');
       setError(message);
-      setDetailsError(message);
       setSelecting(false);
     } finally {
       setLoading(false);

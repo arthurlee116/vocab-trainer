@@ -29,16 +29,16 @@ const AppLayout = ({ children, fullWidth }: Props) => {
         </div>
         <nav className="header-nav">
           <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>
-            <Home size={18} className="nav-icon" />
+            <Home size={18} />
             主界面
           </Link>
           <Link to="/history" className={location.pathname === '/history' ? 'active' : ''}>
-            <BookOpen size={18} className="nav-icon" />
+            <BookOpen size={18} />
             历史记录
           </Link>
           {mode === 'authenticated' && (
             <button type="button" className="text-button" onClick={handleLogout}>
-              <LogOut size={18} className="nav-icon" />
+              <LogOut size={18} />
               退出
             </button>
           )}

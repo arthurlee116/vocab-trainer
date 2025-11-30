@@ -40,6 +40,9 @@
 .header-nav a {
   color: #5a6271;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .header-nav a.active {
@@ -47,11 +50,26 @@
   font-weight: 600;
 }
 
+.header-nav a:hover:not(.active) {
+  color: #3b82f6;
+}
+
 .text-button {
   border: none;
   background: transparent;
   color: #5a6271;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  padding: 0.4rem 0;
+  transition: color 0.2s ease;
+  line-height: 1.4;
+}
+
+.text-button:hover {
+  color: #3b82f6;
 }
 
 .app-main {
@@ -199,6 +217,14 @@
   padding: 0.9rem 1.6rem;
   border-radius: 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+  min-height: 44px;
 }
 
 .ghost {
@@ -207,6 +233,22 @@
   padding: 0.9rem 1.6rem;
   border-radius: 12px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #5a6271;
+  transition: all 0.2s ease;
+  line-height: 1.4;
+  min-height: 44px;
+}
+
+.ghost:hover {
+  background: #f9f9ff;
+  border-color: #7b849c;
+  color: #111;
 }
 
 .header-user {
@@ -824,17 +866,18 @@
 }
 
 /* 图标样式 */
-.nav-icon {
-  display: inline-block;
+
+/* SVG 图标通用样式 */
+svg {
+  flex-shrink: 0;
   vertical-align: middle;
-  margin-right: 6px;
-  color: currentColor;
 }
 
 .btn-icon {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  vertical-align: middle;
 }
 
 .login-icon {

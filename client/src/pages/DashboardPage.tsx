@@ -24,11 +24,11 @@ const DashboardPage = () => {
         </div>
         <div className="hero-actions">
           <button type="button" className="primary" onClick={handleStart}>
-            <Plus size={20} className="btn-icon" />
+            <Plus size={20} />
             开始新的练习
           </button>
           <button type="button" className="ghost" onClick={() => navigate('/history')}>
-            <BookOpen size={18} className="btn-icon" />
+            <BookOpen size={18} />
             查看历史记录
           </button>
         </div>
@@ -51,7 +51,7 @@ const DashboardPage = () => {
               </h3>
             </div>
             <button type="button" className="text-button" onClick={() => navigate('/practice/report')}>
-              <BarChart3 size={18} className="btn-icon" />
+              <BarChart3 size={18} />
               回看报告
             </button>
           </div>

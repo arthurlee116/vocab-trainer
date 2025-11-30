@@ -71,14 +71,21 @@ const QuizPage = () => {
   const currentId = current?.id;
   const sentenceHasProvidedBlank = current?.sentence?.includes('_____') ?? false;
   const correctChoiceText = current?.choices.find((choice) => choice.id === current.correctChoiceId)?.text;
-  const canMaskSentence = Boolean(current?.sentence && !sentenceHasProvidedBlank && correctChoiceText);
-  const sentenceMaskResult = canMaskSentence && current?.sentence && correctChoiceText
-    ? buildSentenceParts(current.sentence, correctChoiceText)
+  // 当为第二大题（看英文选中文）时，使用 question.word 作为匹配来源用来高亮句子中的短语
+  const matchSourceText = current?.type === 'questions_type_2' ? current?.word : correctChoiceText;
+  // 对于第二大题我们不遵循已存在的 "_____" 遮挡逻辑（不做遮挡，只做高亮），其余题型仍需忽略已有的下划线句子
+  const canProcessSentence = Boolean(
+    current?.sentence && (current?.type === 'questions_type_2' || !sentenceHasProvidedBlank) && matchSourceText,
+  );
+  const sentenceMaskResult = canProcessSentence && current?.sentence && matchSourceText
+    ? buildSentenceParts(current.sentence, matchSourceText)
     : null;
   const sentenceParts = sentenceMaskResult?.parts ?? null;
   const matchedSentenceVariant = sentenceMaskResult?.matchedVariant;
   const currentChoices = useMemo(() => {
     if (!current) return [];
+    // 对于第二大题（看英文选中文）不要把选项替换成句子变体 — 选项必须保持为中文
+    if (current.type === 'questions_type_2') return current.choices;
     if (!matchedSentenceVariant || !correctChoiceText) return current.choices;
     return current.choices.map((choice) =>
       choice.id === current.correctChoiceId
@@ -261,18 +268,26 @@ const QuizPage = () => {
           </div>
         ) : current ? (
           <>
-            <h3>{current.prompt}</h3>
+            {/* 第二大题不应该在头部重复展示被测短语 —— 使用通用标题并把短语高亮在句子里 */}
+            <h3>{current.type === 'questions_type_2' ? SECTION_LABELS.questions_type_2 : current.prompt}</h3>
             {current.sentence && (
               <p className="sentence">
                 {sentenceParts
                   ? sentenceParts.map((part, idx) =>
                       part.type === 'blank' ? (
-                        <span
-                          key={`blank-${idx}`}
-                          className="answer-blank"
-                          style={{ width: `${part.length}ch` }}
-                          aria-label="填空"
-                        />
+                        // 第二大题只高亮目标短语，不遮挡；其他题型仍使用遮挡表现
+                        current.type === 'questions_type_2' ? (
+                          <strong key={`bl-hl-${idx}`} className="sentence-highlight">
+                            {matchedSentenceVariant}
+                          </strong>
+                        ) : (
+                          <span
+                            key={`blank-${idx}`}
+                            className="answer-blank"
+                            style={{ width: `${part.length}ch` }}
+                            aria-label="填空"
+                          />
+                        )
                       ) : (
                         <span key={`text-${idx}`}>{part.value}</span>
                       ),
