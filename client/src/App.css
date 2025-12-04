@@ -188,6 +188,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+
   .panel.question-card:hover,
   .panel.question-card:focus-within {
     transform: translate3d(0, -4px, 0);
@@ -295,14 +296,12 @@
   animation: loginDotOrbit 3s linear infinite;
   background:
     radial-gradient(circle at 50% 0%, rgba(231, 255, 199, 0.95) 0 3px, rgba(231, 255, 199, 0.18) 5px, transparent 7px),
-    conic-gradient(
-      from -25deg,
+    conic-gradient(from -25deg,
       transparent 0deg 280deg,
       rgba(125, 255, 114, 0.05) 290deg,
       rgba(125, 255, 114, 0.25) 320deg,
       rgba(125, 255, 114, 0.45) 350deg,
-      rgba(125, 255, 114, 0.6) 360deg
-    );
+      rgba(125, 255, 114, 0.6) 360deg);
   mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 1px));
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-width)), #000 calc(100% - var(--ring-width) + 1px));
 }
@@ -342,17 +341,20 @@
   0% {
     box-shadow: 0 0 0 rgba(63, 208, 167, 0.08);
   }
+
   50% {
     box-shadow:
       0 0 14px rgba(63, 208, 167, 0.45),
       0 0 32px rgba(157, 255, 90, 0.3);
   }
+
   100% {
     box-shadow: 0 0 0 rgba(63, 208, 167, 0.08);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .login-marquee-shell,
   .login-marquee-shell::before,
   .login-marquee-shell::after {
@@ -468,17 +470,20 @@
   flex-direction: column;
   gap: 0.75rem;
 }
+
 .progress-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
 }
+
 .progress-label {
   font-size: 1rem;
   font-weight: 600;
   color: #111;
 }
+
 .progress-count {
   font-size: 0.95rem;
   color: #4b5563;
@@ -502,6 +507,7 @@
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 0.75rem;
 }
+
 .section-capsule {
   padding: 0.9rem 1rem;
   border-radius: 18px;
@@ -522,6 +528,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+
   .section-capsule:hover,
   .section-capsule:focus-within {
     transform: translate3d(0, -3px, 0);
@@ -539,38 +546,46 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .panel,
   .section-capsule {
     transition: none;
     transform: none !important;
   }
 }
+
 .section-status-text {
   margin: 0;
   font-size: 0.9rem;
   color: #4b5563;
 }
+
 .section-status.section-generating.section-capsule {
   background: #fffbeb;
   border-color: #fde68a;
 }
+
 .section-status.section-pending.section-capsule {
   background: #fdf2f8;
   border-color: #f9a8d4;
 }
+
 .section-status.section-error.section-capsule {
   background: #fef2f2;
   border-color: #fecaca;
 }
+
 .capsule-title {
   font-size: 0.95rem;
   display: block;
 }
+
 .capsule-status {
   font-size: 0.9rem;
   color: #4b5563;
   margin: 0;
 }
+
 .capsule-retry {
   align-self: flex-start;
   padding: 0.35rem 0.65rem;
@@ -616,6 +631,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+
   .choice:not(.selected):not(:disabled):hover,
   .choice:not(.selected):not(:disabled):focus-visible {
     transform: translate3d(0, -3px, 0);
@@ -640,6 +656,35 @@
   height: 1.2em;
   min-width: 1.5ch;
   margin: 0 0.2rem;
+}
+
+/* 第三大题填空输入框 */
+.fill-blank-input {
+  margin: 1.5rem 0;
+}
+
+.fill-blank-input .text-input {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cad1e0;
+  border-radius: 14px;
+  font-size: 1rem;
+  background: #fff;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.fill-blank-input .text-input:focus {
+  outline: none;
+  border-color: #4338ca;
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15);
+}
+
+.fill-blank-input .text-input:disabled {
+  background: #f5f6fc;
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
 .hint {
@@ -1067,4 +1112,134 @@ svg {
 .example-zh {
   margin: 0.3rem 0 0;
   color: #4b5563;
+}
+
+/* 错题列表样式
+ */
+.wrong-answer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wrong-answer-empty {
+  text-align: center;
+  padding: 2rem;
+}
+
+.wrong-answer-empty .empty-message {
+  font-size: 1.1rem;
+  color: #059669;
+  margin: 0;
+}
+
+.wrong-answer-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wrong-answer-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wrong-answer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.wrong-answer-index {
+  font-weight: 700;
+  color: #4338ca;
+  font-size: 0.95rem;
+}
+
+.wrong-answer-type {
+  font-size: 0.85rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.wrong-answer-prompt {
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+.wrong-answer-sentence {
+  color: #4b5563;
+  background: #f5f6fc;
+  padding: 0.75rem;
+  border-radius: 10px;
+  line-height: 1.6;
+}
+
+.wrong-answer-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.answer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.answer-row.correct {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.answer-row.wrong {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.answer-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.answer-text {
+  flex: 1;
+}
+
+.wrong-answer-hint {
+  color: #6b7280;
+  font-size: 0.9rem;
+  background: #fffbeb;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border-left: 3px solid #fbbf24;
+}
+
+.hint-label {
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .wrong-answer-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .answer-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .answer-label {
+    white-space: normal;
+  }
 }
