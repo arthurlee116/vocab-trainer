@@ -25,6 +25,24 @@ export const createMockQuestion = (overrides: Partial<SuperQuestion> = {}): Supe
   return { ...fallback, ...overrides };
 };
 
+/**
+ * 创建第三大题的 mock 数据（填空题，无选项）
+ */
+export const createMockType3Question = (overrides: Partial<SuperQuestion> = {}): SuperQuestion => {
+  const fallback: SuperQuestion = {
+    id: `question-${nextId++}`,
+    prompt: '根据句意填空',
+    word: 'misanthrope',
+    correctAnswer: 'misanthrope',
+    explanation: '厌世者的解释',
+    type: 'questions_type_3',
+    sentence: 'The bitter old man was known as a _____, avoiding all social contact.',
+    translation: '那个苦涩的老人被称为厌世者，避免所有社交接触。',
+    hint: '名词，表示厌恶人类或回避人群的人',
+  };
+  return { ...fallback, ...overrides };
+};
+
 export const createMockSuperJson = (options?: {
   sections?: Partial<Record<QuestionType, SuperQuestion[]>>;
   metadata?: Partial<SuperJson['metadata']>;
@@ -38,7 +56,7 @@ export const createMockSuperJson = (options?: {
     },
     questions_type_1: [createMockQuestion({ type: 'questions_type_1' })],
     questions_type_2: [createMockQuestion({ type: 'questions_type_2' })],
-    questions_type_3: [createMockQuestion({ type: 'questions_type_3' })],
+    questions_type_3: [createMockType3Question()],
   };
 
   const sections: Record<QuestionType, SuperQuestion[]> = {
