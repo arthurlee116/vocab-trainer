@@ -1,0 +1,112 @@
+# Implementation Plan
+
+- [x] 1. Create wrong answers utility functions
+  - [x] 1.1 Create `client/src/lib/wrongAnswers.ts` with extractWrongAnswers and getRetryQuestions functions
+    - extractWrongAnswers: takes answers and superJson, returns WrongAnswerItem[]
+    - getRetryQuestions: takes WrongAnswerItem[], returns SuperQuestion[]
+    - Handle all three question types (choice-based and fill-in-blank)
+    - _Requirements: 1.1, 1.3, 1.4_
+  - [x] 1.2 Write property test for extractWrongAnswers
+    - **Property 1: Wrong answers display completeness**
+    - **Validates: Requirements 1.1, 1.3, 1.4**
+  - [x] 1.3 Write unit tests for wrongAnswers utility functions
+    - Test extractWrongAnswers with mixed correct/wrong answers
+    - Test getRetryQuestions returns correct question list
+    - Test edge case: all correct answers returns empty array
+    - _Requirements: 1.1, 1.3, 1.4, 1.5_
+
+- [x] 2. Extend usePracticeStore with retry state
+  - [x] 2.1 Add retry-related state fields to usePracticeStore
+    - Add isRetryMode: boolean
+    - Add retryQuestions: SuperQuestion[]
+    - Add retryAnswers: AnswerRecord[]
+    - Add originalLastResult for preserving original results
+    - _Requirements: 4.1, 4.4_
+  - [x] 2.2 Add retry-related actions to usePracticeStore
+    - startRetryPractice: sets isRetryMode, retryQuestions, clears retryAnswers
+    - recordRetryAnswer: adds answer to retryAnswers
+    - setRetryResult: stores retry result
+    - exitRetryMode: clears all retry state
+    - _Requirements: 2.3, 2.5, 4.3_
+  - [x] 2.3 Write property test for retry state isolation
+    - **Property 4: Retry questions isolation**
+    - **Validates: Requirements 2.3, 2.5, 4.1**
+  - [x] 2.4 Write property test for retry mode flag
+    - **Property 5: Retry mode flag correctness**
+    - **Validates: Requirements 3.4, 4.4**
+  - [x] 2.5 Write property test for state cleanup
+    - **Property 7: State cleanup on exit**
+    - **Validates: Requirements 4.3**
+
+- [x] 3. Create WrongAnswerList component
+  - [x] 3.1 Create `client/src/components/WrongAnswerList.tsx`
+    - Display list of wrong answers with question prompt, correct answer, user answer, hint
+    - Use SECTION_LABELS for question type labels
+    - Show "本轮全对，暂无可重练题目" when no wrong answers
+    - Style consistently with existing Quiz/Report pages
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 5.1, 5.2, 5.3_
+  - [x] 3.2 Write property test for question type labels
+    - **Property 2: Question type labels consistency**
+    - **Validates: Requirements 1.2, 5.3**
+  - [x] 3.3 Write unit tests for WrongAnswerList component
+    - Test rendering wrong answers for all question types
+    - Test empty state message
+    - Test hint display when available
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
+
+- [x] 4. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
+
+- [x] 5. Update ReportPage with retry functionality
+  - [x] 5.1 Integrate WrongAnswerList into ReportPage
+    - Import and render WrongAnswerList with extracted wrong answers
+    - Position below score and analysis sections
+    - _Requirements: 1.1, 5.1_
+  - [x] 5.2 Add "重练错题" button to ReportPage
+    - Enable when wrong answers exist, disable otherwise
+    - On click: call startRetryPractice and navigate to /practice/quiz
+    - Show disabled state message when no wrong answers
+    - _Requirements: 2.1, 2.2, 2.3_
+  - [x] 5.3 Handle retry mode display in ReportPage
+    - Detect isRetryMode and show retry-specific UI
+    - Show "返回原报告" button in retry mode
+    - Allow re-retry if still has wrong answers
+    - _Requirements: 3.1, 3.2, 3.3, 4.2_
+  - [x] 5.4 Write property test for retry button state
+    - **Property 3: Retry button state correctness**
+    - **Validates: Requirements 2.1, 2.2**
+  - [x] 5.5 Write unit tests for ReportPage retry functionality
+    - Test retry button enabled/disabled states
+    - Test retry button click triggers correct actions
+    - Test retry mode UI differences
+    - _Requirements: 2.1, 2.2, 2.3, 3.1_
+
+- [x] 6. Update QuizPage to support retry mode
+  - [x] 6.1 Modify QuizPage to detect and handle retry mode
+    - Check isRetryMode from store
+    - Use retryQuestions instead of superJson queue when in retry mode
+    - Update progress label to show "错题重练"
+    - _Requirements: 2.3, 3.4_
+  - [x] 6.2 Handle retry completion in QuizPage
+    - Call recordRetryAnswer instead of recordAnswer in retry mode
+    - Call setRetryResult instead of setLastResult on completion
+    - Skip API calls (requestAnalysis, saveSession) in retry mode
+    - _Requirements: 2.4, 3.1_
+  - [x] 6.3 Write property test for retry completion re-retry
+    - **Property 6: Retry completion allows re-retry**
+    - **Validates: Requirements 3.3**
+  - [x] 6.4 Write unit tests for QuizPage retry mode
+    - Test retry mode uses retryQuestions
+    - Test retry mode shows correct progress label
+    - Test retry completion does not call API
+    - _Requirements: 2.3, 2.4, 3.4_
+
+- [x] 7. Add CSS styles for new components
+  - [x] 7.1 Add styles for WrongAnswerList to App.css
+    - Style wrong answer items consistently with existing panels
+    - Add responsive styles for mobile
+    - Style empty state message
+    - _Requirements: 5.1, 5.2_
+
+- [x] 8. Final Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
