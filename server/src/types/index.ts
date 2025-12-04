@@ -11,8 +11,9 @@ export interface SuperQuestion {
   id: string;
   word: string;
   prompt: string;
-  choices: Choice[];
-  correctChoiceId: string;
+  choices?: Choice[];
+  correctChoiceId?: string;
+  correctAnswer?: string;
   explanation: string;
   type: QuestionType;
   sentence?: string;
@@ -34,7 +35,8 @@ export interface SuperJson {
 
 export interface AnswerRecord {
   questionId: string;
-  choiceId: string;
+  choiceId?: string;
+  userInput?: string;
   correct: boolean;
   elapsedMs: number;
 }
