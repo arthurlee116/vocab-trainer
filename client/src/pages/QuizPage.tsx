@@ -7,12 +7,14 @@ import { requestAnalysis, retryGenerationSection, saveAuthenticatedSession } fro
 import { getErrorMessage } from '../lib/errors';
 import { saveGuestSession } from '../lib/storage';
 import { buildSentenceParts } from '../lib/sentenceMask';
+import { matchAnswer, generateFirstLetterHint } from '../lib/answerMatch';
 import { useGenerationPolling } from '../hooks/useGenerationPolling';
 import SectionProgressCapsules from '../components/SectionProgressCapsules';
 import { SECTION_LABELS, SECTION_ORDER } from '../constants/sections';
 
 const QuizPage = () => {
   const superJson = usePracticeStore((state) => state.superJson);
+  const difficulty = usePracticeStore((state) => state.difficulty);
   const recordAnswer = usePracticeStore((state) => state.recordAnswer);
   const words = usePracticeStore((state) => state.words);
   const setLastResult = usePracticeStore((state) => state.setLastResult);
@@ -22,9 +24,15 @@ const QuizPage = () => {
   const estimatedTotalQuestions = usePracticeStore((state) => state.estimatedTotalQuestions);
   const applySessionSnapshot = usePracticeStore((state) => state.applySessionSnapshot);
   const mode = useAuthStore((state) => state.mode);
+  // Retry mode state
+  const isRetryMode = usePracticeStore((state) => state.isRetryMode);
+  const retryQuestions = usePracticeStore((state) => state.retryQuestions);
+  const recordRetryAnswer = usePracticeStore((state) => state.recordRetryAnswer);
+  const setRetryResult = usePracticeStore((state) => state.setRetryResult);
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [textInput, setTextInput] = useState(''); // 第三大题填空输入
   const [questionStart, setQuestionStart] = useState(Date.now());
   const [submitting, setSubmitting] = useState(false);
   const answersRef = useRef<AnswerRecord[]>([]);
@@ -34,14 +42,20 @@ const QuizPage = () => {
   const [isHintOpen, setIsHintOpen] = useState(false);
   const { pollError } = useGenerationPolling();
 
+  // 过滤掉旧版第三大题（没有 correctAnswer 字段的）
+  // 重练模式下使用 retryQuestions，否则使用 superJson 队列
   const queue = useMemo(() => {
+    if (isRetryMode) {
+      return retryQuestions;
+    }
     if (!superJson) return [];
+    const type3Questions = superJson.questions_type_3.filter((q) => !!q.correctAnswer);
     return [
       ...superJson.questions_type_1,
       ...superJson.questions_type_2,
-      ...superJson.questions_type_3,
+      ...type3Questions,
     ];
-  }, [superJson]);
+  }, [superJson, isRetryMode, retryQuestions]);
 
   const questionMap = useMemo(() => {
     const map: Record<string, SuperQuestion> = {};
@@ -51,8 +65,12 @@ const QuizPage = () => {
     return map;
   }, [queue]);
 
-  const allSectionsReady = SECTION_ORDER.every((type) => sectionStatus[type] === 'ready');
-  const totalTarget = Math.max(estimatedTotalQuestions ?? superJson?.metadata.totalQuestions ?? queue.length, 1);
+  // 重练模式下所有题目已就绪，无需等待
+  const allSectionsReady = isRetryMode || SECTION_ORDER.every((type) => sectionStatus[type] === 'ready');
+  // 重练模式下使用 retryQuestions 长度作为总题数
+  const totalTarget = isRetryMode
+    ? retryQuestions.length
+    : Math.max(estimatedTotalQuestions ?? superJson?.metadata.totalQuestions ?? queue.length, 1);
 
 
   useEffect(() => {
@@ -62,6 +80,7 @@ const QuizPage = () => {
     if (index < queue.length - 1) {
       setPendingAdvance(false);
       setSelected(null);
+      setTextInput('');
       setQuestionStart(Date.now());
       setIndex((prev) => prev + 1);
     }
@@ -69,13 +88,17 @@ const QuizPage = () => {
 
   const current = queue[index];
   const currentId = current?.id;
+  const isType3 = current?.type === 'questions_type_3';
   const sentenceHasProvidedBlank = current?.sentence?.includes('_____') ?? false;
-  const correctChoiceText = current?.choices.find((choice) => choice.id === current.correctChoiceId)?.text;
+  const correctChoiceText = current?.choices?.find((choice) => choice.id === current.correctChoiceId)?.text;
   // 当为第二大题（看英文选中文）时，使用 question.word 作为匹配来源用来高亮句子中的短语
   const matchSourceText = current?.type === 'questions_type_2' ? current?.word : correctChoiceText;
   // 对于第二大题我们不遵循已存在的 "_____" 遮挡逻辑（不做遮挡，只做高亮），其余题型仍需忽略已有的下划线句子
+  // 第三大题使用 correctAnswer 作为遮挡匹配源
   const canProcessSentence = Boolean(
-    current?.sentence && (current?.type === 'questions_type_2' || !sentenceHasProvidedBlank) && matchSourceText,
+    current?.sentence &&
+      (current?.type === 'questions_type_2' || (!sentenceHasProvidedBlank && !isType3)) &&
+      matchSourceText,
   );
   const sentenceMaskResult = canProcessSentence && current?.sentence && matchSourceText
     ? buildSentenceParts(current.sentence, matchSourceText)
@@ -83,7 +106,7 @@ const QuizPage = () => {
   const sentenceParts = sentenceMaskResult?.parts ?? null;
   const matchedSentenceVariant = sentenceMaskResult?.matchedVariant;
   const currentChoices = useMemo(() => {
-    if (!current) return [];
+    if (!current || !current.choices) return [];
     // 对于第二大题（看英文选中文）不要把选项替换成句子变体 — 选项必须保持为中文
     if (current.type === 'questions_type_2') return current.choices;
     if (!matchedSentenceVariant || !correctChoiceText) return current.choices;
@@ -94,20 +117,32 @@ const QuizPage = () => {
     );
   }, [current, matchedSentenceVariant, correctChoiceText]);
 
+  // 第三大题首字母提示（beginner/intermediate 显示，advanced 不显示）
+  const type3Hint = useMemo(() => {
+    if (!isType3 || !current?.correctAnswer) return null;
+    if (difficulty === 'advanced') return '_____';
+    return generateFirstLetterHint(current.correctAnswer);
+  }, [isType3, current?.correctAnswer, difficulty]);
+
   useEffect(() => {
     setIsHintOpen(false);
+    setTextInput(''); // 切换题目时清空填空输入
   }, [currentId]);
 
-  if (!superJson) {
+  // 重练模式下不需要 superJson，只需要 retryQuestions
+  if (!isRetryMode && !superJson) {
     return null;
   }
   const progressCurrent = Math.min(index + 1, totalTarget);
   const progressPercent = Math.min((progressCurrent / totalTarget) * 100, 100);
-  const sectionQuestions: Record<QuestionType, SuperQuestion[]> = {
-    questions_type_1: superJson.questions_type_1,
-    questions_type_2: superJson.questions_type_2,
-    questions_type_3: superJson.questions_type_3,
-  };
+  // 重练模式下不需要 sectionQuestions，使用空数组
+  const sectionQuestions: Record<QuestionType, SuperQuestion[]> = isRetryMode
+    ? { questions_type_1: [], questions_type_2: [], questions_type_3: [] }
+    : {
+        questions_type_1: superJson!.questions_type_1,
+        questions_type_2: superJson!.questions_type_2,
+        questions_type_3: superJson!.questions_type_3,
+      };
   const currentSectionType = current?.type as QuestionType | undefined;
   const nextBlockedSection = currentSectionType
     ? SECTION_ORDER.slice(SECTION_ORDER.indexOf(currentSectionType) + 1).find((type) => sectionStatus[type] !== 'ready')
@@ -123,29 +158,60 @@ const QuizPage = () => {
     count: sectionQuestions[type].length,
     canRetry: type !== 'questions_type_1' && !!sessionId,
   }));
-  const progressLabel = waitingSectionType
-    ? `${SECTION_LABELS[waitingSectionType]} · 准备中`
-    : current
-      ? SECTION_LABELS[current.type as QuestionType]
-      : '题目';
+  const progressLabel = isRetryMode
+    ? '错题重练'
+    : waitingSectionType
+      ? `${SECTION_LABELS[waitingSectionType]} · 准备中`
+      : current
+        ? SECTION_LABELS[current.type as QuestionType]
+        : '题目';
   const waitingSectionError = waitingSectionType ? sectionErrors[waitingSectionType] : undefined;
-  const handleNext = async () => {
-    if (!selected || !current || pendingAdvance) return;
-    const elapsedMs = Date.now() - questionStart;
-    const answer: AnswerRecord = {
-      questionId: current.id,
-      choiceId: selected,
-      correct: selected === current.correctChoiceId,
-      elapsedMs,
-    };
 
-    recordAnswer(answer);
+  // 判断当前题目是否可以提交
+  const canSubmit = isType3
+    ? textInput.trim().length > 0
+    : selected !== null;
+
+  const handleNext = async () => {
+    if (!current || pendingAdvance) return;
+
+    const elapsedMs = Date.now() - questionStart;
+    let answer: AnswerRecord;
+
+    if (isType3) {
+      // 第三大题：填空题
+      if (!textInput.trim()) return;
+      const isCorrect = matchAnswer(textInput, current.correctAnswer ?? '');
+      answer = {
+        questionId: current.id,
+        userInput: textInput.trim(),
+        correct: isCorrect,
+        elapsedMs,
+      };
+    } else {
+      // 第一、二大题：选择题
+      if (!selected) return;
+      answer = {
+        questionId: current.id,
+        choiceId: selected,
+        correct: selected === current.correctChoiceId,
+        elapsedMs,
+      };
+    }
+
+    // 重练模式下使用 recordRetryAnswer，否则使用 recordAnswer
+    if (isRetryMode) {
+      recordRetryAnswer(answer);
+    } else {
+      recordAnswer(answer);
+    }
     const nextAnswers = [...answersRef.current, answer];
     answersRef.current = nextAnswers;
     const hasMoreQuestions = index < queue.length - 1;
 
     if (hasMoreQuestions) {
       setSelected(null);
+      setTextInput('');
       setQuestionStart(Date.now());
       setIndex((prev) => prev + 1);
       return;
@@ -154,11 +220,17 @@ const QuizPage = () => {
     if (!allSectionsReady) {
       setPendingAdvance(true);
       setSelected(null);
+      setTextInput('');
       setError('');
       return;
     }
 
-    await finalize(nextAnswers);
+    // 重练模式下使用 finalizeRetry，否则使用 finalize
+    if (isRetryMode) {
+      await finalizeRetry(nextAnswers);
+    } else {
+      await finalize(nextAnswers);
+    }
   };
 
   const finalize = async (answers: AnswerRecord[]) => {
@@ -215,6 +287,43 @@ const QuizPage = () => {
     }
   };
 
+  // 重练模式完成处理：不调用 API，直接计算结果
+  const finalizeRetry = async (answers: AnswerRecord[]) => {
+    setSubmitting(true);
+    setError('');
+    try {
+      const correct = answers.filter((a) => a.correct).length;
+      const score = Math.round((correct / answers.length) * 100);
+
+      const incorrectWords = answers
+        .filter((a) => !a.correct)
+        .map((a) => questionMap[a.questionId]?.word)
+        .filter(Boolean) as string[];
+
+      // 重练模式不调用 API，生成简单的分析结果
+      const analysis = {
+        report: score === 100
+          ? '恭喜！错题已全部掌握。'
+          : `本轮重练得分 ${score} 分，还有 ${incorrectWords.length} 个词汇需要继续练习。`,
+        recommendations: incorrectWords.length > 0
+          ? [`继续练习以下词汇：${incorrectWords.join('、')}`]
+          : ['所有错题已掌握，可以返回原报告查看完整分析。'],
+      };
+
+      setRetryResult({
+        score,
+        analysis,
+        incorrectWords,
+        snapshot: undefined, // 重练不保存 session
+      });
+      navigate('/practice/report');
+    } catch (err) {
+      setError(getErrorMessage(err, '处理重练结果失败'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleRetry = async (type: QuestionType) => {
     if (!sessionId) return;
     setRetryingSection(type);
@@ -241,12 +350,15 @@ const QuizPage = () => {
         <div className="progress-track">
           <div className="progress-thumb" style={{ width: `${progressPercent}%` }} />
         </div>
-        <SectionProgressCapsules
-          sections={sectionStates}
-          onRetry={sessionId ? handleRetry : undefined}
-          retryingSection={retryingSection}
-        />
-        {pollError && <p className="form-error subtle">{pollError}</p>}
+        {/* 重练模式下不显示大题进度胶囊 */}
+        {!isRetryMode && (
+          <SectionProgressCapsules
+            sections={sectionStates}
+            onRetry={sessionId ? handleRetry : undefined}
+            retryingSection={retryingSection}
+          />
+        )}
+        {pollError && !isRetryMode && <p className="form-error subtle">{pollError}</p>}
       </div>
 
       <div className="panel question-card">
@@ -272,28 +384,36 @@ const QuizPage = () => {
             <h3>{current.type === 'questions_type_2' ? SECTION_LABELS.questions_type_2 : current.prompt}</h3>
             {current.sentence && (
               <p className="sentence">
-                {sentenceParts
-                  ? sentenceParts.map((part, idx) =>
-                      part.type === 'blank' ? (
-                        // 第二大题只高亮目标短语，不遮挡；其他题型仍使用遮挡表现
-                        current.type === 'questions_type_2' ? (
-                          <strong key={`bl-hl-${idx}`} className="sentence-highlight">
-                            {matchedSentenceVariant}
-                          </strong>
-                        ) : (
-                          <span
-                            key={`blank-${idx}`}
-                            className="answer-blank"
-                            style={{ width: `${part.length}ch` }}
-                            aria-label="填空"
-                          />
-                        )
+                {isType3 ? (
+                  // 第三大题：直接显示句子（已包含 _____），用首字母提示替换空白
+                  <>
+                    {current.sentence.replace('_____', type3Hint ?? '_____')}
+                    {current.translation && <span>（{current.translation}）</span>}
+                  </>
+                ) : sentenceParts ? (
+                  sentenceParts.map((part, idx) =>
+                    part.type === 'blank' ? (
+                      // 第二大题只高亮目标短语，不遮挡；其他题型仍使用遮挡表现
+                      current.type === 'questions_type_2' ? (
+                        <strong key={`bl-hl-${idx}`} className="sentence-highlight">
+                          {matchedSentenceVariant}
+                        </strong>
                       ) : (
-                        <span key={`text-${idx}`}>{part.value}</span>
-                      ),
-                    )
-                  : current.sentence}
-                {current.translation && <span>（{current.translation}）</span>}
+                        <span
+                          key={`blank-${idx}`}
+                          className="answer-blank"
+                          style={{ width: `${part.length}ch` }}
+                          aria-label="填空"
+                        />
+                      )
+                    ) : (
+                      <span key={`text-${idx}`}>{part.value}</span>
+                    ),
+                  )
+                ) : (
+                  <>{current.sentence}</>
+                )}
+                {!isType3 && current.translation && <span>（{current.translation}）</span>}
               </p>
             )}
             {current.hint && (
@@ -323,24 +443,45 @@ const QuizPage = () => {
               </div>
             )}
 
-            <div className="choices">
-              {currentChoices.map((choice) => (
-                <button
-                  type="button"
-                  key={choice.id}
-                  className={selected === choice.id ? 'choice selected' : 'choice'}
-                  onClick={() => setSelected(choice.id)}
+            {isType3 ? (
+              // 第三大题：填空输入框
+              <div className="fill-blank-input">
+                <input
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && canSubmit && !submitting && !pendingAdvance) {
+                      handleNext();
+                    }
+                  }}
+                  placeholder="请输入答案..."
                   disabled={submitting || pendingAdvance}
-                >
-                  {choice.text}
-                </button>
-              ))}
-            </div>
+                  autoFocus
+                  className="text-input"
+                />
+              </div>
+            ) : (
+              // 第一、二大题：选择按钮
+              <div className="choices">
+                {currentChoices.map((choice) => (
+                  <button
+                    type="button"
+                    key={choice.id}
+                    className={selected === choice.id ? 'choice selected' : 'choice'}
+                    onClick={() => setSelected(choice.id)}
+                    disabled={submitting || pendingAdvance}
+                  >
+                    {choice.text}
+                  </button>
+                ))}
+              </div>
+            )}
             {error && <p className="form-error">{error}</p>}
             <button
               type="button"
               className="primary"
-              disabled={!selected || submitting || pendingAdvance}
+              disabled={!canSubmit || submitting || pendingAdvance}
               onClick={handleNext}
             >
               {index === queue.length - 1 && allSectionsReady ? '完成' : '下一题'}
