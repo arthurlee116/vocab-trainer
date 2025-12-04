@@ -28,6 +28,7 @@ const MAX_ATTEMPTS = 6;
 
 /**
  * 随机打乱每道题的选项，同时追踪正确答案的索引，尽量避免相邻题落在同一位置。
+ * 注意：第三大题（填空题）没有 choices 和 correctChoiceId，会直接返回原题目。
  */
 export const shuffleQuestionChoices = (
   questions: SuperQuestion[],
@@ -37,19 +38,21 @@ export const shuffleQuestionChoices = (
   let prevCorrectIndex = options.initialPrevIndex ?? null;
 
   const shuffledQuestions = questions.map((question) => {
-    if (!question.choices?.length) {
+    // 第三大题（填空题）或缺少 choices/correctChoiceId 的题目直接返回
+    if (!question.choices?.length || !question.correctChoiceId) {
       return question;
     }
 
+    const correctChoiceId = question.correctChoiceId;
     let shuffled = fisherYates(question.choices);
     let attempts = 0;
-    let correctIndex = findCorrectIndex(shuffled, question.correctChoiceId);
+    let correctIndex = findCorrectIndex(shuffled, correctChoiceId);
 
     const ensureCorrectVisible = () => {
       if (correctIndex !== -1) {
         return;
       }
-      const fallback = question.choices.find((choice) => choice.id === question.correctChoiceId);
+      const fallback = question.choices!.find((choice) => choice.id === correctChoiceId);
       if (!fallback) {
         return;
       }
@@ -67,7 +70,7 @@ export const shuffleQuestionChoices = (
       attempts < maxAttempts
     ) {
       shuffled = fisherYates(shuffled);
-      correctIndex = findCorrectIndex(shuffled, question.correctChoiceId);
+      correctIndex = findCorrectIndex(shuffled, correctChoiceId);
       ensureCorrectVisible();
       attempts += 1;
     }

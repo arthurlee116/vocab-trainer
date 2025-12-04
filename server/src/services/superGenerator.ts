@@ -62,6 +62,27 @@ const questionSchema = {
   additionalProperties: false,
 };
 
+// 第三大题专用 schema：填空题，不需要选项，只需要正确答案
+const questionType3Schema = {
+  type: 'object',
+  properties: {
+    id: { type: 'string' },
+    word: { type: 'string' },
+    prompt: { type: 'string' },
+    correctAnswer: { type: 'string' },
+    explanation: { type: 'string' },
+    sentence: { type: 'string' },
+    translation: { type: 'string' },
+    hint: { type: 'string' },
+    type: {
+      type: 'string',
+      enum: ['questions_type_3'],
+    },
+  },
+  required: ['id', 'word', 'prompt', 'correctAnswer', 'explanation', 'sentence', 'translation', 'hint', 'type'],
+  additionalProperties: false,
+};
+
 const responseSchema = {
   name: 'super_drill_bundle',
   strict: true,
@@ -81,7 +102,7 @@ const responseSchema = {
       },
       questions_type_1: { type: 'array', minItems: 1, items: questionSchema },
       questions_type_2: { type: 'array', minItems: 1, items: questionSchema },
-      questions_type_3: { type: 'array', minItems: 1, items: questionSchema },
+      questions_type_3: { type: 'array', minItems: 1, items: questionType3Schema },
     },
     required: ['metadata', 'questions_type_1', 'questions_type_2', 'questions_type_3'],
     additionalProperties: false,
@@ -109,7 +130,7 @@ export const generateSuperJson = async (
 
 - questions_type_1: 展示中文释义/情境，提供 4 个英文选项，正确答案必须来自单词表，其余干扰项自然但可不在单词表中。
 - questions_type_2: 展示英文释义或例句，要求选择正确的中文释义或翻译。
-- questions_type_3: 句子填空，必须包含 "_____" 的英文例句、中文翻译以及提示（词性/定义/词根），并给出 4 个英文候选词。
+- questions_type_3: 句子填空，必须包含 "_____" 的英文例句、中文翻译以及提示（词性/定义/词根），只需在 correctAnswer 字段中提供正确答案，不需要选项。
 
 生成过程中务必执行以下变换：先在句子中用 "[BLANK]" 和 "[/BLANK]" 包裹要测试的完整英文短语（使用原始词形，例如 「be the cat's whiskers」），等到最终响应前再把整段占位符连同内部文本一起替换为连续的 "_____"。这可以避免因为 am/is/are 等变形而漏掉空格。无论哪个题型，只要题干或 sentence 字段出现英文例句，都要遵守这个标记→替换流程，且 translation/hint 字段绝不能直接泄露答案。题目顺序务必打乱，choices 数组必须 4 选 1，并且返回前请把 4 个选项彻底打乱，确保正确答案不会持续落在同一位置（例如连续多题都在第一个）。解释和提示请使用中文，并让每个题目的 type 字段标记为所属的 questions_type_x。严格遵守 JSON Schema。
 `;
@@ -201,31 +222,35 @@ const QUESTION_TYPE_RULES: Record<QuestionType, string> = {
   questions_type_2:
     '- 题干使用英文释义或例句，要求考生选择对应的中文释义或翻译，可结合常见误区设计干扰项。若包含例句，必须按照 "[BLANK] → _____" 的流程隐藏正确答案。',
   questions_type_3:
-    '- 题干为包含 “_____” 的英文句子，并附中文翻译与提示（词性/定义/词根），提供 4 个英文候选词，仅有一个能正确填空。句子中不得出现原单词，务必使用 "[BLANK]" 标记后再统一换成 “_____”。',
+    '- 填空题：题干为包含 "_____" 的英文句子，并附中文翻译与提示（词性/定义/词根）。不需要提供选项，只需要在 correctAnswer 字段中提供正确答案（单词或短语）。句子中不得出现原单词，务必使用 "[BLANK]" 标记后再统一换成 "_____"。',
 };
 
-const buildTypeResponseSchema = (questionType: QuestionType, count: number) => ({
-  name: `${questionType}_bundle`,
-  strict: true,
-  schema: {
-    type: 'object',
-    properties: {
-      [questionType]: {
-        type: 'array',
-        minItems: Math.max(3, Math.min(count, 30)),
-        maxItems: Math.max(3, count),
-        items: questionSchema,
+const buildTypeResponseSchema = (questionType: QuestionType, count: number) => {
+  const itemSchema = questionType === 'questions_type_3' ? questionType3Schema : questionSchema;
+  return {
+    name: `${questionType}_bundle`,
+    strict: true,
+    schema: {
+      type: 'object',
+      properties: {
+        [questionType]: {
+          type: 'array',
+          minItems: Math.max(3, Math.min(count, 30)),
+          maxItems: Math.max(3, count),
+          items: itemSchema,
+        },
       },
+      required: [questionType],
+      additionalProperties: false,
     },
-    required: [questionType],
-    additionalProperties: false,
-  },
-});
+  };
+};
 
 const SHARED_TYPE_RULES = `
-- 所有题目都必须提供 4 个选项 (choices[4])，且 correctChoiceId 对应其中一个选项，同时返回前要把 4 个选项随机打乱，避免正确答案总出现在同一位置。
+- 对于 questions_type_1 和 questions_type_2，必须提供 4 个选项 (choices[4])，且 correctChoiceId 对应其中一个选项，同时返回前要把 4 个选项随机打乱，避免正确答案总出现在同一位置。
+- 对于 questions_type_3，不需要选项，只需提供 correctAnswer 字段存放正确答案。
 - explanation 与 hint 必须使用中文，提示需要给出方向性的点（词性/词根/记忆法）。
-- 每个题目的 type 字段固定写为本题型的标识，且 id/choices.id 不得重复。
+- 每个题目的 type 字段固定写为本题型的标识，且 id 不得重复。
 - 题干与选项要自然流畅，严禁输出 markdown/额外文本，只能返回 JSON。`;
 
 export const generateQuestionsForType = async (params: {
@@ -285,7 +310,12 @@ ${SHARED_TYPE_RULES}
         type: questionType,
       }));
       const sanitizedBundle = sanitizeQuestions(normalizedBundle);
-      const { questions: randomizedChoices } = shuffleQuestionChoices(sanitizedBundle);
+
+      // 第三大题是填空题，不需要打乱选项
+      const finalQuestions =
+        questionType === 'questions_type_3'
+          ? sanitizedBundle
+          : shuffleQuestionChoices(sanitizedBundle).questions;
 
       logger.info(
         `SuperGenerator: ${questionType} succeeded with ${normalizedBundle.length} questions in ${responseTime}ms (${model})`,
@@ -296,7 +326,7 @@ ${SHARED_TYPE_RULES}
         },
       );
 
-      return randomizedChoices;
+      return finalQuestions;
     } catch (error) {
       lastError = error;
       logger.warn(`SuperGenerator: ${questionType} failed`, {
