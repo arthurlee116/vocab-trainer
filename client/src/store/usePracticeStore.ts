@@ -5,6 +5,7 @@ import type {
   DifficultyLevel,
   SessionSnapshot,
   SuperJson,
+  SuperQuestion,
   ImageFile,
   GenerationSessionSnapshot,
   QuestionType,
@@ -34,6 +35,11 @@ interface PracticeState {
     incorrectWords: string[];
     snapshot?: SessionSnapshot;
   };
+  // Retry mode fields
+  isRetryMode: boolean;
+  retryQuestions: SuperQuestion[];
+  retryAnswers: AnswerRecord[];
+  originalLastResult?: PracticeState['lastResult'];
   setWords: (words: string[]) => void;
   addWord: (word: string) => void;
   removeWord: (word: string) => void;
@@ -49,6 +55,11 @@ interface PracticeState {
   beginDetailsFetch: () => void;
   setVocabDetails: (details: VocabularyDetail[]) => void;
   setDetailsError: (message: string) => void;
+  // Retry mode actions
+  startRetryPractice: (wrongQuestions: SuperQuestion[]) => void;
+  recordRetryAnswer: (answer: AnswerRecord) => void;
+  setRetryResult: (result: PracticeState['lastResult']) => void;
+  exitRetryMode: () => void;
 }
 
 const createInitialSectionStatus = (): Record<QuestionType, SectionStatus> => ({
@@ -71,6 +82,11 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
   sectionStatus: createInitialSectionStatus(),
   sectionErrors: createInitialSectionErrors(),
   detailsStatus: 'idle',
+  // Retry mode initial values
+  isRetryMode: false,
+  retryQuestions: [],
+  retryAnswers: [],
+  originalLastResult: undefined,
   setWords: (words) =>
     set({
       words: Array.from(new Set(words.map((w) => w.trim().toLowerCase()))).filter(Boolean),
@@ -165,6 +181,11 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       vocabDetails: undefined,
       detailsStatus: 'idle',
       detailsError: undefined,
+      // Reset retry state
+      isRetryMode: false,
+      retryQuestions: [],
+      retryAnswers: [],
+      originalLastResult: undefined,
     });
   },
   recordAnswer: (answer) =>
@@ -213,4 +234,31 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       detailsStatus: 'error',
       detailsError: message,
     }),
+  // Retry mode actions
+  startRetryPractice: (wrongQuestions) =>
+    set((state) => ({
+      isRetryMode: true,
+      retryQuestions: wrongQuestions,
+      retryAnswers: [],
+      originalLastResult: state.originalLastResult ?? state.lastResult,
+      status: 'inProgress',
+    })),
+  recordRetryAnswer: (answer) =>
+    set((state) => ({
+      retryAnswers: [...state.retryAnswers, answer],
+    })),
+  setRetryResult: (result) =>
+    set({
+      lastResult: result,
+      status: 'report',
+    }),
+  exitRetryMode: () =>
+    set((state) => ({
+      isRetryMode: false,
+      retryQuestions: [],
+      retryAnswers: [],
+      lastResult: state.originalLastResult,
+      originalLastResult: undefined,
+      status: 'report',
+    })),
 }));
