@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import WrongAnswerList from '../WrongAnswerList';
 import { SECTION_LABELS } from '../../constants/sections';
 import type { WrongAnswerItem } from '../../lib/wrongAnswers';
@@ -109,7 +109,6 @@ describe('WrongAnswerList - Property Tests', () => {
     fc.assert(
       fc.property(
         fc.constantFrom(...questionTypes),
-        wrongAnswerItemArb('questions_type_1'), // Will be overridden
         (type) => {
           // Generate a single item with the specific type
           return fc.assert(

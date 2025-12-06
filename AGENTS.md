@@ -3,6 +3,16 @@
 ## Project Structure & Module Organization
 Workspaces split the React SPA under `client/` and the Express API under `server/`. UI code sits in `client/src` with `pages/`, `components/`, `store/`, and `lib/` folders so routing, shared UI, state, and helpers stay separated. Server handlers live in `server/src`, while SQLite data and migration helpers stay in `server/storage/`.
 
+## 搜索指引
+- 编码前先用语义搜索工具 `mgrep` 查找现有实现与约定，避免重复造轮子。
+- 直接用自然语言描述要找的逻辑或场景，可用 `-m` 控制结果数量：
+  - `mgrep "Quiz 页面轮询逻辑在哪里实现"` → 会指向 `client/src/hooks/useGenerationPolling.ts` 及相关测试。
+  - `mgrep "生成 session 的接口定义"` → 会定位到 `server/src/routes/generation.ts`、`client/src/lib/api.ts`、`usePracticeStore`。
+  - `mgrep "answer match 逻辑"` → 会找到 `client/src/lib/answerMatch.ts` 与对应测试。
+  - `mgrep "使用 ProxyAgent 的 VLM 请求"` → 会跳转到 `server/src/services/vlm.ts` 与 `openrouter.ts`。
+- 需要缩小范围时可加目录前缀，例如 `mgrep "等待/失败重试 流程" client/src/pages`。
+- 读到相关文件后再开编辑器跳转细看；新代码应遵循查到的模式（例如轮询、路由、API 调用、代理配置、测试结构）。
+
 ## Build, Test, and Development Commands
 - `npm run dev` — starts both workspaces (API on :4000, Vite on :5173) for full-stack testing.
 - `npm run dev:client` / `npm run dev:server` — quicker feedback when touching only UI or API code.

@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { fetchVocabularyDetails, retryGenerationSection } from '../lib/api';
 import { getErrorMessage } from '../lib/errors';
+import { createInProgressSession } from '../lib/progressService';
 import SectionProgressCapsules from '../components/SectionProgressCapsules';
 import { useGenerationPolling } from '../hooks/useGenerationPolling';
 import { SECTION_LABELS, SECTION_ORDER } from '../constants/sections';
 import type { QuestionType, SuperQuestion } from '../types';
+import { tts } from '../lib/tts';
 
 const VocabularyDetailsPage = () => {
   const vocabDetails = usePracticeStore((state) => state.vocabDetails);
@@ -23,10 +25,16 @@ const VocabularyDetailsPage = () => {
   const setVocabDetails = usePracticeStore((state) => state.setVocabDetails);
   const setDetailsError = usePracticeStore((state) => state.setDetailsError);
   const applySessionSnapshot = usePracticeStore((state) => state.applySessionSnapshot);
+  const audioEnabled = usePracticeStore((state) => state.audioEnabled);
+  const initializeHistorySession = usePracticeStore((state) => state.initializeHistorySession);
   const navigate = useNavigate();
   const { pollError } = useGenerationPolling();
   const [retryingSection, setRetryingSection] = useState<QuestionType | null>(null);
   const [sectionRetryError, setSectionRetryError] = useState('');
+  const [sessionCreateError, setSessionCreateError] = useState('');
+  const [isStartingPractice, setIsStartingPractice] = useState(false);
+  
+  const canSpeak = tts.canSpeak();
 
   const sectionQuestions: Record<QuestionType, SuperQuestion[]> = useMemo(
     () => ({
@@ -83,8 +91,30 @@ const VocabularyDetailsPage = () => {
     }
   };
 
-  const handleStartPractice = () => {
-    if (!detailReady) return;
+  const handleStartPractice = async () => {
+    if (!detailReady || !superJson || !difficulty) return;
+    
+    setIsStartingPractice(true);
+    setSessionCreateError('');
+    
+    try {
+      // Create in-progress session before navigation (Requirements 1.1, 1.2, 1.3)
+      const { id } = await createInProgressSession({
+        difficulty,
+        words,
+        superJson,
+      });
+      // Store session ID in practice store (Requirement 1.3)
+      initializeHistorySession(id);
+    } catch (err) {
+      // Graceful degradation: show error but still allow navigation (Requirement 1.4)
+      console.error('Failed to create in-progress session:', err);
+      setSessionCreateError('进度保存功能暂时不可用，但您可以继续练习');
+      // Clear error after 3 seconds
+      setTimeout(() => setSessionCreateError(''), 3000);
+    }
+    
+    setIsStartingPractice(false);
     navigate('/practice/run');
   };
 
@@ -107,6 +137,7 @@ const VocabularyDetailsPage = () => {
         />
         {pollError && <p className="form-error subtle">{pollError}</p>}
         {sectionRetryError && <p className="form-error subtle">{sectionRetryError}</p>}
+        {sessionCreateError && <p className="form-error subtle">{sessionCreateError}</p>}
       </div>
 
       <div className="panel vocab-panel">
@@ -115,8 +146,13 @@ const VocabularyDetailsPage = () => {
             <p className="eyebrow">词汇详情</p>
             <h2>逐词检查释义与例句</h2>
           </div>
-          <button type="button" className="primary" onClick={handleStartPractice} disabled={!detailReady}>
-            {detailReady ? '开始练习' : 'AI 正在整理词条...'}
+          <button 
+            type="button" 
+            className="primary" 
+            onClick={handleStartPractice} 
+            disabled={!detailReady || isStartingPractice}
+          >
+            {isStartingPractice ? '正在准备...' : detailReady ? '开始练习' : 'AI 正在整理词条...'}
           </button>
         </div>
 
@@ -140,7 +176,22 @@ const VocabularyDetailsPage = () => {
             {vocabDetails.map((detail) => (
               <article key={detail.word} className="vocab-entry">
                 <header className="vocab-entry-head">
-                  <h3>{detail.word}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h3>{detail.word}</h3>
+                    <button
+                      type="button"
+                      className="audio-btn"
+                      style={{ width: '28px', height: '28px' }}
+                      onClick={() => tts.speak(detail.word)}
+                      disabled={!canSpeak || !audioEnabled}
+                      title={!canSpeak ? "当前浏览器不支持语音播放" : !audioEnabled ? "音频已禁用" : "播放发音"}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                      </svg>
+                    </button>
+                  </div>
                   <div className="pos-list">
                     {detail.partsOfSpeech.map((pos) => (
                       <span key={`${detail.word}-${pos}`} className="pos-badge">

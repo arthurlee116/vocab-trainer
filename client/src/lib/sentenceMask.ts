@@ -15,29 +15,9 @@ const INFLECTION_MAP: Record<string, string[]> = {
   do: ['do', 'does', 'did', 'doing', 'done'],
 };
 
-// 常见不规则动词的过去式 / 过去分词（用于生成被动或不规则变体）
-const IRREGULAR_PARTICIPLES: Record<string, string> = {
-  hold: 'held',
-  make: 'made',
-  take: 'taken',
-  do: 'done',
-  go: 'gone',
-  write: 'written',
-  say: 'said',
-  bring: 'brought',
-  buy: 'bought',
-  meet: 'met',
-  see: 'seen',
-  be: 'been',
-  have: 'had',
-};
 
-// 占位符（sb / someone / somebody）在模板中的常见写法
-const SB_TOKENS = new Set(['sb', 'sbs', "sb's", 'somebody', 'someone', "someone's"]);
 
-// 人称替换：对象代词和所有格（视占位符上下文生成不同变体）
-const OBJ_PRONOUNS = ['him', 'her', 'them', 'us', 'me', 'you'];
-const POSSESSIVE_PRONOUNS = ['his', 'her', 'their', 'our', 'my', 'your'];
+
 
 // Irregular verbs mapping to more correct surface forms to improve matching of
 // common verbs where simple -ed/-ing generation would be wrong (e.g. hold -> held)

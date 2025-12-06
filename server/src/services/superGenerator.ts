@@ -4,6 +4,21 @@ import { logger } from '../utils/logger';
 import { shuffleQuestionChoices } from '../lib/shuffleChoices';
 import { MODEL_FALLBACKS } from '../constants/model-fallbacks';
 
+/**
+ * TypeWordMap: 按题型分组的单词映射
+ * 每个题型包含分配到该题型的单词列表
+ */
+export interface TypeWordMap {
+  questions_type_1: string[];
+  questions_type_2: string[];
+  questions_type_3: string[];
+}
+
+/**
+ * Fisher-Yates shuffle 算法，用于随机打乱数组
+ * @param items 要打乱的数组
+ * @returns 打乱后的新数组（不修改原数组）
+ */
 const shuffleWithin = <T>(items: T[]): T[] => {
   if (items.length <= 1) {
     return [...items];
@@ -17,6 +32,49 @@ const shuffleWithin = <T>(items: T[]): T[] => {
     copy[j] = temp;
   }
   return copy;
+};
+
+/**
+ * 所有可用的题型
+ */
+const ALL_QUESTION_TYPES: QuestionType[] = ['questions_type_1', 'questions_type_2', 'questions_type_3'];
+
+/**
+ * 为每个单词随机分配 2 种题型
+ * 
+ * 算法说明：
+ * 1. 对于每个单词，从 3 种题型中随机选择 2 种
+ * 2. 使用 Fisher-Yates shuffle 打乱题型顺序，然后取前 2 个
+ * 3. 将单词添加到对应题型的数组中
+ * 
+ * 这确保了：
+ * - 每个单词恰好出现在 2 种题型中（Requirements 1.1）
+ * - 总题目数 = 单词数 × 2（Requirements 1.2）
+ * - 每种题型大约获得 2/3 的单词（Requirements 1.3）
+ * 
+ * @param words 单词列表
+ * @returns TypeWordMap 按题型分组的单词映射
+ */
+export const assignWordsToTypes = (words: string[]): TypeWordMap => {
+  const result: TypeWordMap = {
+    questions_type_1: [],
+    questions_type_2: [],
+    questions_type_3: [],
+  };
+
+  for (const word of words) {
+    // 使用 Fisher-Yates shuffle 随机打乱题型顺序
+    const shuffledTypes = shuffleWithin(ALL_QUESTION_TYPES);
+    // 取前 2 个题型
+    const assignedTypes = shuffledTypes.slice(0, 2) as [QuestionType, QuestionType];
+    
+    // 将单词添加到分配的题型中
+    for (const type of assignedTypes) {
+      result[type].push(word);
+    }
+  }
+
+  return result;
 };
 
 const sanitizeQuestions = (questions?: SuperQuestion[]): SuperQuestion[] =>
@@ -253,25 +311,39 @@ const SHARED_TYPE_RULES = `
 - 每个题目的 type 字段固定写为本题型的标识，且 id 不得重复。
 - 题干与选项要自然流畅，严禁输出 markdown/额外文本，只能返回 JSON。`;
 
+/**
+ * 为指定题型生成题目
+ * 
+ * 改进说明（Requirements 1.2）：
+ * - 移除了 perType 参数，改为根据传入的单词列表长度生成题目
+ * - 每个单词生成一道题目，确保完整覆盖
+ * 
+ * @param params.questionType 题目类型
+ * @param params.words 分配给该题型的单词列表（由 assignWordsToTypes 生成）
+ * @param params.difficulty 难度级别
+ * @returns 生成的题目数组
+ */
 export const generateQuestionsForType = async (params: {
   questionType: QuestionType;
   words: string[];
   difficulty: DifficultyLevel;
-  perType: number;
 }): Promise<SuperQuestion[]> => {
-  const { questionType, words, difficulty, perType } = params;
+  const { questionType, words, difficulty } = params;
 
   if (!words.length) {
     throw new Error('Word list cannot be empty');
   }
 
+  // 每个单词生成一道题目（Requirements 1.2）
+  const questionCount = words.length;
+
   const prompt = `
-你是一名严谨的出题 AI。根据给定的单词列表与难度，生成 ${perType} 道 ${questionType} 题目。
+你是一名严谨的出题 AI。根据给定的单词列表与难度，为每个单词生成一道 ${questionType} 题目，共 ${questionCount} 道题。
 ${QUESTION_TYPE_RULES[questionType]}
 ${SHARED_TYPE_RULES}
 - 单词列表：${words.join(', ')}
 - 难度：${difficulty}
-- 题目数量：${perType}
+- 题目数量：${questionCount}（每个单词一道题）
 
 请严格返回 JSON，字段结构必须匹配 schema。`;
 
@@ -284,14 +356,14 @@ ${SHARED_TYPE_RULES}
     { role: 'user' as const, content: prompt },
   ];
 
-  const schema = buildTypeResponseSchema(questionType, perType);
+  const schema = buildTypeResponseSchema(questionType, questionCount);
 
   let lastError: unknown;
 
   for (const model of MODEL_FALLBACKS) {
     try {
       logger.info(
-        `SuperGenerator: Generating ${perType} questions for ${questionType} with ${words.length} words (${difficulty}) via ${model}`,
+        `SuperGenerator: Generating ${questionCount} questions for ${questionType} with ${words.length} words (${difficulty}) via ${model}`,
       );
       const startTime = Date.now();
       const result = await openRouterChat<Record<QuestionType, SuperQuestion[]>>({
@@ -321,7 +393,7 @@ ${SHARED_TYPE_RULES}
         `SuperGenerator: ${questionType} succeeded with ${normalizedBundle.length} questions in ${responseTime}ms (${model})`,
         {
           difficulty,
-          perType,
+          questionCount,
           wordsCount: words.length,
         },
       );
@@ -332,7 +404,7 @@ ${SHARED_TYPE_RULES}
       logger.warn(`SuperGenerator: ${questionType} failed`, {
         error: error instanceof Error ? error.message : error,
         difficulty,
-        perType,
+        questionCount,
         wordsCount: words.length,
       });
     }

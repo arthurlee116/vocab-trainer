@@ -41,6 +41,8 @@ export interface AnswerRecord {
   elapsedMs: number;
 }
 
+export type SessionStatus = 'in_progress' | 'completed';
+
 export interface SessionRecord {
   id: string;
   userId?: string | null;
@@ -52,6 +54,20 @@ export interface SessionRecord {
   score: number;
   analysis: AnalysisSummary;
   createdAt: string;
+  // Session resume fields (Requirements 2.1, 2.3)
+  status: SessionStatus;
+  currentQuestionIndex: number;
+  updatedAt: string;
+}
+
+export interface InProgressSessionSummary {
+  id: string;
+  difficulty: DifficultyLevel;
+  wordCount: number;
+  answeredCount: number;
+  totalQuestions: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AnalysisSummary {
@@ -69,4 +85,15 @@ export interface VocabularyDetail {
   partsOfSpeech: string[];
   definitions: string[];
   examples: VocabularyExample[];
+}
+
+export interface WeeklyActivity {
+  date: string;
+  count: number;
+}
+
+export interface StatsResponse {
+  totalWordsLearned: number;
+  totalSessionsCompleted: number;
+  weeklyActivity: WeeklyActivity[];
 }

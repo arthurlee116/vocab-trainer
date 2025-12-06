@@ -64,32 +64,7 @@ const superJsonArb: fc.Arbitrary<SuperJson> = fc
     questions_type_3: type3,
   }));
 
-// Generate an answer record for a given question
-const answerForQuestionArb = (question: SuperQuestion, correct: boolean): fc.Arbitrary<AnswerRecord> => {
-  if (question.type === 'questions_type_3') {
-    // Fill-in-blank question
-    const userInput = correct
-      ? fc.constant(question.correctAnswer!)
-      : fc.string({ minLength: 1, maxLength: 50 }).filter((s) => s !== question.correctAnswer);
-    return fc.record({
-      questionId: fc.constant(question.id),
-      userInput,
-      correct: fc.constant(correct),
-      elapsedMs: fc.integer({ min: 100, max: 30000 }),
-    });
-  } else {
-    // Choice-based question
-    const choiceId = correct
-      ? fc.constant(question.correctChoiceId!)
-      : fc.constantFrom(...(question.choices?.filter((c) => c.id !== question.correctChoiceId).map((c) => c.id) ?? []));
-    return fc.record({
-      questionId: fc.constant(question.id),
-      choiceId,
-      correct: fc.constant(correct),
-      elapsedMs: fc.integer({ min: 100, max: 30000 }),
-    });
-  }
-};
+
 
 describe('extractWrongAnswers - Property Tests', () => {
   /**

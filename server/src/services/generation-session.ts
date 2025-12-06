@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { DifficultyLevel, QuestionType, SuperJson, SuperQuestion } from '../types';
-import { generateQuestionsForType } from './superGenerator';
+import { assignWordsToTypes, generateQuestionsForType, TypeWordMap } from './superGenerator';
 import { logger } from '../utils/logger';
 import { HttpError } from '../utils/httpError';
 
@@ -18,7 +18,10 @@ interface GenerationSession {
   id: string;
   normalizedWords: string[];
   difficulty: DifficultyLevel;
+  /** @deprecated 使用 typeWordMap 替代，保留用于向后兼容 */
   perType: number;
+  /** 按题型分配的单词映射 */
+  typeWordMap: TypeWordMap;
   createdAt: number;
   metadata: {
     generatedAt: string;
@@ -107,11 +110,13 @@ const triggerSectionGeneration = async (
   section.version += 1;
   const currentVersion = section.version;
 
+  // 使用分配给该题型的单词列表
+  const wordsForType = session.typeWordMap[questionType];
+
   const exec = generateQuestionsForType({
     questionType,
-    words: session.normalizedWords,
+    words: wordsForType,
     difficulty: session.difficulty,
-    perType: session.perType,
   })
     .then((questions) => {
       const latest = sessions.get(sessionId);
@@ -169,10 +174,34 @@ export const startGenerationSession = async (params: {
     throw new HttpError(400, 'Word list cannot be empty');
   }
 
-  const perType = params.questionCountPerType ?? Math.min(20, normalizedWords.length);
-  if (perType < 3) {
-    throw new HttpError(400, 'questionCountPerType must be at least 3');
+  // 使用智能单词分配算法：每个单词随机分配到 2 种题型
+  // 移除了 Math.min(20, normalizedWords.length) 的硬编码限制
+  const typeWordMap = assignWordsToTypes(normalizedWords);
+
+  // 计算每种题型的题目数量（等于分配给该题型的单词数）
+  const perTypeEstimates = {
+    questions_type_1: typeWordMap.questions_type_1.length,
+    questions_type_2: typeWordMap.questions_type_2.length,
+    questions_type_3: typeWordMap.questions_type_3.length,
+  };
+
+  // 总题目数 = 单词数 × 2（每个单词分配到 2 种题型）
+  const totalQuestionsEstimate = normalizedWords.length * 2;
+
+  // 保留 perType 用于向后兼容（取平均值）
+  const perType = params.questionCountPerType ?? Math.ceil(totalQuestionsEstimate / questionTypes.length);
+
+  if (normalizedWords.length < 3) {
+    throw new HttpError(400, 'Word list must contain at least 3 words');
   }
+
+  logger.info(`GenerationSession: Word assignment completed`, {
+    totalWords: normalizedWords.length,
+    type1Words: perTypeEstimates.questions_type_1,
+    type2Words: perTypeEstimates.questions_type_2,
+    type3Words: perTypeEstimates.questions_type_3,
+    totalQuestionsEstimate,
+  });
 
   const sessionId = randomUUID();
   const session: GenerationSession = {
@@ -180,12 +209,13 @@ export const startGenerationSession = async (params: {
     normalizedWords,
     difficulty: params.difficulty,
     perType,
+    typeWordMap,
     createdAt: Date.now(),
     metadata: {
       generatedAt: new Date().toISOString(),
       words: normalizedWords,
       difficulty: params.difficulty,
-      totalQuestionsEstimate: perType * questionTypes.length,
+      totalQuestionsEstimate,
       totalQuestions: 0,
     },
     sections: {

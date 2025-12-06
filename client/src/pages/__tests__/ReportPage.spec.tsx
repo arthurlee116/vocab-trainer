@@ -8,7 +8,7 @@ import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import ReportPage from '../ReportPage';
 import { usePracticeStore } from '../../store/usePracticeStore';
-import { createMockSuperJson, createMockQuestion, createMockType3Question } from '../../test-utils/quizFixtures';
+import { createMockSuperJson, createMockQuestion } from '../../test-utils/quizFixtures';
 
 // Mock useNavigate
 const mockNavigate = vi.fn();

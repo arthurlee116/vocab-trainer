@@ -35,11 +35,20 @@ interface PracticeState {
     incorrectWords: string[];
     snapshot?: SessionSnapshot;
   };
+  // Audio & Listening Mode
+  audioEnabled: boolean;
+  listeningMode: boolean;
+  setAudioEnabled: (enabled: boolean) => void;
+  toggleListeningMode: () => void;
   // Retry mode fields
   isRetryMode: boolean;
   retryQuestions: SuperQuestion[];
   retryAnswers: AnswerRecord[];
   originalLastResult?: PracticeState['lastResult'];
+  // Session resume fields (Requirements 3.3)
+  historySessionId?: string;
+  currentQuestionIndex: number;
+  isResumedSession: boolean;
   setWords: (words: string[]) => void;
   addWord: (word: string) => void;
   removeWord: (word: string) => void;
@@ -60,6 +69,10 @@ interface PracticeState {
   recordRetryAnswer: (answer: AnswerRecord) => void;
   setRetryResult: (result: PracticeState['lastResult']) => void;
   exitRetryMode: () => void;
+  // Session resume actions (Requirements 2.1, 2.2, 3.3, 3.4, 3.5, 7.2)
+  initializeHistorySession: (historySessionId: string) => void;
+  resumeSession: (session: SessionSnapshot) => void;
+  saveProgress: (answer: AnswerRecord) => Promise<void>;
 }
 
 const createInitialSectionStatus = (): Record<QuestionType, SectionStatus> => ({
@@ -82,11 +95,20 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
   sectionStatus: createInitialSectionStatus(),
   sectionErrors: createInitialSectionErrors(),
   detailsStatus: 'idle',
+  // Audio & Listening Mode
+  audioEnabled: true,
+  listeningMode: false,
+  setAudioEnabled: (enabled) => set({ audioEnabled: enabled }),
+  toggleListeningMode: () => set((state) => ({ listeningMode: !state.listeningMode })),
   // Retry mode initial values
   isRetryMode: false,
   retryQuestions: [],
   retryAnswers: [],
   originalLastResult: undefined,
+  // Session resume initial values (Requirements 3.3)
+  historySessionId: undefined,
+  currentQuestionIndex: 0,
+  isResumedSession: false,
   setWords: (words) =>
     set({
       words: Array.from(new Set(words.map((w) => w.trim().toLowerCase()))).filter(Boolean),
@@ -181,11 +203,17 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       vocabDetails: undefined,
       detailsStatus: 'idle',
       detailsError: undefined,
+      // Reset Audio/Listening Mode
+      listeningMode: false, // audioEnabled generally persists, but listeningMode resets per session usually? Or maybe keep it? Let's reset listeningMode to be safe/standard.
       // Reset retry state
       isRetryMode: false,
       retryQuestions: [],
       retryAnswers: [],
       originalLastResult: undefined,
+      // Reset session resume state
+      historySessionId: undefined,
+      currentQuestionIndex: 0,
+      isResumedSession: false,
     });
   },
   recordAnswer: (answer) =>
@@ -261,4 +289,52 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       originalLastResult: undefined,
       status: 'report',
     })),
+  // Session resume actions (Requirements 2.1, 2.2, 3.3, 3.4, 3.5, 7.2)
+  initializeHistorySession: (historySessionId) =>
+    set({
+      historySessionId,
+      currentQuestionIndex: 0,
+      isResumedSession: false,
+    }),
+  resumeSession: (session) =>
+    set({
+      historySessionId: session.id,
+      superJson: session.superJson,
+      difficulty: session.difficulty,
+      words: session.words,
+      answers: session.answers,
+      currentQuestionIndex: session.currentQuestionIndex,
+      isResumedSession: true,
+      status: 'inProgress',
+      // Set all sections to ready since history session has complete superJson (Requirement 7.1)
+      sectionStatus: {
+        questions_type_1: 'ready',
+        questions_type_2: 'ready',
+        questions_type_3: 'ready',
+      },
+      sectionErrors: {
+        questions_type_1: undefined,
+        questions_type_2: undefined,
+        questions_type_3: undefined,
+      },
+    }),
+  saveProgress: async (answer) => {
+    const { historySessionId, answers } = get();
+    if (!historySessionId) {
+      // No history session yet, just record locally
+      set((state) => ({
+        answers: [...state.answers, answer],
+        currentQuestionIndex: state.currentQuestionIndex + 1,
+      }));
+      return;
+    }
+    // Import dynamically to avoid circular dependency
+    const { saveProgress: saveProgressService } = await import('../lib/progressService');
+    const newIndex = answers.length + 1;
+    await saveProgressService(historySessionId, answer, newIndex);
+    set((state) => ({
+      answers: [...state.answers, answer],
+      currentQuestionIndex: newIndex,
+    }));
+  },
 }));

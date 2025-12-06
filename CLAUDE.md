@@ -166,6 +166,7 @@ This is a full-stack AI-powered vocabulary training application with three core 
 
 ## Common Development Patterns
 
+- **🔍 CODE SEARCH: Always use mgrep first!** Before using Glob, Grep, or file searches, use `mgrep "natural language query"` for semantic search. It's substantially better and provides match scores and line ranges.
 - **API calls:** Use `lib/api.ts` Axios instance with JWT interceptors
 - **Type validation:** Server uses `zod` for external data validation
 - **Error responses:** `{ message: string }` JSON with appropriate HTTP status
@@ -219,3 +220,53 @@ This is a full-stack AI-powered vocabulary training application with three core 
 - Question generation: `server/src/services/superGenerator.ts`
 - Database: `server/src/db/client.ts`
 - Environment example: `.env.example`
+
+
+
+# AI 协作行为准则
+
+本文档定义 AI 助手在本项目中必须遵循的核心原则。
+
+## 1. 查阅优先，禁止猜测
+
+- 在调用或修改任何 API/接口前，必须先阅读相关源码或文档
+- 不确定接口签名、参数类型时，主动查阅 `server/src/routes/` 和 `client/src/lib/api.ts`
+- 禁止凭记忆或假设编写接口调用代码
+
+## 2. 确认优先，禁止模糊执行
+
+- 需求不明确时，向用户提问确认，不要自行假设
+- 涉及业务逻辑变更时，先描述理解并请求确认
+- 多种实现方案时，列出选项让用户决定
+
+## 3. 复用优先，禁止重复造轮
+
+- 新增功能前，先搜索项目中是否已有类似实现
+- 优先使用 `client/src/lib/`、`server/src/utils/`、`server/src/services/` 中的现有工具
+- 避免创建与现有模块功能重叠的新文件
+
+## 4. 验证优先，禁止跳过测试
+
+- 修改代码后，运行相关测试确认无破坏：
+  - 前端：`npm run test --workspace=client`
+  - 后端：`npm run test --workspace=server`
+- 新增功能应包含对应测试用例
+- 使用工具检查类型和语法错误
+
+## 5. 架构优先，禁止破坏规范
+
+- 遵循项目既定目录结构（参见 `structure.md`）
+- 前端组件放 `pages/` 或 `components/`，后端逻辑放 `services/`
+- 命名遵循约定：前端 PascalCase，后端 kebab-case
+
+## 6. 诚实优先，禁止假装理解
+
+- 不理解某段代码或需求时，明确告知用户
+- 不确定修改是否正确时，说明风险并请求审查
+- 遇到超出能力范围的问题，坦诚说明
+
+## 7. 谨慎优先，禁止盲目修改
+
+- 重构前先理解现有代码的完整上下文
+- 大范围修改前，先提出方案并获得确认
+- 保持最小化变更原则，只改必要的部分

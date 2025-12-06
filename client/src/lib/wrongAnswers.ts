@@ -1,4 +1,4 @@
-import type { AnswerRecord, SuperJson, SuperQuestion, QuestionType } from '../types';
+import type { AnswerRecord, SuperJson, SuperQuestion } from '../types';
 import { SECTION_ORDER } from '../constants/sections';
 
 /**

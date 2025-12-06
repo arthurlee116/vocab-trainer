@@ -11,6 +11,17 @@ if (!fs.existsSync(dbDir)) {
 export const db = new Database(env.databasePath);
 db.pragma('journal_mode = WAL');
 
+/**
+ * Check if a column exists in a table
+ */
+const columnExists = (tableName: string, columnName: string): boolean => {
+  const columns = db.prepare(`PRAGMA table_info(${tableName})`).all() as Array<{ name: string }>;
+  return columns.some((col) => col.name === columnName);
+};
+
+/**
+ * Run initial schema migrations (create tables if not exist)
+ */
 export const runMigrations = () => {
   db.prepare(
     `
@@ -40,6 +51,34 @@ export const runMigrations = () => {
     );
   `,
   ).run();
+
+  // Run session resume migrations
+  runSessionResumeMigrations();
+};
+
+/**
+ * Migration for session-resume feature (Requirements 6.1, 6.2, 6.3, 6.4)
+ * Adds status, current_question_index, and updated_at columns to sessions table
+ */
+export const runSessionResumeMigrations = () => {
+  // Add status column with default 'in_progress' (Requirement 6.1)
+  if (!columnExists('sessions', 'status')) {
+    db.prepare(`ALTER TABLE sessions ADD COLUMN status TEXT DEFAULT 'in_progress'`).run();
+    // Migrate existing records: set status to 'completed'
+    db.prepare(`UPDATE sessions SET status = 'completed' WHERE status IS NULL OR status = 'in_progress'`).run();
+  }
+
+  // Add current_question_index column with default 0 (Requirement 6.2)
+  if (!columnExists('sessions', 'current_question_index')) {
+    db.prepare(`ALTER TABLE sessions ADD COLUMN current_question_index INTEGER DEFAULT 0`).run();
+  }
+
+  // Add updated_at column (Requirement 6.3)
+  if (!columnExists('sessions', 'updated_at')) {
+    db.prepare(`ALTER TABLE sessions ADD COLUMN updated_at TEXT`).run();
+    // Migrate existing records: copy created_at to updated_at (Requirement 6.4)
+    db.prepare(`UPDATE sessions SET updated_at = created_at WHERE updated_at IS NULL`).run();
+  }
 };
 
 runMigrations();

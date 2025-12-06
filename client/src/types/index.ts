@@ -62,6 +62,8 @@ export interface AnalysisSummary {
   recommendations: string[];
 }
 
+export type SessionStatus = 'in_progress' | 'completed';
+
 export interface SessionSnapshot {
   id: string;
   mode: 'guest' | 'authenticated';
@@ -73,6 +75,20 @@ export interface SessionSnapshot {
   superJson: SuperJson;
   answers: AnswerRecord[];
   createdAt: string;
+  // Session resume fields (Requirements 2.2, 3.3)
+  status: SessionStatus;
+  currentQuestionIndex: number;
+  updatedAt: string;
+}
+
+export interface InProgressSessionSummary {
+  id: string;
+  difficulty: DifficultyLevel;
+  wordCount: number;
+  answeredCount: number;
+  totalQuestions: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ImageFile {
@@ -96,4 +112,15 @@ export interface VocabularyDetail {
   partsOfSpeech: string[];
   definitions: string[];
   examples: VocabularyExample[];
+}
+
+export interface WeeklyActivity {
+  date: string;
+  count: number;
+}
+
+export interface StatsResponse {
+  totalWordsLearned: number;
+  totalSessionsCompleted: number;
+  weeklyActivity: WeeklyActivity[];
 }

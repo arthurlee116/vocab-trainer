@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { describe, expect, it, vi } from 'vitest';
-import type { AnswerRecord, SuperJson } from '../../types';
+import type { AnswerRecord, SuperJson, SessionStatus } from '../../types';
 
 const createTestHistory = async (options?: { precreateDir?: boolean }) => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vocab-history-'));
@@ -14,8 +14,8 @@ const createTestHistory = async (options?: { precreateDir?: boolean }) => {
   process.env.DATABASE_PATH = dbPath;
   vi.resetModules();
 
-  const { db } = await import('../../db/client');
-  const history = await import('../history');
+  const { db } = await import('../../db/client.js');
+  const history = await import('../history.js');
   db
     .prepare(
       `
@@ -83,6 +83,8 @@ describe('history service', () => {
         answers: createAnswers(),
         score: 88,
         analysis: { report: 'report', recommendations: ['focus'] },
+        status: 'completed',
+        currentQuestionIndex: 1,
       });
 
       const fetched = getSession('tester', saved.id);
@@ -113,6 +115,8 @@ describe('history service', () => {
         answers: createAnswers(),
         score: 70,
         analysis: { report: 'first', recommendations: [] },
+        status: 'completed',
+        currentQuestionIndex: 1,
       });
 
       vi.advanceTimersByTime(1000);
@@ -126,6 +130,8 @@ describe('history service', () => {
         answers: createAnswers(),
         score: 95,
         analysis: { report: 'second', recommendations: ['repeat'] },
+        status: 'completed',
+        currentQuestionIndex: 1,
       });
 
       const sessions = listSessions('tester');
@@ -140,6 +146,252 @@ describe('history service', () => {
     const { getSession, cleanup } = await createTestHistory();
     try {
       expect(getSession('tester', 'missing')).toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+});
+
+/**
+ * Integration tests for new API endpoints
+ * Requirements: 2.1, 4.1, 4.4
+ */
+describe('history service - progress and session management', () => {
+  it('updateProgress 保存答题进度并更新索引', async () => {
+    const { createInProgressSession, updateProgress, getSession, cleanup } = await createTestHistory();
+
+    try {
+      // Create a SuperJson with multiple questions so status stays in_progress
+      const superJsonWithMultipleQuestions: SuperJson = {
+        ...createSuperJson(),
+        questions_type_1: [
+          {
+            id: 'q1',
+            word: 'alpha',
+            prompt: '题干 1',
+            choices: [
+              { id: 'c1', text: 'alpha' },
+              { id: 'c2', text: 'beta' },
+            ],
+            correctChoiceId: 'c1',
+            explanation: '解释 1',
+            type: 'questions_type_1',
+          },
+          {
+            id: 'q2',
+            word: 'beta',
+            prompt: '题干 2',
+            choices: [
+              { id: 'c1', text: 'alpha' },
+              { id: 'c2', text: 'beta' },
+            ],
+            correctChoiceId: 'c2',
+            explanation: '解释 2',
+            type: 'questions_type_1',
+          },
+          {
+            id: 'q3',
+            word: 'gamma',
+            prompt: '题干 3',
+            choices: [
+              { id: 'c1', text: 'gamma' },
+              { id: 'c2', text: 'delta' },
+            ],
+            correctChoiceId: 'c1',
+            explanation: '解释 3',
+            type: 'questions_type_1',
+          },
+        ],
+      };
+
+      // Create an in-progress session with 3 questions
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha', 'beta', 'gamma'],
+        superJson: superJsonWithMultipleQuestions,
+      });
+
+      expect(session.status).toBe('in_progress');
+      expect(session.currentQuestionIndex).toBe(0);
+      expect(session.answers).toHaveLength(0);
+
+      // Update progress with first answer (1 of 3 questions)
+      const answer: AnswerRecord = {
+        questionId: 'q1',
+        choiceId: 'c1',
+        correct: true,
+        elapsedMs: 1500,
+      };
+      const updated = updateProgress('tester', session.id, answer, 1);
+
+      expect(updated).not.toBeNull();
+      expect(updated!.currentQuestionIndex).toBe(1);
+      expect(updated!.answers).toHaveLength(1);
+      expect(updated!.answers[0]).toMatchObject(answer);
+      expect(updated!.status).toBe('in_progress'); // Still in progress (1/3)
+
+      // Verify persistence
+      const fetched = getSession('tester', session.id);
+      expect(fetched!.currentQuestionIndex).toBe(1);
+      expect(fetched!.answers).toHaveLength(1);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('updateProgress 在完成所有题目时自动转换状态为 completed', async () => {
+    const { createInProgressSession, updateProgress, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const superJson = createSuperJson();
+      const totalQuestions = superJson.questions_type_1.length;
+
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson,
+      });
+
+      // Answer the only question (totalQuestions = 1)
+      const answer: AnswerRecord = {
+        questionId: 'q1',
+        choiceId: 'c1',
+        correct: true,
+        elapsedMs: 1000,
+      };
+      const updated = updateProgress('tester', session.id, answer, totalQuestions);
+
+      expect(updated!.status).toBe('completed');
+      expect(updated!.score).toBe(100); // 1/1 correct = 100%
+
+      const fetched = getSession('tester', session.id);
+      expect(fetched!.status).toBe('completed');
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('updateProgress 对不存在的 session 返回 null', async () => {
+    const { updateProgress, cleanup } = await createTestHistory();
+
+    try {
+      const answer: AnswerRecord = {
+        questionId: 'q1',
+        choiceId: 'c1',
+        correct: true,
+        elapsedMs: 1000,
+      };
+      const result = updateProgress('tester', 'non-existent-id', answer, 1);
+      expect(result).toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('deleteSession 删除用户拥有的 session', async () => {
+    const { createInProgressSession, deleteSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson: createSuperJson(),
+      });
+
+      // Verify session exists
+      expect(getSession('tester', session.id)).not.toBeNull();
+
+      // Delete session
+      const deleted = deleteSession('tester', session.id);
+      expect(deleted).toBe(true);
+
+      // Verify session is gone
+      expect(getSession('tester', session.id)).toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('deleteSession 对不存在的 session 返回 false', async () => {
+    const { deleteSession, cleanup } = await createTestHistory();
+
+    try {
+      const deleted = deleteSession('tester', 'non-existent-id');
+      expect(deleted).toBe(false);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('deleteSession 不能删除其他用户的 session', async () => {
+    const { createInProgressSession, deleteSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson: createSuperJson(),
+      });
+
+      // Try to delete with wrong user ID
+      const deleted = deleteSession('other-user', session.id);
+      expect(deleted).toBe(false);
+
+      // Verify session still exists
+      expect(getSession('tester', session.id)).not.toBeNull();
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('listSessions 支持按 status 筛选', async () => {
+    const { createInProgressSession, saveSession, listSessions, cleanup } = await createTestHistory();
+
+    try {
+      // Create an in-progress session
+      createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson: createSuperJson(),
+      });
+
+      // Create a completed session
+      saveSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'intermediate',
+        words: ['beta'],
+        superJson: createSuperJson(),
+        answers: createAnswers(),
+        score: 100,
+        analysis: { report: 'done', recommendations: [] },
+        status: 'completed',
+        currentQuestionIndex: 1,
+      });
+
+      // List all sessions
+      const allSessions = listSessions('tester');
+      expect(allSessions).toHaveLength(2);
+
+      // List only in-progress sessions
+      const inProgressSessions = listSessions('tester', 'in_progress');
+      expect(inProgressSessions).toHaveLength(1);
+      expect(inProgressSessions[0]?.status).toBe('in_progress');
+
+      // List only completed sessions
+      const completedSessions = listSessions('tester', 'completed');
+      expect(completedSessions).toHaveLength(1);
+      expect(completedSessions[0]?.status).toBe('completed');
     } finally {
       cleanup();
     }

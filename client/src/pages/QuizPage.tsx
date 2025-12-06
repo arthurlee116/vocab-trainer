@@ -4,10 +4,12 @@ import { usePracticeStore } from '../store/usePracticeStore';
 import { useAuthStore } from '../store/useAuthStore';
 import type { AnswerRecord, QuestionType, SessionSnapshot, SuperQuestion } from '../types';
 import { requestAnalysis, retryGenerationSection, saveAuthenticatedSession } from '../lib/api';
+import { updateSessionSuperJson } from '../lib/progressService';
 import { getErrorMessage } from '../lib/errors';
 import { saveGuestSession } from '../lib/storage';
 import { buildSentenceParts } from '../lib/sentenceMask';
 import { matchAnswer, generateFirstLetterHint } from '../lib/answerMatch';
+import { tts } from '../lib/tts';
 import { useGenerationPolling } from '../hooks/useGenerationPolling';
 import SectionProgressCapsules from '../components/SectionProgressCapsules';
 import { SECTION_LABELS, SECTION_ORDER } from '../constants/sections';
@@ -23,14 +25,23 @@ const QuizPage = () => {
   const sectionErrors = usePracticeStore((state) => state.sectionErrors);
   const estimatedTotalQuestions = usePracticeStore((state) => state.estimatedTotalQuestions);
   const applySessionSnapshot = usePracticeStore((state) => state.applySessionSnapshot);
+  const listeningMode = usePracticeStore((state) => state.listeningMode);
+  const toggleListeningMode = usePracticeStore((state) => state.toggleListeningMode);
+  const audioEnabled = usePracticeStore((state) => state.audioEnabled);
   const mode = useAuthStore((state) => state.mode);
   // Retry mode state
   const isRetryMode = usePracticeStore((state) => state.isRetryMode);
   const retryQuestions = usePracticeStore((state) => state.retryQuestions);
   const recordRetryAnswer = usePracticeStore((state) => state.recordRetryAnswer);
   const setRetryResult = usePracticeStore((state) => state.setRetryResult);
+  // Session resume state (Requirements 3.3, 3.4)
+  const currentQuestionIndex = usePracticeStore((state) => state.currentQuestionIndex);
+  const isResumedSession = usePracticeStore((state) => state.isResumedSession);
+  const historySessionId = usePracticeStore((state) => state.historySessionId);
+  const saveProgressAction = usePracticeStore((state) => state.saveProgress);
   const navigate = useNavigate();
-  const [index, setIndex] = useState(0);
+  // Initialize index from store's currentQuestionIndex for resume support (Requirements 3.3, 3.4)
+  const [index, setIndex] = useState(() => currentQuestionIndex);
   const [selected, setSelected] = useState<string | null>(null);
   const [textInput, setTextInput] = useState(''); // 第三大题填空输入
   const [questionStart, setQuestionStart] = useState(Date.now());
@@ -40,7 +51,26 @@ const QuizPage = () => {
   const [pendingAdvance, setPendingAdvance] = useState(false);
   const [retryingSection, setRetryingSection] = useState<QuestionType | null>(null);
   const [isHintOpen, setIsHintOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [canSpeak, setCanSpeak] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [showPauseConfirm, setShowPauseConfirm] = useState(false);
   const { pollError } = useGenerationPolling();
+
+  useEffect(() => {
+    setCanSpeak(tts.canSpeak());
+    const unsub = tts.subscribe((status) => {
+      setIsPlaying(status === 'playing');
+    });
+    return () => {
+      unsub();
+      tts.cancel();
+    };
+  }, []);
+
+  const handlePlayAudio = (text: string) => {
+    tts.speak(text);
+  };
 
   // 过滤掉旧版第三大题（没有 correctAnswer 字段的）
   // 重练模式下使用 retryQuestions，否则使用 superJson 队列
@@ -129,6 +159,13 @@ const QuizPage = () => {
     setTextInput(''); // 切换题目时清空填空输入
   }, [currentId]);
 
+  // Sync index when resuming a session (Requirements 3.3, 3.4)
+  useEffect(() => {
+    if (isResumedSession && currentQuestionIndex > 0) {
+      setIndex(currentQuestionIndex);
+    }
+  }, [isResumedSession, currentQuestionIndex]);
+
   // 重练模式下不需要 superJson，只需要 retryQuestions
   if (!isRetryMode && !superJson) {
     return null;
@@ -204,6 +241,19 @@ const QuizPage = () => {
       recordRetryAnswer(answer);
     } else {
       recordAnswer(answer);
+      
+      // Auto-save progress for non-retry mode (Requirements 2.1, 2.2)
+      if (historySessionId) {
+        try {
+          await saveProgressAction(answer);
+          setSaveError(null);
+        } catch {
+          // Handle save errors gracefully - show toast but continue
+          setSaveError('进度保存失败，但您可以继续答题');
+          // Clear error after 3 seconds
+          setTimeout(() => setSaveError(null), 3000);
+        }
+      }
     }
     const nextAnswers = [...answersRef.current, answer];
     answersRef.current = nextAnswers;
@@ -236,14 +286,22 @@ const QuizPage = () => {
   const finalize = async (answers: AnswerRecord[]) => {
     setSubmitting(true);
     setError('');
+    const ensuredSuperJson = superJson;
+
+    if (!ensuredSuperJson) {
+      setSubmitting(false);
+      setError('题目数据缺失，请返回并重新开始练习');
+      return;
+    }
+
     try {
       const correct = answers.filter((a) => a.correct).length;
       const score = Math.round((correct / answers.length) * 100);
       const analysis = await requestAnalysis({
-        difficulty: superJson.metadata.difficulty,
+        difficulty: ensuredSuperJson.metadata.difficulty,
         words,
         answers,
-        superJson,
+        superJson: ensuredSuperJson,
         score,
       });
 
@@ -255,20 +313,22 @@ const QuizPage = () => {
       let snapshot: SessionSnapshot | undefined;
       if (mode === 'guest') {
         snapshot = saveGuestSession({
-          difficulty: superJson.metadata.difficulty,
+          difficulty: ensuredSuperJson.metadata.difficulty,
           words,
           score,
           analysis,
-          superJson,
+          superJson: ensuredSuperJson,
           answers,
+          status: 'completed',
+          currentQuestionIndex: answers.length,
         });
       } else {
         snapshot = await saveAuthenticatedSession({
-          difficulty: superJson.metadata.difficulty,
+          difficulty: ensuredSuperJson.metadata.difficulty,
           words,
           score,
           analysis,
-          superJson,
+          superJson: ensuredSuperJson,
           answers,
         });
       }
@@ -331,6 +391,28 @@ const QuizPage = () => {
     try {
       const snapshot = await retryGenerationSection(sessionId, type);
       applySessionSnapshot(snapshot);
+      
+      // Sync updated superJson to history session if exists (Requirements 7.3)
+      // This ensures progress saves work with the newly generated questions
+      if (historySessionId) {
+        const updatedSuperJson = {
+          metadata: {
+            totalQuestions: snapshot.metadata.totalQuestions,
+            words: snapshot.metadata.words,
+            difficulty: snapshot.metadata.difficulty,
+            generatedAt: snapshot.metadata.generatedAt,
+          },
+          questions_type_1: snapshot.sections.questions_type_1.questions,
+          questions_type_2: snapshot.sections.questions_type_2.questions,
+          questions_type_3: snapshot.sections.questions_type_3.questions,
+        };
+        try {
+          await updateSessionSuperJson(historySessionId, updatedSuperJson);
+        } catch (syncErr) {
+          // Log but don't fail - the retry itself succeeded
+          console.error('Failed to sync updated superJson:', syncErr);
+        }
+      }
     } catch (err) {
       setError(getErrorMessage(err, '重试失败，请稍后再试'));
     } finally {
@@ -338,14 +420,55 @@ const QuizPage = () => {
     }
   };
 
+  // Pause button handlers (Requirements 3.1, 3.2)
+  const handlePauseClick = () => {
+    setShowPauseConfirm(true);
+  };
+
+  const handlePauseConfirm = () => {
+    setShowPauseConfirm(false);
+    navigate('/');
+  };
+
+  const handlePauseCancel = () => {
+    setShowPauseConfirm(false);
+  };
+
   return (
     <div className="quiz-shell">
       <div className="quiz-progress">
         <div className="progress-header">
-          <p className="progress-label">{progressLabel}</p>
-          <p className="progress-count">
-            第 {progressCurrent} / {totalTarget} 题
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <p className="progress-label">{progressLabel}</p>
+            <button
+              type="button"
+              className="listening-mode-toggle"
+              onClick={toggleListeningMode}
+              title="开启后将遮挡题干，需依靠听力作答"
+              role="switch"
+              aria-checked={listeningMode}
+              style={{ background: 'transparent', border: 'none', padding: 0 }}
+            >
+              <div className={`toggle-switch ${listeningMode ? 'active' : ''}`} />
+              <span>听力模式</span>
+            </button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <p className="progress-count">
+              第 {progressCurrent} / {totalTarget} 题
+            </p>
+            {/* Pause button (Requirements 3.1, 3.2) */}
+            {!isRetryMode && historySessionId && (
+              <button
+                type="button"
+                className="pause-btn"
+                onClick={handlePauseClick}
+                title="暂停练习，稍后继续"
+              >
+                暂停
+              </button>
+            )}
+          </div>
         </div>
         <div className="progress-track">
           <div className="progress-thumb" style={{ width: `${progressPercent}%` }} />
@@ -359,6 +482,7 @@ const QuizPage = () => {
           />
         )}
         {pollError && !isRetryMode && <p className="form-error subtle">{pollError}</p>}
+        {saveError && <p className="form-error subtle">{saveError}</p>}
       </div>
 
       <div className="panel question-card">
@@ -381,9 +505,40 @@ const QuizPage = () => {
         ) : current ? (
           <>
             {/* 第二大题不应该在头部重复展示被测短语 —— 使用通用标题并把短语高亮在句子里 */}
-            <h3>{current.type === 'questions_type_2' ? SECTION_LABELS.questions_type_2 : current.prompt}</h3>
+            {/* 听力模式：对于非 Type 2 题目，遮挡题干；Type 2 (Zh->En) 不遮挡中文提示 */}
+            <div className="prompt-row">
+              {/* 播放按钮 - Type 2 不显示（避免泄露答案） */}
+              {current.type !== 'questions_type_2' && (
+                <button
+                  type="button"
+                  className={`audio-btn ${isPlaying ? 'playing' : ''}`}
+                  onClick={() => handlePlayAudio(current.type === 'questions_type_3' ? current.sentence ?? '' : current.word)}
+                  disabled={!canSpeak || !audioEnabled}
+                  title={!canSpeak ? "当前浏览器不支持语音播放" : !audioEnabled ? "音频已禁用" : "播放发音"}
+                >
+                  {isPlaying ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      <line x1="23" y1="9" x2="17" y2="15" />
+                      <line x1="17" y1="9" x2="23" y2="15" />
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                    </svg>
+                  )}
+                </button>
+              )}
+              
+              {/* 题目内容 - 听力模式下遮挡 Type 1/3 */}
+              <div className={listeningMode && current.type !== 'questions_type_2' ? 'masked-content' : ''}>
+                <h3>{current.type === 'questions_type_2' ? SECTION_LABELS.questions_type_2 : current.prompt}</h3>
+              </div>
+            </div>
+            
             {current.sentence && (
-              <p className="sentence">
+              <div className={listeningMode && current.type === 'questions_type_3' ? 'masked-content sentence' : 'sentence'}>
                 {isType3 ? (
                   // 第三大题：直接显示句子（已包含 _____），用首字母提示替换空白
                   <>
@@ -413,8 +568,9 @@ const QuizPage = () => {
                 ) : (
                   <>{current.sentence}</>
                 )}
-                {!isType3 && current.translation && <span>（{current.translation}）</span>}
-              </p>
+                {/* 听力模式下也隐藏翻译? 是的，否则可能猜出来 */}
+                {!isType3 && current.translation && !listeningMode && <span>（{current.translation}）</span>}
+              </div>
             )}
             {current.hint && (
               <div className="hint-toggle">
@@ -494,6 +650,24 @@ const QuizPage = () => {
           </div>
         )}
       </div>
+
+      {/* Pause confirmation dialog (Requirements 3.1, 3.2) */}
+      {showPauseConfirm && (
+        <div className="modal-overlay" onClick={handlePauseCancel}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>暂停练习</h3>
+            <p>您的进度已自动保存，可以稍后从主页继续。</p>
+            <div className="modal-actions">
+              <button type="button" className="secondary" onClick={handlePauseCancel}>
+                继续答题
+              </button>
+              <button type="button" className="primary" onClick={handlePauseConfirm}>
+                确认暂停
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,15 +1,22 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { useGenerationPolling } from '../useGenerationPolling';
 import { usePracticeStore } from '../../store/usePracticeStore';
-import type { GenerationSectionState, QuestionType } from '../../types';
+import type { GenerationSectionState, QuestionType, SessionSnapshot } from '../../types';
 import { fetchGenerationSession } from '../../lib/api';
+import { getSessionForResume } from '../../lib/progressService';
 
 vi.mock('../../lib/api', async () => {
   const actual = await vi.importActual<typeof import('../../lib/api')>('../../lib/api');
   return {
     ...actual,
     fetchGenerationSession: vi.fn(),
+  };
+});
+
+vi.mock('../../lib/progressService', async () => {
+  return {
+    getSessionForResume: vi.fn(),
   };
 });
 
@@ -62,15 +69,17 @@ const snapshot = {
 
 describe('useGenerationPolling', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     usePracticeStore.setState({
       sessionId: undefined,
+      historySessionId: undefined,
       sectionStatus: {
         questions_type_1: 'pending',
         questions_type_2: 'pending',
         questions_type_3: 'pending',
       },
       applySessionSnapshot: usePracticeStore.getState().applySessionSnapshot,
+      resumeSession: usePracticeStore.getState().resumeSession,
     });
   });
 
@@ -176,5 +185,174 @@ describe('useGenerationPolling', () => {
     expect(clearSpy).toHaveBeenCalled();
     clearSpy.mockRestore();
     vi.useRealTimers();
+  });
+
+  // Requirement 7.1: Generation session expiry fallback to history session
+  it('404 错误时调用 getSessionForResume (Requirement 7.1)', async () => {
+    // Setup store with historySessionId
+    usePracticeStore.setState({
+      sessionId: 'session-1',
+      historySessionId: 'history-session-1',
+      sectionStatus: {
+        questions_type_1: 'ready',
+        questions_type_2: 'generating',
+        questions_type_3: 'pending',
+      },
+    });
+
+    // Mock 404 error from generation session API
+    const error404 = { response: { status: 404 } };
+    (fetchGenerationSession as Mock).mockRejectedValue(error404);
+    
+    // Mock successful history session retrieval
+    (getSessionForResume as Mock).mockResolvedValue({
+      id: 'history-session-1',
+      mode: 'guest',
+      difficulty: 'beginner',
+      words: ['a', 'b'],
+      score: 0,
+      analysis: { report: '', recommendations: [] },
+      superJson: {
+        metadata: {
+          totalQuestions: 3,
+          words: ['a', 'b'],
+          difficulty: 'beginner',
+          generatedAt: new Date().toISOString(),
+        },
+        questions_type_1: [],
+        questions_type_2: [],
+        questions_type_3: [],
+      },
+      answers: [],
+      createdAt: new Date().toISOString(),
+      status: 'in_progress',
+      currentQuestionIndex: 0,
+      updatedAt: new Date().toISOString(),
+    });
+
+    const { unmount } = renderHook(() => useGenerationPolling());
+
+    await waitFor(() => {
+      expect(getSessionForResume).toHaveBeenCalledWith('history-session-1');
+    });
+
+    unmount();
+  });
+
+  it('404 错误时回退到 history session 并调用 resumeSession (Requirement 7.1)', async () => {
+    const historySession: SessionSnapshot = {
+      id: 'history-session-1',
+      mode: 'guest',
+      difficulty: 'beginner',
+      words: ['a', 'b'],
+      score: 0,
+      analysis: { report: '', recommendations: [] },
+      superJson: {
+        metadata: {
+          totalQuestions: 3,
+          words: ['a', 'b'],
+          difficulty: 'beginner',
+          generatedAt: new Date().toISOString(),
+        },
+        questions_type_1: [],
+        questions_type_2: [],
+        questions_type_3: [],
+      },
+      answers: [],
+      createdAt: new Date().toISOString(),
+      status: 'in_progress',
+      currentQuestionIndex: 0,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const resumeSessionMock = vi.fn();
+    
+    // Setup store with historySessionId and mock resumeSession
+    usePracticeStore.setState({
+      sessionId: 'session-1',
+      historySessionId: 'history-session-1',
+      sectionStatus: {
+        questions_type_1: 'ready',
+        questions_type_2: 'generating',
+        questions_type_3: 'pending',
+      },
+      resumeSession: resumeSessionMock,
+    });
+
+    // Mock 404 error from generation session API
+    const error404 = { response: { status: 404 } };
+    (fetchGenerationSession as Mock).mockRejectedValue(error404);
+    
+    // Mock successful history session retrieval
+    (getSessionForResume as Mock).mockResolvedValue(historySession);
+
+    const { unmount } = renderHook(() => useGenerationPolling());
+
+    await waitFor(() => {
+      expect(getSessionForResume).toHaveBeenCalledWith('history-session-1');
+    });
+
+    await waitFor(() => {
+      expect(resumeSessionMock).toHaveBeenCalledWith(historySession);
+    });
+
+    unmount();
+  });
+
+  it('404 错误但无 historySessionId 时显示错误', async () => {
+    // Setup store without historySessionId
+    usePracticeStore.setState({
+      sessionId: 'session-1',
+      historySessionId: undefined,
+      sectionStatus: {
+        questions_type_1: 'ready',
+        questions_type_2: 'generating',
+        questions_type_3: 'pending',
+      },
+    });
+
+    // Mock 404 error
+    const error404 = { response: { status: 404 } };
+    (fetchGenerationSession as vi.Mock).mockRejectedValue(error404);
+
+    const { result, unmount } = renderHook(() => useGenerationPolling());
+
+    await waitFor(() => {
+      expect(result.current.pollError).toContain('刷新题库状态失败');
+    });
+
+    // Should not attempt to get history session
+    expect(getSessionForResume).not.toHaveBeenCalled();
+    unmount();
+  });
+
+  it('404 回退失败时调用 getSessionForResume', async () => {
+    // Setup mocks BEFORE setting store state
+    // Mock 404 error from generation session API
+    const error404 = { response: { status: 404 } };
+    (fetchGenerationSession as Mock).mockRejectedValue(error404);
+    
+    // Mock failed history session retrieval
+    (getSessionForResume as Mock).mockRejectedValue(new Error('History session not found'));
+    
+    // Setup store with historySessionId
+    usePracticeStore.setState({
+      sessionId: 'session-1',
+      historySessionId: 'history-session-1',
+      sectionStatus: {
+        questions_type_1: 'ready',
+        questions_type_2: 'generating',
+        questions_type_3: 'pending',
+      },
+    });
+
+    const { unmount } = renderHook(() => useGenerationPolling());
+
+    // Wait for getSessionForResume to be called
+    await waitFor(() => {
+      expect(getSessionForResume).toHaveBeenCalledWith('history-session-1');
+    });
+
+    unmount();
   });
 });

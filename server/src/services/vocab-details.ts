@@ -198,6 +198,9 @@ export const generateVocabularyDetails = async (
       const chunkIndex = currentIndex;
       currentIndex += 1;
       const chunkWordsList = chunks[chunkIndex];
+      if (!chunkWordsList) {
+        continue; // Skip undefined chunks
+      }
       const chunkDetails = await generateChunk(chunkWordsList, difficulty, chunkIndex, totalChunks);
       chunkDetails.forEach((detail) => {
         const key = detail.word.toLowerCase();

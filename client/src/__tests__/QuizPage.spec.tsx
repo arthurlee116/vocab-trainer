@@ -1,6 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import QuizPage from '../pages/QuizPage';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -10,15 +10,32 @@ import { SECTION_LABELS } from '../constants/sections';
 import { requestAnalysis, retryGenerationSection, saveAuthenticatedSession } from '../lib/api';
 import { saveGuestSession } from '../lib/storage';
 
-const mockNavigate = vi.fn();
+import { tts } from '../lib/tts';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+  const mockNavigate = vi.fn();
+
+  vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+    return {
+      ...actual,
+      useNavigate: () => mockNavigate,
+    };
+  });
+
+// Mock TTS
+vi.mock('../lib/tts', () => ({
+  tts: {
+    speak: vi.fn(),
+    cancel: vi.fn(),
+    canSpeak: vi.fn().mockReturnValue(true),
+    subscribe: vi.fn((cb) => {
+      // reference the callback so TypeScript's noUnusedParameters doesn't complain
+      void cb;
+      // cb('stopped'); // Don't auto-call to allow manual control in tests if needed, or call it
+      return () => {};
+    }),
+  },
+}));
 
 vi.mock('../hooks/useGenerationPolling', () => ({
   useGenerationPolling: vi.fn(() => ({ pollError: '' })),
@@ -393,11 +410,11 @@ describe('QuizPage', () => {
         metadata: { totalQuestions: 1 },
       },
     });
-    (requestAnalysis as vi.Mock).mockResolvedValue({
+    (requestAnalysis as Mock).mockResolvedValue({
       report: '分析',
       recommendations: [],
     });
-    (saveGuestSession as vi.Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
+    (saveGuestSession as Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
 
     renderQuiz();
 
@@ -437,11 +454,11 @@ describe('QuizPage', () => {
         metadata: { totalQuestions: 1 },
       },
     });
-    (requestAnalysis as vi.Mock).mockResolvedValue({
+    (requestAnalysis as Mock).mockResolvedValue({
       report: '分析',
       recommendations: [],
     });
-    (saveAuthenticatedSession as vi.Mock).mockResolvedValue({ id: 'history' });
+    (saveAuthenticatedSession as Mock).mockResolvedValue({ id: 'history' });
 
     renderQuiz();
     await userEvent.click(screen.getByRole('button', { name: /a/i }));
@@ -471,7 +488,7 @@ describe('QuizPage', () => {
         metadata: { totalQuestions: 1 },
       },
     });
-    (requestAnalysis as vi.Mock).mockRejectedValue({});
+    (requestAnalysis as Mock).mockRejectedValue({});
 
     renderQuiz();
     await userEvent.click(screen.getByRole('button', { name: 'OK' }));
@@ -531,9 +548,15 @@ describe('QuizPage', () => {
       const input = screen.getByPlaceholderText('请输入答案...');
       expect(input).toBeInTheDocument();
 
-      // 不应该有选择按钮（除了提交按钮）
+      // 不应该有选择按钮（除了提交按钮和播放按钮）
       const choiceButtons = screen.queryAllByRole('button').filter(
-        (btn) => !['完成', '下一题', '查看提示', '收起提示'].includes(btn.textContent ?? ''),
+        (btn) => {
+          const text = btn.textContent ?? '';
+          const title = btn.getAttribute('title');
+          return !['完成', '下一题', '查看提示', '收起提示'].includes(text) && 
+                 title !== '播放发音' && 
+                 title !== '当前浏览器不支持语音播放';
+        }
       );
       expect(choiceButtons.length).toBe(0);
     });
@@ -591,11 +614,11 @@ describe('QuizPage', () => {
           metadata: { totalQuestions: 1 },
         },
       });
-      (requestAnalysis as vi.Mock).mockResolvedValue({
+      (requestAnalysis as Mock).mockResolvedValue({
         report: '分析',
         recommendations: [],
       });
-      (saveGuestSession as vi.Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
+      (saveGuestSession as Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
 
       renderQuiz();
 
@@ -635,11 +658,11 @@ describe('QuizPage', () => {
           metadata: { totalQuestions: 1 },
         },
       });
-      (requestAnalysis as vi.Mock).mockResolvedValue({
+      (requestAnalysis as Mock).mockResolvedValue({
         report: '分析',
         recommendations: [],
       });
-      (saveGuestSession as vi.Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
+      (saveGuestSession as Mock).mockReturnValue({ id: 'snapshot', mode: 'guest' });
 
       renderQuiz();
 
@@ -849,9 +872,9 @@ describe('QuizPage', () => {
       setRetryModeState([retryQuestion]);
 
       // 清除之前的 mock 调用
-      (requestAnalysis as vi.Mock).mockClear();
-      (saveGuestSession as vi.Mock).mockClear();
-      (saveAuthenticatedSession as vi.Mock).mockClear();
+      (requestAnalysis as Mock).mockClear();
+      (saveGuestSession as Mock).mockClear();
+      (saveAuthenticatedSession as Mock).mockClear();
 
       renderQuiz();
 
@@ -924,6 +947,421 @@ describe('QuizPage', () => {
         const { lastResult } = usePracticeStore.getState();
         expect(lastResult?.analysis.report).toContain('恭喜');
       });
+    });
+  });
+
+  /**
+   * TTS & Listening Mode Tests
+   * Requirements: 1, 2, 3
+   */
+  describe('TTS & Listening Mode', () => {
+    beforeEach(() => {
+      usePracticeStore.setState({
+        listeningMode: false,
+        audioEnabled: true,
+        isRetryMode: false,
+        retryQuestions: [],
+      });
+    });
+
+    it('Type 1 题目应渲染播放按钮并在点击时调用 tts.speak', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        word: 'apple',
+        prompt: 'apple',
+        choices: [{ id: 'c1', text: '苹果' }],
+        correctChoiceId: 'c1',
+      });
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [question], questions_type_2: [], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+      
+      const audioBtn = screen.getByTitle('播放发音');
+      expect(audioBtn).toBeInTheDocument();
+      
+      await userEvent.click(audioBtn);
+      expect(tts.speak).toHaveBeenCalledWith('apple');
+    });
+
+    it('点击听力模式开关应切换 listeningMode 状态', async () => {
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [createMockQuestion({ type: 'questions_type_1' })], questions_type_2: [], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+      
+      const toggle = screen.getByRole('switch', { name: /听力模式/ }); // Assuming label text is associated or button content acts as label
+      // Actually our button contains text "听力模式", so getByRole('switch') should work if we have aria-label or content.
+      // The button has content "听力模式", so accessible name is "听力模式".
+      
+      await userEvent.click(toggle);
+      expect(usePracticeStore.getState().listeningMode).toBe(true);
+      expect(toggle).toHaveAttribute('aria-checked', 'true');
+      
+      await userEvent.click(toggle);
+      expect(usePracticeStore.getState().listeningMode).toBe(false);
+      expect(toggle).toHaveAttribute('aria-checked', 'false');
+    });
+
+    it('听力模式下 Type 1 题目应遮挡题干', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        prompt: 'ShowMe',
+      });
+      usePracticeStore.setState({ listeningMode: true });
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [question], questions_type_2: [], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      const { container } = renderQuiz();
+      
+      // Check if masked class is applied
+      const promptContainer = container.querySelector('.masked-content');
+      expect(promptContainer).toBeInTheDocument();
+      expect(promptContainer).toHaveTextContent('ShowMe');
+    });
+
+    it('听力模式下 Type 2 (看英文选中文) 不应遮挡题干', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_2',
+        prompt: 'ChinesePrompt',
+      });
+      usePracticeStore.setState({ listeningMode: true });
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [], questions_type_2: [question], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      const { container } = renderQuiz();
+      
+      // Should NOT have masked-content class
+      const promptContainer = container.querySelector('.masked-content');
+      expect(promptContainer).toBeNull();
+      
+      expect(screen.getByRole('heading', { level: 3, name: SECTION_LABELS.questions_type_2 })).toBeInTheDocument();
+    });
+
+    it('Type 2 (看英文选中文) 不应显示播放按钮 (防止泄露答案)', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_2',
+      });
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [], questions_type_2: [question], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+      
+      expect(screen.queryByTitle('播放发音')).toBeNull();
+    });
+
+    it('播放时按钮应有 playing 样式', async () => {
+       const question = createMockQuestion({ type: 'questions_type_1' });
+       setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [question], questions_type_2: [], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      // Setup tts subscribe mock to simulate state change
+      let statusCallback: (s: string) => void = () => {};
+      (tts.subscribe as Mock).mockImplementation((cb: (status: string) => void) => {
+        statusCallback = cb;
+        return () => {};
+      });
+
+      renderQuiz();
+      
+      const audioBtn = screen.getByTitle('播放发音');
+      expect(audioBtn).not.toHaveClass('playing');
+      
+      act(() => {
+        statusCallback('playing');
+      });
+      expect(audioBtn).toHaveClass('playing');
+      
+      act(() => {
+        statusCallback('stopped');
+      });
+      expect(audioBtn).not.toHaveClass('playing');
+    });
+    
+    it('当 audioEnabled 为 false 时播放按钮应禁用', async () => {
+      const question = createMockQuestion({ type: 'questions_type_1' });
+      setQuizState({
+        superJsonOverrides: {
+          sections: { questions_type_1: [question], questions_type_2: [], questions_type_3: [] },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+      
+      renderQuiz();
+      const audioBtn = screen.getByTitle('播放发音');
+      expect(audioBtn).toBeEnabled();
+      
+      act(() => {
+        usePracticeStore.setState({ audioEnabled: false });
+      });
+      
+      expect(audioBtn).toBeDisabled();
+      expect(audioBtn).toHaveAttribute('title', '音频已禁用');
+    });
+  });
+
+  /**
+   * Session Resume Tests
+   * Requirements: 3.3, 3.4, 2.1, 2.2
+   */
+  describe('Session Resume', () => {
+    beforeEach(() => {
+      usePracticeStore.setState({
+        currentQuestionIndex: 0,
+        isResumedSession: false,
+        historySessionId: undefined,
+      });
+    });
+
+    it('恢复会话时从 currentQuestionIndex 初始化题目索引', async () => {
+      const q1 = createMockQuestion({
+        id: 'q1',
+        type: 'questions_type_1',
+        prompt: '第一题',
+        choices: [{ id: 'c1', text: 'A' }, { id: 'c2', text: 'B' }],
+        correctChoiceId: 'c1',
+      });
+      const q2 = createMockQuestion({
+        id: 'q2',
+        type: 'questions_type_1',
+        prompt: '第二题',
+        choices: [{ id: 'c3', text: 'C' }, { id: 'c4', text: 'D' }],
+        correctChoiceId: 'c3',
+      });
+      const q3 = createMockQuestion({
+        id: 'q3',
+        type: 'questions_type_1',
+        prompt: '第三题',
+        choices: [{ id: 'c5', text: 'E' }, { id: 'c6', text: 'F' }],
+        correctChoiceId: 'c5',
+      });
+
+      // Set up resumed session state - already answered 2 questions
+      usePracticeStore.setState({
+        currentQuestionIndex: 2,
+        isResumedSession: true,
+        historySessionId: 'history-123',
+        answers: [
+          { questionId: 'q1', choiceId: 'c1', correct: true, elapsedMs: 1000 },
+          { questionId: 'q2', choiceId: 'c3', correct: true, elapsedMs: 1000 },
+        ],
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [q1, q2, q3],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 3 },
+        },
+      });
+
+      renderQuiz();
+
+      // Should show the third question (index 2)
+      expect(screen.getByText('第三题')).toBeInTheDocument();
+      expect(screen.getByText('第 3 / 3 题')).toBeInTheDocument();
+    });
+
+    it('有 historySessionId 时显示暂停按钮', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        choices: [{ id: 'c1', text: 'A' }],
+        correctChoiceId: 'c1',
+      });
+
+      usePracticeStore.setState({
+        historySessionId: 'history-123',
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [question],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+
+      const pauseBtn = screen.getByRole('button', { name: '暂停' });
+      expect(pauseBtn).toBeInTheDocument();
+    });
+
+    it('无 historySessionId 时不显示暂停按钮', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        choices: [{ id: 'c1', text: 'A' }],
+        correctChoiceId: 'c1',
+      });
+
+      usePracticeStore.setState({
+        historySessionId: undefined,
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [question],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+
+      expect(screen.queryByRole('button', { name: '暂停' })).toBeNull();
+    });
+
+    it('点击暂停按钮显示确认对话框', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        choices: [{ id: 'c1', text: 'A' }],
+        correctChoiceId: 'c1',
+      });
+
+      usePracticeStore.setState({
+        historySessionId: 'history-123',
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [question],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+
+      await userEvent.click(screen.getByRole('button', { name: '暂停' }));
+
+      // Should show confirmation dialog
+      expect(screen.getByText('暂停练习')).toBeInTheDocument();
+      expect(screen.getByText('您的进度已自动保存，可以稍后从主页继续。')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '继续答题' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '确认暂停' })).toBeInTheDocument();
+    });
+
+    it('确认暂停后导航到主页', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        choices: [{ id: 'c1', text: 'A' }],
+        correctChoiceId: 'c1',
+      });
+
+      usePracticeStore.setState({
+        historySessionId: 'history-123',
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [question],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+
+      await userEvent.click(screen.getByRole('button', { name: '暂停' }));
+      await userEvent.click(screen.getByRole('button', { name: '确认暂停' }));
+
+      expect(mockNavigate).toHaveBeenCalledWith('/');
+    });
+
+    it('取消暂停后关闭对话框继续答题', async () => {
+      const question = createMockQuestion({
+        type: 'questions_type_1',
+        choices: [{ id: 'c1', text: 'A' }],
+        correctChoiceId: 'c1',
+      });
+
+      usePracticeStore.setState({
+        historySessionId: 'history-123',
+      });
+
+      setQuizState({
+        superJsonOverrides: {
+          sections: {
+            questions_type_1: [question],
+            questions_type_2: [],
+            questions_type_3: [],
+          },
+          metadata: { totalQuestions: 1 },
+        },
+      });
+
+      renderQuiz();
+
+      await userEvent.click(screen.getByRole('button', { name: '暂停' }));
+      await userEvent.click(screen.getByRole('button', { name: '继续答题' }));
+
+      // Dialog should be closed
+      expect(screen.queryByText('暂停练习')).toBeNull();
+      // Should not navigate
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('重练模式下不显示暂停按钮', async () => {
+      const retryQuestion = createMockQuestion({
+        id: 'retry-q1',
+        type: 'questions_type_1',
+        prompt: '重练题目',
+        choices: [{ id: 'r1', text: '正确' }],
+        correctChoiceId: 'r1',
+      });
+
+      usePracticeStore.setState({
+        isRetryMode: true,
+        retryQuestions: [retryQuestion],
+        retryAnswers: [],
+        historySessionId: 'history-123', // Even with historySessionId
+        status: 'inProgress',
+        superJson: undefined,
+      });
+
+      renderQuiz();
+
+      // Should not show pause button in retry mode
+      expect(screen.queryByRole('button', { name: '暂停' })).toBeNull();
     });
   });
 });

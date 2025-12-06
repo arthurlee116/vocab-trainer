@@ -14,7 +14,6 @@ const ReportPage = () => {
     isRetryMode,
     retryQuestions,
     retryAnswers,
-    originalLastResult,
     startRetryPractice,
     exitRetryMode,
   } = usePracticeStore();
