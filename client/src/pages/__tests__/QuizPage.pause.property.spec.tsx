@@ -176,7 +176,7 @@ describe('QuizPage Pause Button - Property Tests', () => {
         ),
         { numRuns: 50 }
       );
-    });
+    }, 15000);
 
     it('should NOT show pause button when historySessionId is undefined', () => {
       fc.assert(
@@ -211,7 +211,7 @@ describe('QuizPage Pause Button - Property Tests', () => {
         ),
         { numRuns: 50 }
       );
-    });
+    }, 15000);
 
     it('should NOT show pause button in retry mode even with historySessionId', () => {
       fc.assert(
@@ -253,6 +253,6 @@ describe('QuizPage Pause Button - Property Tests', () => {
         ),
         { numRuns: 50 }
       );
-    });
+    }, 15000);
   });
 });

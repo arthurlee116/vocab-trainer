@@ -178,14 +178,18 @@ export const updateSessionSuperJson = async (
  * @param params.difficulty - The difficulty level of the session
  * @param params.words - Array of words for the session
  * @param params.superJson - The generated quiz data
+ * @param params.hasVocabDetails - Whether vocabulary details were generated
+ * @param params.vocabDetails - Optional vocabulary details data
  * @returns Created session ID and timestamp
  * 
- * Requirements: 1.1, 1.2
+ * Requirements: 1.1, 1.2, 4.1, 4.2
  */
 export const createInProgressSession = async (params: {
   difficulty: DifficultyLevel;
   words: string[];
   superJson: SuperJson;
+  hasVocabDetails?: boolean;
+  vocabDetails?: import('../types').VocabularyDetail[];
 }): Promise<{ id: string; createdAt: string }> => {
   const mode = useAuthStore.getState().mode;
 

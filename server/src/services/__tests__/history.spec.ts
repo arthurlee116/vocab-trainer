@@ -352,6 +352,115 @@ describe('history service - progress and session management', () => {
     }
   });
 
+  it('createInProgressSession 正确存储 hasVocabDetails 为 true', async () => {
+    const { createInProgressSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const vocabDetails = [
+        {
+          word: 'alpha',
+          partsOfSpeech: ['noun'],
+          definitions: ['第一个希腊字母'],
+          examples: [{ en: 'Alpha is the first letter.', zh: 'Alpha 是第一个字母。' }],
+        },
+      ];
+
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson: createSuperJson(),
+        hasVocabDetails: true,
+        vocabDetails,
+      });
+
+      expect(session.hasVocabDetails).toBe(true);
+      expect(session.vocabDetails).toEqual(vocabDetails);
+
+      // Verify persistence
+      const fetched = getSession('tester', session.id);
+      expect(fetched!.hasVocabDetails).toBe(true);
+      expect(fetched!.vocabDetails).toEqual(vocabDetails);
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('createInProgressSession 正确存储 hasVocabDetails 为 false', async () => {
+    const { createInProgressSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const session = createInProgressSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'beginner',
+        words: ['alpha'],
+        superJson: createSuperJson(),
+        hasVocabDetails: false,
+      });
+
+      expect(session.hasVocabDetails).toBe(false);
+      expect(session.vocabDetails).toBeUndefined();
+
+      // Verify persistence
+      const fetched = getSession('tester', session.id);
+      expect(fetched!.hasVocabDetails).toBe(false);
+      expect(fetched!.vocabDetails).toBeUndefined();
+    } finally {
+      cleanup();
+    }
+  });
+
+  it('saveSession 正确存储和读取 vocabDetails', async () => {
+    const { saveSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      const vocabDetails = [
+        {
+          word: 'beta',
+          partsOfSpeech: ['noun', 'adjective'],
+          definitions: ['第二个希腊字母', '测试版'],
+          examples: [
+            { en: 'Beta version is not stable.', zh: '测试版不稳定。' },
+            { en: 'Beta is the second letter.', zh: 'Beta 是第二个字母。' },
+          ],
+        },
+        {
+          word: 'gamma',
+          partsOfSpeech: ['noun'],
+          definitions: ['第三个希腊字母'],
+          examples: [{ en: 'Gamma rays are dangerous.', zh: '伽马射线是危险的。' }],
+        },
+      ];
+
+      const saved = saveSession({
+        userId: 'tester',
+        mode: 'authenticated',
+        difficulty: 'intermediate',
+        words: ['beta', 'gamma'],
+        superJson: createSuperJson(),
+        answers: createAnswers(),
+        score: 90,
+        analysis: { report: 'good', recommendations: [] },
+        status: 'completed',
+        currentQuestionIndex: 1,
+        hasVocabDetails: true,
+        vocabDetails,
+      });
+
+      expect(saved.hasVocabDetails).toBe(true);
+      expect(saved.vocabDetails).toEqual(vocabDetails);
+
+      // Verify persistence
+      const fetched = getSession('tester', saved.id);
+      expect(fetched!.hasVocabDetails).toBe(true);
+      expect(fetched!.vocabDetails).toEqual(vocabDetails);
+    } finally {
+      cleanup();
+    }
+  });
+
   it('listSessions 支持按 status 筛选', async () => {
     const { createInProgressSession, saveSession, listSessions, cleanup } = await createTestHistory();
 

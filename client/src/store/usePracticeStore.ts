@@ -306,6 +306,9 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       currentQuestionIndex: session.currentQuestionIndex,
       isResumedSession: true,
       status: 'inProgress',
+      // Load vocab details if available (Requirements 5.1)
+      vocabDetails: session.vocabDetails,
+      detailsStatus: session.hasVocabDetails && session.vocabDetails ? 'ready' : 'idle',
       // Set all sections to ready since history session has complete superJson (Requirement 7.1)
       sectionStatus: {
         questions_type_1: 'ready',

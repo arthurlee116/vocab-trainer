@@ -58,6 +58,9 @@ export interface SessionRecord {
   status: SessionStatus;
   currentQuestionIndex: number;
   updatedAt: string;
+  // Optional vocab details fields (Requirements 4.1, 4.2)
+  hasVocabDetails: boolean;
+  vocabDetails?: VocabularyDetail[];
 }
 
 export interface InProgressSessionSummary {

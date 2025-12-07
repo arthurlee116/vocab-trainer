@@ -11,7 +11,7 @@ import HistoryPage from '../HistoryPage';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePracticeStore } from '../../store/usePracticeStore';
 import * as storage from '../../lib/storage';
-import type { SessionSnapshot, DifficultyLevel, SessionStatus, SuperJson, AnswerRecord } from '../../types';
+import type { SessionSnapshot, DifficultyLevel, SessionStatus, SuperJson, AnswerRecord, VocabularyDetail } from '../../types';
 
 // Mock the storage module
 vi.mock('../../lib/storage', () => ({
@@ -65,6 +65,20 @@ const answerRecordArb: fc.Arbitrary<AnswerRecord> = fc.record({
   elapsedMs: fc.integer({ min: 100, max: 30000 }),
 });
 
+// Arbitrary for generating vocabulary details
+const vocabDetailArb: fc.Arbitrary<VocabularyDetail> = fc.record({
+  word: fc.string({ minLength: 1, maxLength: 20 }),
+  partsOfSpeech: fc.array(fc.constantFrom('n.', 'v.', 'adj.', 'adv.'), { minLength: 1, maxLength: 3 }),
+  definitions: fc.array(fc.string({ minLength: 5, maxLength: 100 }), { minLength: 1, maxLength: 3 }),
+  examples: fc.array(
+    fc.record({
+      en: fc.string({ minLength: 5, maxLength: 100 }),
+      zh: fc.string({ minLength: 2, maxLength: 50 }),
+    }),
+    { minLength: 1, maxLength: 2 }
+  ),
+});
+
 // Arbitrary for generating a SessionSnapshot with specific status
 const sessionSnapshotArb = (status: SessionStatus): fc.Arbitrary<SessionSnapshot> =>
   fc.record({
@@ -86,6 +100,34 @@ const sessionSnapshotArb = (status: SessionStatus): fc.Arbitrary<SessionSnapshot
     status: fc.constant(status),
     currentQuestionIndex: fc.integer({ min: 0, max: 100 }),
     updatedAt: validDateStringArb,
+    // Vocab details fields (Requirements 4.1, 4.2)
+    hasVocabDetails: fc.boolean(),
+    vocabDetails: fc.option(fc.array(vocabDetailArb, { minLength: 1, maxLength: 5 }), { nil: undefined }),
+  });
+
+// Arbitrary for generating a SessionSnapshot with specific hasVocabDetails value
+const sessionWithVocabDetailsArb = (hasDetails: boolean): fc.Arbitrary<SessionSnapshot> =>
+  fc.record({
+    id: idArb,
+    mode: fc.constantFrom('guest', 'authenticated') as fc.Arbitrary<'guest' | 'authenticated'>,
+    userId: fc.option(idArb, { nil: undefined }),
+    difficulty: difficultyArb,
+    words: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 20 }),
+    score: fc.integer({ min: 0, max: 100 }),
+    analysis: fc.record({
+      report: fc.string({ minLength: 10, maxLength: 200 }),
+      recommendations: fc.array(fc.string({ minLength: 5, maxLength: 100 }), { minLength: 0, maxLength: 3 }),
+    }),
+    superJson: superJsonArb,
+    answers: fc.array(answerRecordArb, { minLength: 0, maxLength: 50 }),
+    createdAt: validDateStringArb,
+    status: fc.constantFrom('in_progress', 'completed') as fc.Arbitrary<SessionStatus>,
+    currentQuestionIndex: fc.integer({ min: 0, max: 100 }),
+    updatedAt: validDateStringArb,
+    hasVocabDetails: fc.constant(hasDetails),
+    vocabDetails: hasDetails
+      ? fc.array(vocabDetailArb, { minLength: 1, maxLength: 5 })
+      : fc.constant(undefined),
   });
 
 // Arbitrary for generating mixed status sessions
@@ -262,6 +304,86 @@ describe('HistoryPage - Property Tests', () => {
           }
         });
       }),
+      { numRuns: 20 }
+    );
+  });
+
+  /**
+   * Vocab details badge rendering test
+   * Sessions with hasVocabDetails=true SHALL display a vocab badge
+   * **Feature: optional-vocab-details**
+   * **Validates: Requirements 4.3**
+   */
+  it('should display vocab badge for sessions with hasVocabDetails=true', () => {
+    fc.assert(
+      fc.property(
+        fc.array(sessionWithVocabDetailsArb(true), { minLength: 1, maxLength: 3 }),
+        (sessions) => {
+          vi.mocked(storage.loadGuestHistory).mockReturnValue(sessions);
+
+          renderHistoryPage();
+
+          // Property: vocab badges should equal number of sessions with hasVocabDetails=true
+          const vocabBadges = document.querySelectorAll('.history-vocab-badge');
+          expect(vocabBadges.length).toBe(sessions.length);
+
+          // Property: each badge should contain "词典" text
+          vocabBadges.forEach((badge) => {
+            expect(badge.textContent).toContain('词典');
+          });
+        }
+      ),
+      { numRuns: 20 }
+    );
+  });
+
+  /**
+   * Vocab details badge NOT rendering test
+   * Sessions with hasVocabDetails=false SHALL NOT display a vocab badge
+   * **Feature: optional-vocab-details**
+   * **Validates: Requirements 4.3**
+   */
+  it('should NOT display vocab badge for sessions with hasVocabDetails=false', () => {
+    fc.assert(
+      fc.property(
+        fc.array(sessionWithVocabDetailsArb(false), { minLength: 1, maxLength: 3 }),
+        (sessions) => {
+          vi.mocked(storage.loadGuestHistory).mockReturnValue(sessions);
+
+          renderHistoryPage();
+
+          // Property: no vocab badges should be rendered
+          const vocabBadges = document.querySelectorAll('.history-vocab-badge');
+          expect(vocabBadges.length).toBe(0);
+        }
+      ),
+      { numRuns: 20 }
+    );
+  });
+
+  /**
+   * Mixed vocab details sessions render correctly
+   * **Feature: optional-vocab-details**
+   * **Validates: Requirements 4.3**
+   */
+  it('should correctly render vocab badges for mixed hasVocabDetails sessions', () => {
+    fc.assert(
+      fc.property(
+        fc.tuple(
+          fc.array(sessionWithVocabDetailsArb(true), { minLength: 1, maxLength: 2 }),
+          fc.array(sessionWithVocabDetailsArb(false), { minLength: 1, maxLength: 2 })
+        ),
+        ([withDetails, withoutDetails]) => {
+          const sessions = [...withDetails, ...withoutDetails];
+          vi.mocked(storage.loadGuestHistory).mockReturnValue(sessions);
+
+          renderHistoryPage();
+
+          // Property: vocab badges count equals sessions with hasVocabDetails=true
+          const vocabBadges = document.querySelectorAll('.history-vocab-badge');
+          expect(vocabBadges.length).toBe(withDetails.length);
+        }
+      ),
       { numRuns: 20 }
     );
   });

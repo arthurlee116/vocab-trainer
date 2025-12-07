@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { History, Clock, CheckCircle, Trash2 } from 'lucide-react';
+import { History, Clock, CheckCircle, Trash2, BookOpen } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { fetchAuthenticatedHistory } from '../lib/api';
@@ -27,6 +27,8 @@ const HistoryPage = () => {
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  // Vocab details resume choice state (Requirements 5.1, 5.2)
+  const [vocabChoiceSession, setVocabChoiceSession] = useState<SessionSnapshot | null>(null);
 
   const fetchRecords = useCallback(async () => {
     setLoading(true);
@@ -52,11 +54,17 @@ const HistoryPage = () => {
   // Handle click on session item (Requirements 5.3, 5.4)
   const handleSessionClick = useCallback(async (record: SessionSnapshot) => {
     if (record.status === 'in_progress') {
-      // In-progress: navigate to QuizPage to continue (Requirements 5.3)
+      // In-progress: check for vocab details (Requirements 5.1, 5.2, 5.3)
       try {
         const session = await getSessionForResume(record.id);
-        resumeSession(session);
-        navigate('/practice/quiz');
+        // If session has vocab details, show choice dialog (Requirements 5.1, 5.2)
+        if (session.hasVocabDetails && session.vocabDetails?.length) {
+          setVocabChoiceSession(session);
+        } else {
+          // No vocab details: navigate directly to QuizPage (Requirements 5.3)
+          resumeSession(session);
+          navigate('/practice/quiz');
+        }
       } catch (err) {
         setError(getErrorMessage(err, '加载会话失败'));
       }
@@ -71,6 +79,27 @@ const HistoryPage = () => {
       navigate('/practice/report');
     }
   }, [resumeSession, setLastResult, navigate]);
+
+  // Handle vocab details choice: view details first (Requirements 5.2)
+  const handleViewVocabDetails = useCallback(() => {
+    if (!vocabChoiceSession) return;
+    resumeSession(vocabChoiceSession);
+    setVocabChoiceSession(null);
+    navigate('/practice/details');
+  }, [vocabChoiceSession, resumeSession, navigate]);
+
+  // Handle vocab details choice: skip to quiz directly (Requirements 5.3)
+  const handleSkipToQuiz = useCallback(() => {
+    if (!vocabChoiceSession) return;
+    resumeSession(vocabChoiceSession);
+    setVocabChoiceSession(null);
+    navigate('/practice/quiz');
+  }, [vocabChoiceSession, resumeSession, navigate]);
+
+  // Cancel vocab choice dialog
+  const handleCancelVocabChoice = useCallback(() => {
+    setVocabChoiceSession(null);
+  }, []);
 
   // Handle delete session (Requirements 4.4)
   const handleDelete = useCallback(async (sessionId: string, e: React.MouseEvent) => {
@@ -105,6 +134,35 @@ const HistoryPage = () => {
 
   return (
     <div className="page-section">
+      {/* Vocab details choice dialog (Requirements 5.1, 5.2) */}
+      {vocabChoiceSession && (
+        <div className="modal-overlay" onClick={handleCancelVocabChoice}>
+          <div className="modal-content vocab-choice-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>
+              <BookOpen size={20} className="inline-icon" />
+              此会话包含词汇详情
+            </h3>
+            <p>您可以先查看词汇详情，或直接继续练习。</p>
+            <div className="vocab-choice-actions">
+              <button type="button" className="secondary" onClick={handleViewVocabDetails}>
+                <BookOpen size={16} />
+                查看词汇详情
+              </button>
+              <button type="button" className="primary" onClick={handleSkipToQuiz}>
+                直接继续练习
+              </button>
+            </div>
+            <button
+              type="button"
+              className="ghost small modal-close"
+              onClick={handleCancelVocabChoice}
+              aria-label="关闭"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
       <div className="panel">
         <h2>
           <History size={24} className="page-title-icon" />
@@ -147,6 +205,13 @@ const HistoryPage = () => {
                       <span>{Math.round(record.score)} 分</span>
                     )}
                     <span className="history-difficulty"> · {difficultyLabels[record.difficulty]}</span>
+                    {/* Vocab details badge (Requirements 4.3) */}
+                    {record.hasVocabDetails && (
+                      <span className="history-vocab-badge" title="含词汇详情">
+                        <BookOpen size={14} className="inline-icon" />
+                        词典
+                      </span>
+                    )}
                   </h3>
                   <div className="history-item-actions">
                     <span className="history-time">

@@ -2,6 +2,9 @@
  * Property-based tests for usePracticeStore session resume functionality
  * **Feature: session-resume, Property 6: Session Resumption Integrity**
  * **Validates: Requirements 3.3, 3.4, 3.5**
+ * 
+ * **Feature: optional-vocab-details, Property: vocabDetails restoration**
+ * **Validates: Requirements 5.1**
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import * as fc from 'fast-check';
@@ -14,6 +17,8 @@ import type {
   SessionSnapshot,
   SuperJson,
   DifficultyLevel,
+  VocabularyDetail,
+  VocabularyExample,
 } from '../../types';
 
 // Reset store before each test
@@ -103,23 +108,47 @@ const superJsonArb: fc.Arbitrary<SuperJson> = fc.record({
   questions_type_3: fc.array(superQuestionArb, { minLength: 0, maxLength: 20 }),
 });
 
-// Arbitrary for generating a SessionSnapshot for resume
+// Arbitrary for generating a VocabularyExample
+const vocabExampleArb: fc.Arbitrary<VocabularyExample> = fc.record({
+  en: fc.string({ minLength: 1, maxLength: 100 }),
+  zh: fc.string({ minLength: 1, maxLength: 100 }),
+});
+
+// Arbitrary for generating a VocabularyDetail
+const vocabDetailArb: fc.Arbitrary<VocabularyDetail> = fc.record({
+  word: fc.string({ minLength: 1, maxLength: 30 }).filter((s) => s.trim().length > 0),
+  partsOfSpeech: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 3 }),
+  definitions: fc.array(fc.string({ minLength: 1, maxLength: 100 }), { minLength: 1, maxLength: 3 }),
+  examples: fc.array(vocabExampleArb, { minLength: 1, maxLength: 2 }),
+});
+
+// Arbitrary for generating a SessionSnapshot for resume (with vocab details support)
 const sessionSnapshotArb: fc.Arbitrary<SessionSnapshot> = fc
-  .record({
-    id: idArb,
-    mode: fc.constantFrom('guest', 'authenticated') as fc.Arbitrary<'guest' | 'authenticated'>,
-    userId: fc.option(idArb, { nil: undefined }),
-    difficulty: difficultyArb,
-    words: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 50 }),
-    score: fc.integer({ min: 0, max: 100 }),
-    analysis: analysisSummaryArb,
-    superJson: superJsonArb,
-    answers: fc.array(answerRecordArb, { minLength: 0, maxLength: 50 }),
-    createdAt: isoDateArb,
-    status: fc.constantFrom('in_progress', 'completed') as fc.Arbitrary<'in_progress' | 'completed'>,
-    currentQuestionIndex: fc.integer({ min: 0, max: 100 }),
-    updatedAt: isoDateArb,
-  })
+  .tuple(
+    fc.record({
+      id: idArb,
+      mode: fc.constantFrom('guest', 'authenticated') as fc.Arbitrary<'guest' | 'authenticated'>,
+      userId: fc.option(idArb, { nil: undefined }),
+      difficulty: difficultyArb,
+      words: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 50 }),
+      score: fc.integer({ min: 0, max: 100 }),
+      analysis: analysisSummaryArb,
+      superJson: superJsonArb,
+      answers: fc.array(answerRecordArb, { minLength: 0, maxLength: 50 }),
+      createdAt: isoDateArb,
+      status: fc.constantFrom('in_progress', 'completed') as fc.Arbitrary<'in_progress' | 'completed'>,
+      currentQuestionIndex: fc.integer({ min: 0, max: 100 }),
+      updatedAt: isoDateArb,
+    }),
+    fc.boolean(), // hasVocabDetails
+    fc.array(vocabDetailArb, { minLength: 1, maxLength: 10 }) // vocabDetails array
+  )
+  .map(([base, hasVocabDetails, vocabDetailsArray]) => ({
+    ...base,
+    hasVocabDetails,
+    // Only include vocabDetails if hasVocabDetails is true (Property 3 consistency)
+    vocabDetails: hasVocabDetails ? vocabDetailsArray : undefined,
+  }))
   .filter((s) => s.currentQuestionIndex <= s.answers.length + 50); // Ensure index is reasonable
 
 describe('usePracticeStore Resume - Property Tests', () => {
@@ -321,6 +350,61 @@ describe('usePracticeStore Resume - Property Tests', () => {
 
           // Property: isResumedSession should be false (this is a new session)
           expect(state.isResumedSession).toBe(false);
+
+          return true;
+        }),
+        { numRuns: 100 }
+      );
+    });
+  });
+
+  /**
+   * **Feature: optional-vocab-details, Property: vocabDetails restoration**
+   * **Validates: Requirements 5.1**
+   *
+   * For any session with hasVocabDetails === true and vocabDetails present,
+   * resuming SHALL restore the vocabDetails and set detailsStatus to 'ready'.
+   * For any session with hasVocabDetails === false or vocabDetails absent,
+   * resuming SHALL set detailsStatus to 'idle'.
+   */
+  describe('vocabDetails Restoration (Requirements 5.1)', () => {
+    it('resumeSession should restore vocabDetails when hasVocabDetails is true', () => {
+      fc.assert(
+        fc.property(sessionSnapshotArb, (session) => {
+          // Action: resume session
+          usePracticeStore.getState().resumeSession(session);
+
+          const state = usePracticeStore.getState();
+
+          if (session.hasVocabDetails && session.vocabDetails) {
+            // Property: vocabDetails should be restored
+            expect(state.vocabDetails).toEqual(session.vocabDetails);
+            // Property: detailsStatus should be 'ready'
+            expect(state.detailsStatus).toBe('ready');
+          } else {
+            // Property: vocabDetails should be undefined
+            expect(state.vocabDetails).toBeUndefined();
+            // Property: detailsStatus should be 'idle'
+            expect(state.detailsStatus).toBe('idle');
+          }
+
+          return true;
+        }),
+        { numRuns: 100 }
+      );
+    });
+
+    it('resumeSession should set detailsStatus based on hasVocabDetails flag', () => {
+      fc.assert(
+        fc.property(sessionSnapshotArb, (session) => {
+          // Action: resume session
+          usePracticeStore.getState().resumeSession(session);
+
+          const state = usePracticeStore.getState();
+
+          // Property: detailsStatus should reflect hasVocabDetails state
+          const expectedStatus = session.hasVocabDetails && session.vocabDetails ? 'ready' : 'idle';
+          expect(state.detailsStatus).toBe(expectedStatus);
 
           return true;
         }),

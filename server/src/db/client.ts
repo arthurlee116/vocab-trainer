@@ -54,6 +54,9 @@ export const runMigrations = () => {
 
   // Run session resume migrations
   runSessionResumeMigrations();
+
+  // Run optional vocab details migrations
+  runVocabDetailsMigrations();
 };
 
 /**
@@ -78,6 +81,22 @@ export const runSessionResumeMigrations = () => {
     db.prepare(`ALTER TABLE sessions ADD COLUMN updated_at TEXT`).run();
     // Migrate existing records: copy created_at to updated_at (Requirement 6.4)
     db.prepare(`UPDATE sessions SET updated_at = created_at WHERE updated_at IS NULL`).run();
+  }
+};
+
+/**
+ * Migration for optional-vocab-details feature (Requirements 4.1, 4.2)
+ * Adds has_vocab_details and vocab_details columns to sessions table
+ */
+export const runVocabDetailsMigrations = () => {
+  // Add has_vocab_details column with default 0 (false) (Requirement 4.1)
+  if (!columnExists('sessions', 'has_vocab_details')) {
+    db.prepare(`ALTER TABLE sessions ADD COLUMN has_vocab_details INTEGER DEFAULT 0`).run();
+  }
+
+  // Add vocab_details column for JSON storage (Requirement 4.2)
+  if (!columnExists('sessions', 'vocab_details')) {
+    db.prepare(`ALTER TABLE sessions ADD COLUMN vocab_details TEXT`).run();
   }
 };
 

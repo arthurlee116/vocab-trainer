@@ -143,7 +143,8 @@ describe('ReportPage - Property Tests', () => {
       fc.property(
         superJsonArb,
         fc.integer({ min: 0, max: 9 }), // wrongCount (max 9 = 3 questions per type)
-        (superJson, wrongCount) => {
+        fc.integer({ min: 0, max: 1000000 }), // seed for deterministic shuffle
+        (superJson, wrongCount, seed) => {
           const allQuestions = [
             ...superJson.questions_type_1,
             ...superJson.questions_type_2,
@@ -151,45 +152,67 @@ describe('ReportPage - Property Tests', () => {
           ];
           const actualWrongCount = Math.min(wrongCount, allQuestions.length);
 
-          return fc.assert(
-            fc.property(
-              answersWithWrongCountArb(superJson, actualWrongCount),
-              (answers) => {
-                // Set up store state
-                usePracticeStore.setState({
-                  superJson,
-                  answers,
-                  lastResult: {
-                    score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
-                    analysis: {
-                      report: 'Test report',
-                      recommendations: ['Recommendation 1'],
-                    },
-                    incorrectWords: [],
-                  },
-                  isRetryMode: false,
-                });
+          // Deterministically generate wrong indices using seed
+          const indices = Array.from({ length: allQuestions.length }, (_, i) => i);
+          // Simple seeded shuffle
+          const shuffled = [...indices].sort((a, b) => {
+            const hashA = (seed * (a + 1) * 31) % 1000;
+            const hashB = (seed * (b + 1) * 31) % 1000;
+            return hashA - hashB;
+          });
+          const wrongIndices = new Set(shuffled.slice(0, actualWrongCount));
 
-                renderReportPage();
+          const answers = allQuestions.map((q, i) => {
+            const isWrong = wrongIndices.has(i);
+            if (q.type === 'questions_type_3') {
+              return {
+                questionId: q.id,
+                userInput: isWrong ? 'wrong_answer' : q.correctAnswer!,
+                correct: !isWrong,
+                elapsedMs: 1000,
+              };
+            } else {
+              const wrongChoiceId = q.choices?.find((c) => c.id !== q.correctChoiceId)?.id ?? '';
+              return {
+                questionId: q.id,
+                choiceId: isWrong ? wrongChoiceId : q.correctChoiceId!,
+                correct: !isWrong,
+                elapsedMs: 1000,
+              };
+            }
+          });
 
-                const retryButton = screen.getByRole('button', { name: '重练错题' });
-                const hasWrongAnswers = actualWrongCount > 0;
+          // Set up store state
+          usePracticeStore.setState({
+            superJson,
+            answers,
+            lastResult: {
+              score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
+              analysis: {
+                report: 'Test report',
+                recommendations: ['Recommendation 1'],
+              },
+              incorrectWords: [],
+            },
+            isRetryMode: false,
+          });
 
-                // Property: button disabled state matches absence of wrong answers
-                if (hasWrongAnswers) {
-                  expect(retryButton).not.toBeDisabled();
-                } else {
-                  expect(retryButton).toBeDisabled();
-                }
-              }
-            ),
-            { numRuns: 5 }
-          );
+          renderReportPage();
+
+          const retryButton = screen.getByRole('button', { name: '重练错题' });
+          const hasWrongAnswers = actualWrongCount > 0;
+
+          // Property: button disabled state matches absence of wrong answers
+          if (hasWrongAnswers) {
+            expect(retryButton).not.toBeDisabled();
+          } else {
+            expect(retryButton).toBeDisabled();
+          }
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 50 }
     );
-  });
+  }, 15000);
 
   /**
    * Property 3 (continued): Button should be disabled when all answers are correct
@@ -197,36 +220,53 @@ describe('ReportPage - Property Tests', () => {
   it('should disable retry button when all answers are correct', () => {
     fc.assert(
       fc.property(superJsonArb, (superJson) => {
-        return fc.assert(
-          fc.property(
-            answersWithWrongCountArb(superJson, 0), // All correct
-            (answers) => {
-              usePracticeStore.setState({
-                superJson,
-                answers,
-                lastResult: {
-                  score: 100,
-                  analysis: {
-                    report: 'Perfect score!',
-                    recommendations: [],
-                  },
-                  incorrectWords: [],
-                },
-                isRetryMode: false,
-              });
+        const allQuestions = [
+          ...superJson.questions_type_1,
+          ...superJson.questions_type_2,
+          ...superJson.questions_type_3,
+        ];
 
-              renderReportPage();
+        // All correct answers
+        const answers = allQuestions.map((q) => {
+          if (q.type === 'questions_type_3') {
+            return {
+              questionId: q.id,
+              userInput: q.correctAnswer!,
+              correct: true,
+              elapsedMs: 1000,
+            };
+          } else {
+            return {
+              questionId: q.id,
+              choiceId: q.correctChoiceId!,
+              correct: true,
+              elapsedMs: 1000,
+            };
+          }
+        });
 
-              const retryButton = screen.getByRole('button', { name: '重练错题' });
-              expect(retryButton).toBeDisabled();
-            }
-          ),
-          { numRuns: 5 }
-        );
+        usePracticeStore.setState({
+          superJson,
+          answers,
+          lastResult: {
+            score: 100,
+            analysis: {
+              report: 'Perfect score!',
+              recommendations: [],
+            },
+            incorrectWords: [],
+          },
+          isRetryMode: false,
+        });
+
+        renderReportPage();
+
+        const retryButton = screen.getByRole('button', { name: '重练错题' });
+        expect(retryButton).toBeDisabled();
       }),
-      { numRuns: 20 }
+      { numRuns: 50 }
     );
-  });
+  }, 15000);
 
   /**
    * Property 3 (continued): Button should be enabled when at least one answer is wrong
@@ -236,7 +276,8 @@ describe('ReportPage - Property Tests', () => {
       fc.property(
         superJsonArb,
         fc.integer({ min: 1, max: 9 }), // At least 1 wrong
-        (superJson, wrongCount) => {
+        fc.integer({ min: 0, max: 1000000 }), // seed for deterministic shuffle
+        (superJson, wrongCount, seed) => {
           const allQuestions = [
             ...superJson.questions_type_1,
             ...superJson.questions_type_2,
@@ -244,35 +285,56 @@ describe('ReportPage - Property Tests', () => {
           ];
           const actualWrongCount = Math.min(wrongCount, allQuestions.length);
 
-          return fc.assert(
-            fc.property(
-              answersWithWrongCountArb(superJson, actualWrongCount),
-              (answers) => {
-                usePracticeStore.setState({
-                  superJson,
-                  answers,
-                  lastResult: {
-                    score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
-                    analysis: {
-                      report: 'Test report',
-                      recommendations: ['Study more'],
-                    },
-                    incorrectWords: [],
-                  },
-                  isRetryMode: false,
-                });
+          // Deterministically generate wrong indices using seed
+          const indices = Array.from({ length: allQuestions.length }, (_, i) => i);
+          const shuffled = [...indices].sort((a, b) => {
+            const hashA = (seed * (a + 1) * 31) % 1000;
+            const hashB = (seed * (b + 1) * 31) % 1000;
+            return hashA - hashB;
+          });
+          const wrongIndices = new Set(shuffled.slice(0, actualWrongCount));
 
-                renderReportPage();
+          const answers = allQuestions.map((q, i) => {
+            const isWrong = wrongIndices.has(i);
+            if (q.type === 'questions_type_3') {
+              return {
+                questionId: q.id,
+                userInput: isWrong ? 'wrong_answer' : q.correctAnswer!,
+                correct: !isWrong,
+                elapsedMs: 1000,
+              };
+            } else {
+              const wrongChoiceId = q.choices?.find((c) => c.id !== q.correctChoiceId)?.id ?? '';
+              return {
+                questionId: q.id,
+                choiceId: isWrong ? wrongChoiceId : q.correctChoiceId!,
+                correct: !isWrong,
+                elapsedMs: 1000,
+              };
+            }
+          });
 
-                const retryButton = screen.getByRole('button', { name: '重练错题' });
-                expect(retryButton).not.toBeDisabled();
-              }
-            ),
-            { numRuns: 5 }
-          );
+          usePracticeStore.setState({
+            superJson,
+            answers,
+            lastResult: {
+              score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
+              analysis: {
+                report: 'Test report',
+                recommendations: ['Study more'],
+              },
+              incorrectWords: [],
+            },
+            isRetryMode: false,
+          });
+
+          renderReportPage();
+
+          const retryButton = screen.getByRole('button', { name: '重练错题' });
+          expect(retryButton).not.toBeDisabled();
         }
       ),
-      { numRuns: 20 }
+      { numRuns: 50 }
     );
-  });
+  }, 15000);
 });

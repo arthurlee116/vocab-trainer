@@ -1,11 +1,11 @@
 import { randomUUID } from 'crypto';
 import { db } from '../db/client';
-import { InProgressSessionSummary, SessionRecord, SessionStatus, StatsResponse, WeeklyActivity } from '../types';
+import { InProgressSessionSummary, SessionRecord, SessionStatus, StatsResponse, VocabularyDetail, WeeklyActivity } from '../types';
 
 const insertStmt = db.prepare(
   `
-  INSERT INTO sessions (id, user_id, mode, difficulty, words, super_json, answers, score, analysis, created_at, status, current_question_index, updated_at)
-  VALUES (@id, @user_id, @mode, @difficulty, @words, @super_json, @answers, @score, @analysis, @created_at, @status, @current_question_index, @updated_at)
+  INSERT INTO sessions (id, user_id, mode, difficulty, words, super_json, answers, score, analysis, created_at, status, current_question_index, updated_at, has_vocab_details, vocab_details)
+  VALUES (@id, @user_id, @mode, @difficulty, @words, @super_json, @answers, @score, @analysis, @created_at, @status, @current_question_index, @updated_at, @has_vocab_details, @vocab_details)
 `,
 );
 
@@ -47,6 +47,8 @@ export const saveSession = (record: Omit<SessionRecord, 'id' | 'createdAt' | 'up
     status: record.status,
     current_question_index: record.currentQuestionIndex,
     updated_at: updatedAt,
+    has_vocab_details: record.hasVocabDetails ? 1 : 0,
+    vocab_details: record.vocabDetails ? JSON.stringify(record.vocabDetails) : null,
   });
 
   return { ...record, id, createdAt, updatedAt };
@@ -54,7 +56,7 @@ export const saveSession = (record: Omit<SessionRecord, 'id' | 'createdAt' | 'up
 
 /**
  * Create an in-progress session when generation completes first section
- * Requirements: 7.2
+ * Requirements: 7.2, 4.1, 4.2
  */
 export const createInProgressSession = (
   record: Omit<SessionRecord, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'currentQuestionIndex' | 'score' | 'analysis' | 'answers'> & { userId: string },
@@ -77,9 +79,11 @@ export const createInProgressSession = (
     status: 'in_progress',
     current_question_index: 0,
     updated_at: updatedAt,
+    has_vocab_details: record.hasVocabDetails ? 1 : 0,
+    vocab_details: record.vocabDetails ? JSON.stringify(record.vocabDetails) : null,
   });
 
-  return {
+  const result: SessionRecord = {
     id,
     userId: record.userId,
     mode: record.mode,
@@ -93,7 +97,14 @@ export const createInProgressSession = (
     status: 'in_progress',
     currentQuestionIndex: 0,
     updatedAt,
+    hasVocabDetails: record.hasVocabDetails,
   };
+  
+  if (record.vocabDetails) {
+    result.vocabDetails = record.vocabDetails;
+  }
+  
+  return result;
 };
 
 const mapRow = (row: any): SessionRecord => ({
@@ -110,6 +121,9 @@ const mapRow = (row: any): SessionRecord => ({
   status: row.status || 'completed',
   currentQuestionIndex: row.current_question_index || 0,
   updatedAt: row.updated_at || row.created_at,
+  // Optional vocab details fields (Requirements 4.1, 4.2)
+  hasVocabDetails: row.has_vocab_details === 1,
+  vocabDetails: row.vocab_details ? JSON.parse(row.vocab_details) : undefined,
 });
 
 /**
@@ -285,7 +299,7 @@ export const getLearningStats = (userId: string): StatsResponse => {
   for (let i = 6; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const dateStr = date.toISOString().split('T')[0] ?? ''; // YYYY-MM-DD format
     
     const dayData = weeklyActivityRows.find(row => row.date === dateStr);
     weeklyActivity.push({

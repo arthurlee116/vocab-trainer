@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import type { AnswerRecord, SuperJson, SessionRecord } from '../../types';
+import type { AnswerRecord, SuperJson, SessionRecord, VocabularyDetail, VocabularyExample } from '../../types';
 
 /**
  * Helper to create a test database environment
@@ -286,6 +286,133 @@ describe('History Service Property Tests', () => {
             expect(finalSession).not.toBeNull();
             expect(finalSession!.status).toBe('completed');
             expect(finalSession!.currentQuestionIndex).toBe(actualTotal);
+          }
+        ),
+        { numRuns: 100 }
+      );
+    } finally {
+      cleanup();
+    }
+  });
+
+  /**
+   * **Feature: optional-vocab-details, Property 2: hasVocabDetails consistency with toggle**
+   * **Validates: Requirements 4.1**
+   *
+   * For any practice session saved to history, the hasVocabDetails field
+   * should equal the toggle state at the time of session creation.
+   */
+  it('Property 2: hasVocabDetails consistency with toggle', async () => {
+    const { createInProgressSession, getSession, cleanup } = await createTestHistory();
+
+    try {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.boolean(), // hasVocabDetails toggle state
+          difficultyArb,
+          wordsArb,
+          async (hasVocabDetails, difficulty, words) => {
+            const superJson = createSuperJson(6);
+            superJson.metadata.difficulty = difficulty;
+            superJson.metadata.words = words;
+
+            // Create session with the toggle state
+            const session = createInProgressSession({
+              userId: 'test-user',
+              mode: 'authenticated',
+              difficulty,
+              words,
+              superJson,
+              hasVocabDetails,
+              vocabDetails: hasVocabDetails ? [{
+                word: words[0] || 'test',
+                partsOfSpeech: ['noun'],
+                definitions: ['test definition'],
+                examples: [{ en: 'Test sentence', zh: '测试句子' }],
+              }] : undefined,
+            });
+
+            // Property: returned session hasVocabDetails should match input
+            expect(session.hasVocabDetails).toBe(hasVocabDetails);
+
+            // Verify persistence: load from DB and check same property
+            const loaded = getSession('test-user', session.id);
+            expect(loaded).not.toBeNull();
+            expect(loaded!.hasVocabDetails).toBe(hasVocabDetails);
+          }
+        ),
+        { numRuns: 100 }
+      );
+    } finally {
+      cleanup();
+    }
+  });
+
+  /**
+   * **Feature: optional-vocab-details, Property 3: vocabDetails storage consistency**
+   * **Validates: Requirements 4.2**
+   *
+   * For any session with hasVocabDetails === true, the vocabDetails field
+   * should contain a non-empty array of VocabularyDetail objects.
+   * For any session with hasVocabDetails === false, the vocabDetails field
+   * should be undefined or null.
+   */
+  it('Property 3: vocabDetails storage consistency', async () => {
+    const { createInProgressSession, getSession, cleanup } = await createTestHistory();
+
+    // Arbitrary for generating VocabularyExample
+    const vocabExampleArb: fc.Arbitrary<VocabularyExample> = fc.record({
+      en: fc.string({ minLength: 1, maxLength: 100 }),
+      zh: fc.string({ minLength: 1, maxLength: 100 }),
+    });
+
+    // Arbitrary for generating VocabularyDetail
+    const vocabDetailArb: fc.Arbitrary<VocabularyDetail> = fc.record({
+      word: fc.string({ minLength: 1, maxLength: 30 }).filter(s => s.trim().length > 0),
+      partsOfSpeech: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { minLength: 1, maxLength: 3 }),
+      definitions: fc.array(fc.string({ minLength: 1, maxLength: 200 }), { minLength: 1, maxLength: 3 }),
+      examples: fc.array(vocabExampleArb, { minLength: 1, maxLength: 3 }),
+    });
+
+    try {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.boolean(), // hasVocabDetails
+          fc.array(vocabDetailArb, { minLength: 1, maxLength: 5 }), // vocabDetails when enabled
+          difficultyArb,
+          wordsArb,
+          async (hasVocabDetails, vocabDetails, difficulty, words) => {
+            const superJson = createSuperJson(6);
+            superJson.metadata.difficulty = difficulty;
+            superJson.metadata.words = words;
+
+            // Create session with conditional vocabDetails
+            const session = createInProgressSession({
+              userId: 'test-user',
+              mode: 'authenticated',
+              difficulty,
+              words,
+              superJson,
+              hasVocabDetails,
+              vocabDetails: hasVocabDetails ? vocabDetails : undefined,
+            });
+
+            // Load from DB
+            const loaded = getSession('test-user', session.id);
+            expect(loaded).not.toBeNull();
+
+            if (hasVocabDetails) {
+              // Property: when hasVocabDetails is true, vocabDetails should be non-empty array
+              expect(loaded!.vocabDetails).toBeDefined();
+              expect(Array.isArray(loaded!.vocabDetails)).toBe(true);
+              expect(loaded!.vocabDetails!.length).toBeGreaterThan(0);
+
+              // Verify round-trip: vocabDetails should match input
+              expect(loaded!.vocabDetails).toEqual(vocabDetails);
+            } else {
+              // Property: when hasVocabDetails is false, vocabDetails should be undefined
+              expect(loaded!.vocabDetails).toBeUndefined();
+            }
           }
         ),
         { numRuns: 100 }

@@ -27,6 +27,8 @@ const VocabularyDetailsPage = () => {
   const applySessionSnapshot = usePracticeStore((state) => state.applySessionSnapshot);
   const audioEnabled = usePracticeStore((state) => state.audioEnabled);
   const initializeHistorySession = usePracticeStore((state) => state.initializeHistorySession);
+  // Session resume fields (Requirements 5.1, 5.2)
+  const isResumedSession = usePracticeStore((state) => state.isResumedSession);
   const navigate = useNavigate();
   const { pollError } = useGenerationPolling();
   const [retryingSection, setRetryingSection] = useState<QuestionType | null>(null);
@@ -61,6 +63,7 @@ const VocabularyDetailsPage = () => {
     canRetry: type !== 'questions_type_1' && !!sessionId,
   }));
 
+  // For resumed sessions with vocab details, they are already ready (Requirements 5.1, 5.2)
   const detailReady = detailsStatus === 'ready' && (vocabDetails?.length ?? 0) > 0;
 
   const handleRetrySection = async (type: QuestionType) => {
@@ -94,6 +97,12 @@ const VocabularyDetailsPage = () => {
   const handleStartPractice = async () => {
     if (!detailReady || !superJson || !difficulty) return;
     
+    // For resumed sessions, skip creating new session (Requirements 5.1, 5.2)
+    if (isResumedSession) {
+      navigate('/practice/run');
+      return;
+    }
+    
     setIsStartingPractice(true);
     setSessionCreateError('');
     
@@ -118,33 +127,44 @@ const VocabularyDetailsPage = () => {
     navigate('/practice/run');
   };
 
+  // Determine button text based on session state (Requirements 5.1, 5.2)
+  const getButtonText = () => {
+    if (isStartingPractice) return '正在准备...';
+    if (isResumedSession && detailReady) return '继续练习';
+    if (detailReady) return '开始练习';
+    return 'AI 正在整理词条...';
+  };
+
   return (
     <div className="page-section">
-      <div className="quiz-progress">
-        <div className="progress-header">
-          <p className="progress-label">题库进度</p>
-          <p className="progress-count">
-            已就绪 {readyCount} / {totalTarget} 题
-          </p>
+      {/* Hide quiz progress for resumed sessions since quiz is already complete (Requirements 5.1, 5.2) */}
+      {!isResumedSession && (
+        <div className="quiz-progress">
+          <div className="progress-header">
+            <p className="progress-label">题库进度</p>
+            <p className="progress-count">
+              已就绪 {readyCount} / {totalTarget} 题
+            </p>
+          </div>
+          <div className="progress-track">
+            <div className="progress-thumb" style={{ width: `${progressPercent}%` }} />
+          </div>
+          <SectionProgressCapsules
+            sections={sectionStates}
+            onRetry={sessionId ? handleRetrySection : undefined}
+            retryingSection={retryingSection}
+          />
+          {pollError && <p className="form-error subtle">{pollError}</p>}
+          {sectionRetryError && <p className="form-error subtle">{sectionRetryError}</p>}
+          {sessionCreateError && <p className="form-error subtle">{sessionCreateError}</p>}
         </div>
-        <div className="progress-track">
-          <div className="progress-thumb" style={{ width: `${progressPercent}%` }} />
-        </div>
-        <SectionProgressCapsules
-          sections={sectionStates}
-          onRetry={sessionId ? handleRetrySection : undefined}
-          retryingSection={retryingSection}
-        />
-        {pollError && <p className="form-error subtle">{pollError}</p>}
-        {sectionRetryError && <p className="form-error subtle">{sectionRetryError}</p>}
-        {sessionCreateError && <p className="form-error subtle">{sessionCreateError}</p>}
-      </div>
+      )}
 
       <div className="panel vocab-panel">
         <div className="vocab-panel-head">
           <div>
-            <p className="eyebrow">词汇详情</p>
-            <h2>逐词检查释义与例句</h2>
+            <p className="eyebrow">{isResumedSession ? '已保存的词汇详情' : '词汇详情'}</p>
+            <h2>{isResumedSession ? '复习词汇释义与例句' : '逐词检查释义与例句'}</h2>
           </div>
           <button 
             type="button" 
@@ -152,7 +172,7 @@ const VocabularyDetailsPage = () => {
             onClick={handleStartPractice} 
             disabled={!detailReady || isStartingPractice}
           >
-            {isStartingPractice ? '正在准备...' : detailReady ? '开始练习' : 'AI 正在整理词条...'}
+            {getButtonText()}
           </button>
         </div>
 

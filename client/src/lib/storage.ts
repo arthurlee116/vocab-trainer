@@ -208,6 +208,8 @@ export const createGuestInProgressSession = (params: {
   difficulty: DifficultyLevel;
   words: string[];
   superJson: SuperJson;
+  hasVocabDetails?: boolean;
+  vocabDetails?: import('../types').VocabularyDetail[];
 }): { id: string; createdAt: string } | undefined => {
   if (!safeWindow) return undefined;
   
@@ -227,6 +229,8 @@ export const createGuestInProgressSession = (params: {
     currentQuestionIndex: 0,
     createdAt: now,
     updatedAt: now,
+    hasVocabDetails: params.hasVocabDetails ?? false,
+    vocabDetails: params.vocabDetails,
   };
   
   const history = loadGuestHistory();
