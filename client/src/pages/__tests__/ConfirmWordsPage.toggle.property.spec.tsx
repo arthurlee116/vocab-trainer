@@ -32,8 +32,8 @@ describe('ConfirmWordsPage Toggle - Property Tests', () => {
     // Reset store with some words so we can see the difficulty panel
     usePracticeStore.setState({
       words: ['apple', 'banana', 'cherry'],
-      vocabDetails: null,
-      detailsError: null,
+      vocabDetails: undefined,
+      detailsError: undefined,
     });
   });
 

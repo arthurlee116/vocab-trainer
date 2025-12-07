@@ -68,8 +68,8 @@ describe('ConfirmWordsPage - Vocabulary Details Toggle', () => {
     // Reset store with some words
     usePracticeStore.setState({
       words: ['apple', 'banana', 'cherry'],
-      vocabDetails: null,
-      detailsError: null,
+      vocabDetails: undefined,
+      detailsError: undefined,
     });
   });
 
