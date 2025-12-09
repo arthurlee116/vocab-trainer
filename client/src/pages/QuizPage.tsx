@@ -127,8 +127,8 @@ const QuizPage = () => {
   // 第三大题使用 correctAnswer 作为遮挡匹配源
   const canProcessSentence = Boolean(
     current?.sentence &&
-      (current?.type === 'questions_type_2' || (!sentenceHasProvidedBlank && !isType3)) &&
-      matchSourceText,
+    (current?.type === 'questions_type_2' || (!sentenceHasProvidedBlank && !isType3)) &&
+    matchSourceText,
   );
   const sentenceMaskResult = canProcessSentence && current?.sentence && matchSourceText
     ? buildSentenceParts(current.sentence, matchSourceText)
@@ -176,10 +176,10 @@ const QuizPage = () => {
   const sectionQuestions: Record<QuestionType, SuperQuestion[]> = isRetryMode
     ? { questions_type_1: [], questions_type_2: [], questions_type_3: [] }
     : {
-        questions_type_1: superJson!.questions_type_1,
-        questions_type_2: superJson!.questions_type_2,
-        questions_type_3: superJson!.questions_type_3,
-      };
+      questions_type_1: superJson!.questions_type_1,
+      questions_type_2: superJson!.questions_type_2,
+      questions_type_3: superJson!.questions_type_3,
+    };
   const currentSectionType = current?.type as QuestionType | undefined;
   const nextBlockedSection = currentSectionType
     ? SECTION_ORDER.slice(SECTION_ORDER.indexOf(currentSectionType) + 1).find((type) => sectionStatus[type] !== 'ready')
@@ -241,7 +241,7 @@ const QuizPage = () => {
       recordRetryAnswer(answer);
     } else {
       recordAnswer(answer);
-      
+
       // Auto-save progress for non-retry mode (Requirements 2.1, 2.2)
       if (historySessionId) {
         try {
@@ -391,7 +391,7 @@ const QuizPage = () => {
     try {
       const snapshot = await retryGenerationSection(sessionId, type);
       applySessionSnapshot(snapshot);
-      
+
       // Sync updated superJson to history session if exists (Requirements 7.3)
       // This ensures progress saves work with the newly generated questions
       if (historySessionId) {
@@ -530,14 +530,14 @@ const QuizPage = () => {
                   )}
                 </button>
               )}
-              
+
               {/* 题目内容 - 听力模式下遮挡 Type 1/3 */}
               <div className={listeningMode && current.type !== 'questions_type_2' ? 'masked-content' : ''}>
                 <h3>{current.type === 'questions_type_2' ? SECTION_LABELS.questions_type_2 : current.prompt}</h3>
               </div>
             </div>
-            
-            {current.sentence && (
+
+            {current.sentence && current.type !== 'questions_type_1' && (
               <div className={listeningMode && current.type === 'questions_type_3' ? 'masked-content sentence' : 'sentence'}>
                 {isType3 ? (
                   // 第三大题：直接显示句子（已包含 _____），用首字母提示替换空白

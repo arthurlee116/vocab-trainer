@@ -296,7 +296,12 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       currentQuestionIndex: 0,
       isResumedSession: false,
     }),
-  resumeSession: (session) =>
+  resumeSession: (session) => {
+    // Validates section status based on actual question content (Requirements 7.1)
+    const hasType1 = session.superJson.questions_type_1.length > 0;
+    const hasType2 = session.superJson.questions_type_2.length > 0;
+    const hasType3 = session.superJson.questions_type_3.length > 0;
+
     set({
       historySessionId: session.id,
       superJson: session.superJson,
@@ -310,17 +315,20 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       vocabDetails: session.vocabDetails,
       detailsStatus: session.hasVocabDetails && session.vocabDetails ? 'ready' : 'idle',
       // Set all sections to ready since history session has complete superJson (Requirement 7.1)
+      // If a section is missing questions, mark it as 'error' so the UI shows retry options
+      // or the polling hook can attempt to fetch updates
       sectionStatus: {
-        questions_type_1: 'ready',
-        questions_type_2: 'ready',
-        questions_type_3: 'ready',
+        questions_type_1: hasType1 ? 'ready' : 'error',
+        questions_type_2: hasType2 ? 'ready' : 'error',
+        questions_type_3: hasType3 ? 'ready' : 'error',
       },
       sectionErrors: {
-        questions_type_1: undefined,
-        questions_type_2: undefined,
-        questions_type_3: undefined,
+        questions_type_1: hasType1 ? undefined : '题目数据缺失，请尝试重新生成',
+        questions_type_2: hasType2 ? undefined : '题目数据缺失，请尝试重新生成',
+        questions_type_3: hasType3 ? undefined : '题目数据缺失，请尝试重新生成',
       },
-    }),
+    });
+  },
   saveProgress: async (answer) => {
     const { historySessionId, answers } = get();
     if (!historySessionId) {

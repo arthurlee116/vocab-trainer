@@ -55,6 +55,19 @@ export const retryGenerationSection = (sessionId: string, type: QuestionType) =>
     .post<GenerationSessionSnapshot>(`/generation/session/${sessionId}/retry`, { type })
     .then((res) => res.data);
 
+/**
+ * Bind a history session ID to a generation session
+ * When all sections complete, the superJson will be automatically synced to the history session
+ * This allows users to resume with complete questions even if they paused before generation finished
+ * 
+ * @param sessionId - The generation session ID
+ * @param historySessionId - The history session ID to bind
+ */
+export const bindGenerationSession = (sessionId: string, historySessionId: string) =>
+  api
+    .post<{ success: boolean }>(`/generation/session/${sessionId}/bind`, { historySessionId })
+    .then((res) => res.data);
+
 export const fetchVocabularyDetails = (params: { words: string[]; difficulty: DifficultyLevel }) =>
   api.post<{ details: VocabularyDetail[] }>('/generation/details', params).then((res) => res.data.details);
 

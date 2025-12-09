@@ -6,6 +6,7 @@ import {
   getGenerationSessionSnapshot,
   retryGenerationSection,
   startGenerationSession,
+  bindHistorySession,
 } from '../services/generation-session';
 import { generateVocabularyDetails } from '../services/vocab-details';
 import { HttpError } from '../utils/httpError';
@@ -26,6 +27,10 @@ const retrySchema = z.object({
 const detailsSchema = z.object({
   words: z.array(z.string().min(1)).min(1),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+});
+
+const bindSchema = z.object({
+  historySessionId: z.string().min(1),
 });
 
 router.post(
@@ -89,6 +94,31 @@ router.post(
     } catch (error) {
       logError('Generation API: /api/generation/session/:sessionId/retry failed', error);
       logApiRequest('POST', '/api/generation/session/:sessionId/retry', 500);
+      throw error;
+    }
+  }),
+);
+
+/**
+ * Bind a history session ID to a generation session
+ * When all sections complete, the superJson will be automatically synced to the history session
+ * This allows users to resume with complete questions even if they paused before generation finished
+ */
+router.post(
+  '/session/:sessionId/bind',
+  asyncHandler(async (req, res) => {
+    try {
+      const { historySessionId } = bindSchema.parse(req.body);
+      const { sessionId } = req.params;
+      if (!sessionId) {
+        throw new HttpError(400, 'Missing session id');
+      }
+      bindHistorySession(sessionId, historySessionId);
+      logApiRequest('POST', '/api/generation/session/:sessionId/bind', 200);
+      res.json({ success: true });
+    } catch (error) {
+      logError('Generation API: /api/generation/session/:sessionId/bind failed', error);
+      logApiRequest('POST', '/api/generation/session/:sessionId/bind', 500);
       throw error;
     }
   }),

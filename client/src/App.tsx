@@ -123,15 +123,13 @@ function App() {
           }
         />
         <Route
-          path="/practice/run"
+          path="/practice/quiz"
           element={
             <ProtectedRoute>
               <RequireSuperJson>
-                <RequireDetailsReady>
-                  <AppLayout fullWidth>
-                    <QuizPage />
-                  </AppLayout>
-                </RequireDetailsReady>
+                <AppLayout fullWidth>
+                  <QuizPage />
+                </AppLayout>
               </RequireSuperJson>
             </ProtectedRoute>
           }

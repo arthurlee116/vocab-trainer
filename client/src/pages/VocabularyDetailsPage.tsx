@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
-import { fetchVocabularyDetails, retryGenerationSection } from '../lib/api';
+import { useAuthStore } from '../store/useAuthStore';
+import { bindGenerationSession, fetchVocabularyDetails, retryGenerationSection } from '../lib/api';
 import { getErrorMessage } from '../lib/errors';
 import { createInProgressSession } from '../lib/progressService';
 import SectionProgressCapsules from '../components/SectionProgressCapsules';
@@ -29,6 +30,7 @@ const VocabularyDetailsPage = () => {
   const initializeHistorySession = usePracticeStore((state) => state.initializeHistorySession);
   // Session resume fields (Requirements 5.1, 5.2)
   const isResumedSession = usePracticeStore((state) => state.isResumedSession);
+  const authMode = useAuthStore((state) => state.mode);
   const navigate = useNavigate();
   const { pollError } = useGenerationPolling();
   const [retryingSection, setRetryingSection] = useState<QuestionType | null>(null);
@@ -99,7 +101,7 @@ const VocabularyDetailsPage = () => {
     
     // For resumed sessions, skip creating new session (Requirements 5.1, 5.2)
     if (isResumedSession) {
-      navigate('/practice/run');
+      navigate('/practice/quiz');
       return;
     }
     
@@ -115,6 +117,17 @@ const VocabularyDetailsPage = () => {
       });
       // Store session ID in practice store (Requirement 1.3)
       initializeHistorySession(id);
+      
+      // Bind history session to generation session for background sync (authenticated users only)
+      // This ensures superJson is updated when all sections complete, even if user pauses
+      if (authMode === 'authenticated' && sessionId) {
+        try {
+          await bindGenerationSession(sessionId, id);
+        } catch (bindErr) {
+          // Non-critical: log but don't block navigation
+          console.error('Failed to bind generation session:', bindErr);
+        }
+      }
     } catch (err) {
       // Graceful degradation: show error but still allow navigation (Requirement 1.4)
       console.error('Failed to create in-progress session:', err);
@@ -124,7 +137,7 @@ const VocabularyDetailsPage = () => {
     }
     
     setIsStartingPractice(false);
-    navigate('/practice/run');
+    navigate('/practice/quiz');
   };
 
   // Determine button text based on session state (Requirements 5.1, 5.2)

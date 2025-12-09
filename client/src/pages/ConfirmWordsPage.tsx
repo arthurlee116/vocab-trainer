@@ -2,7 +2,9 @@ import { useState, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
-import { fetchVocabularyDetails, startGenerationSession } from '../lib/api';
+import { useAuthStore } from '../store/useAuthStore';
+import { bindGenerationSession, fetchVocabularyDetails, startGenerationSession } from '../lib/api';
+import { createInProgressSession } from '../lib/progressService';
 import { getErrorMessage } from '../lib/errors';
 import type { DifficultyLevel, GenerationSessionSnapshot } from '../types';
 
@@ -14,8 +16,9 @@ const ConfirmWordsPage = () => {
     applySessionSnapshot,
     startGenerating,
     setVocabDetails,
-    setDetailsError,
+    initializeHistorySession,
   } = usePracticeStore();
+  const authMode = useAuthStore((state) => state.mode);
   const [input, setInput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -92,6 +95,41 @@ const ConfirmWordsPage = () => {
         // (Requirements 2.1, 2.3)
         const sessionSnapshot = await startGenerationSession({ words, difficulty });
         applySessionSnapshot(sessionSnapshot);
+        
+        // Create in-progress session for pause/resume support (Requirements 3.1, 3.2)
+        try {
+          const { id } = await createInProgressSession({
+            difficulty,
+            words,
+            superJson: {
+              metadata: {
+                totalQuestions: sessionSnapshot.metadata.totalQuestions,
+                words: sessionSnapshot.metadata.words,
+                difficulty: sessionSnapshot.metadata.difficulty,
+                generatedAt: sessionSnapshot.metadata.generatedAt,
+              },
+              questions_type_1: sessionSnapshot.sections.questions_type_1.questions,
+              questions_type_2: sessionSnapshot.sections.questions_type_2.questions,
+              questions_type_3: sessionSnapshot.sections.questions_type_3.questions,
+            },
+          });
+          initializeHistorySession(id);
+          
+          // Bind history session to generation session for background sync (authenticated users only)
+          // This ensures superJson is updated when all sections complete, even if user pauses
+          if (authMode === 'authenticated') {
+            try {
+              await bindGenerationSession(sessionSnapshot.sessionId, id);
+            } catch (bindErr) {
+              // Non-critical: log but don't block navigation
+              console.error('Failed to bind generation session:', bindErr);
+            }
+          }
+        } catch (err) {
+          // Graceful degradation: log error but still allow navigation
+          console.error('Failed to create in-progress session:', err);
+        }
+        
         navigate('/practice/quiz');
       }
     } catch (err) {
@@ -126,10 +164,47 @@ const ConfirmWordsPage = () => {
   };
 
   // Skip vocabulary details and go directly to quiz (Requirements 3.5)
-  const handleSkipVocabDetails = () => {
+  const handleSkipVocabDetails = async () => {
     setVocabDetailsError('');
+    const session = pendingSessionRef.current;
+    const diff = pendingDifficultyRef.current;
     pendingSessionRef.current = null;
     pendingDifficultyRef.current = null;
+    
+    // Create in-progress session for pause/resume support (Requirements 3.1, 3.2)
+    if (session && diff) {
+      try {
+        const { id } = await createInProgressSession({
+          difficulty: diff,
+          words,
+          superJson: {
+            metadata: {
+              totalQuestions: session.metadata.totalQuestions,
+              words: session.metadata.words,
+              difficulty: session.metadata.difficulty,
+              generatedAt: session.metadata.generatedAt,
+            },
+            questions_type_1: session.sections.questions_type_1.questions,
+            questions_type_2: session.sections.questions_type_2.questions,
+            questions_type_3: session.sections.questions_type_3.questions,
+          },
+        });
+        initializeHistorySession(id);
+        
+        // Bind history session to generation session for background sync (authenticated users only)
+        if (authMode === 'authenticated') {
+          try {
+            await bindGenerationSession(session.sessionId, id);
+          } catch (bindErr) {
+            console.error('Failed to bind generation session:', bindErr);
+          }
+        }
+      } catch (err) {
+        // Graceful degradation: log error but still allow navigation
+        console.error('Failed to create in-progress session:', err);
+      }
+    }
+    
     // hasVocabDetails will be false since we didn't set vocabDetails
     navigate('/practice/quiz');
   };

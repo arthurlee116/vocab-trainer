@@ -252,6 +252,33 @@ export const updateSessionSuperJson = (
 };
 
 /**
+ * Update superJson for an in-progress session by session ID only (no user check)
+ * Used by background generation process when all sections complete
+ * This allows the system to update the session after user has left the page
+ */
+export const updateHistorySessionSuperJson = (
+  sessionId: string,
+  superJson: import('../types').SuperJson,
+): boolean => {
+  const updatedAt = new Date().toISOString();
+
+  const result = db.prepare(
+    `
+    UPDATE sessions
+    SET super_json = @super_json,
+        updated_at = @updated_at
+    WHERE id = @id AND status = 'in_progress'
+  `,
+  ).run({
+    super_json: JSON.stringify(superJson),
+    updated_at: updatedAt,
+    id: sessionId,
+  });
+
+  return result.changes > 0;
+};
+
+/**
  * Get learning statistics for a user
  * Returns total words learned, completed sessions, and weekly activity
  */

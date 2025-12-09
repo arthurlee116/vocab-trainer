@@ -25,6 +25,11 @@ interface ChatRequestBody {
   response_format?: Record<string, unknown>;
   temperature?: number;
   max_output_tokens?: number;
+  reasoning?: {
+    effort?: 'high' | 'medium' | 'low' | 'minimal' | 'none';
+    max_tokens?: number;
+    exclude?: boolean;
+  };
 }
 
 interface OpenRouterResponse {
@@ -58,7 +63,11 @@ export const openRouterChat = async <T = unknown>(
     },
     body: JSON.stringify({
       ...payload,
-      stream: false
+      stream: false,
+      // Disable reasoning for Grok hybrid model to use non-thinking mode
+      ...(payload.model.startsWith('x-ai/grok') && !payload.reasoning
+        ? { reasoning: { effort: 'none' } }
+        : {})
     })
   };
 

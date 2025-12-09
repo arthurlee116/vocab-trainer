@@ -1377,6 +1377,25 @@ svg {
   gap: 1rem;
 }
 
+.in-progress-empty {
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.in-progress-empty p {
+  margin: 0;
+}
+
+.in-progress-empty .hint {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
 .in-progress-card {
   background: #fff;
   border: 1px solid #e5e7eb;

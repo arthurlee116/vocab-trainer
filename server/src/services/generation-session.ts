@@ -3,6 +3,7 @@ import { DifficultyLevel, QuestionType, SuperJson, SuperQuestion } from '../type
 import { assignWordsToTypes, generateQuestionsForType, TypeWordMap } from './superGenerator';
 import { logger } from '../utils/logger';
 import { HttpError } from '../utils/httpError';
+import { updateHistorySessionSuperJson } from './history';
 
 type SectionStatus = 'pending' | 'generating' | 'ready' | 'error';
 
@@ -31,6 +32,8 @@ interface GenerationSession {
     totalQuestions: number;
   };
   sections: Record<QuestionType, SectionState>;
+  /** 绑定的 history session ID，用于生成完成后自动更新持久化数据 */
+  boundHistorySessionId?: string;
 }
 
 const SESSION_TTL_MS = 1000 * 60 * 30; // 30 minutes
@@ -137,6 +140,12 @@ const triggerSectionGeneration = async (
         if (third.status !== 'ready') {
           void triggerSectionGeneration(sessionId, 'questions_type_3');
         }
+      }
+
+      // 检查是否所有大题都已完成，若完成则更新绑定的 history session
+      const allReady = questionTypes.every((t) => latest.sections[t].status === 'ready');
+      if (allReady && latest.boundHistorySessionId) {
+        void syncToHistorySession(latest);
       }
     })
     .catch((error) => {
@@ -281,4 +290,66 @@ export const consumeFullSuperJson = (sessionId: string): SuperJson => {
     questions_type_2: session.sections.questions_type_2.questions,
     questions_type_3: session.sections.questions_type_3.questions,
   };
+};
+
+/**
+ * 将完整的 superJson 同步到绑定的 history session
+ * 当所有大题生成完成后自动调用，确保用户暂停后回来能看到完整题目
+ */
+const syncToHistorySession = async (session: GenerationSession) => {
+  if (!session.boundHistorySessionId) return;
+
+  const superJson: SuperJson = {
+    metadata: {
+      totalQuestions: session.metadata.totalQuestions,
+      words: session.metadata.words,
+      difficulty: session.metadata.difficulty,
+      generatedAt: session.metadata.generatedAt,
+    },
+    questions_type_1: session.sections.questions_type_1.questions,
+    questions_type_2: session.sections.questions_type_2.questions,
+    questions_type_3: session.sections.questions_type_3.questions,
+  };
+
+  try {
+    const updated = await updateHistorySessionSuperJson(session.boundHistorySessionId, superJson);
+    if (updated) {
+      logger.info(`GenerationSession: Synced superJson to history session`, {
+        generationSessionId: session.id,
+        historySessionId: session.boundHistorySessionId,
+        totalQuestions: superJson.metadata.totalQuestions,
+      });
+    } else {
+      logger.warn(`GenerationSession: Failed to sync - history session not found or not in_progress`, {
+        generationSessionId: session.id,
+        historySessionId: session.boundHistorySessionId,
+      });
+    }
+  } catch (error) {
+    logger.error(`GenerationSession: Failed to sync superJson to history session`, {
+      generationSessionId: session.id,
+      historySessionId: session.boundHistorySessionId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+};
+
+/**
+ * 绑定 history session ID 到 generation session
+ * 当所有大题生成完成后，会自动将完整 superJson 同步到该 history session
+ */
+export const bindHistorySession = (sessionId: string, historySessionId: string): void => {
+  const session = ensureSession(sessionId);
+  session.boundHistorySessionId = historySessionId;
+
+  logger.info(`GenerationSession: Bound history session`, {
+    generationSessionId: sessionId,
+    historySessionId,
+  });
+
+  // 如果所有大题已经就绪，立即同步
+  const allReady = questionTypes.every((t) => session.sections[t].status === 'ready');
+  if (allReady) {
+    void syncToHistorySession(session);
+  }
 };

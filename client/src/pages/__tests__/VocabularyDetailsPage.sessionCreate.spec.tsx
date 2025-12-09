@@ -147,7 +147,7 @@ describe('VocabularyDetailsPage Session Creation', () => {
     });
 
     // Verify navigation occurred
-    expect(mockNavigate).toHaveBeenCalledWith('/practice/run');
+    expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
   });
 
   it('guest user: creates session in LocalStorage before navigation (Requirements 1.2, 1.3)', async () => {
@@ -183,7 +183,7 @@ describe('VocabularyDetailsPage Session Creation', () => {
       expect(historySessionId).toBe('guest-session-456');
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/practice/run');
+    expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
   });
 
   it('error handling: shows error but still navigates (Requirement 1.4)', async () => {
@@ -207,7 +207,7 @@ describe('VocabularyDetailsPage Session Creation', () => {
     });
 
     // Verify navigation still occurred (graceful degradation)
-    expect(mockNavigate).toHaveBeenCalledWith('/practice/run');
+    expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
 
     // Verify historySessionId was NOT set (since creation failed)
     const { historySessionId } = usePracticeStore.getState();
@@ -240,7 +240,7 @@ describe('VocabularyDetailsPage Session Creation', () => {
     resolvePromise!({ id: 'session-id', createdAt: '2025-12-06T10:00:00Z' });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/practice/run');
+      expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
     });
   });
 

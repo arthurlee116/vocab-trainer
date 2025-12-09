@@ -202,41 +202,6 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* In-Progress Sessions Section (Requirements 4.1, 4.2) */}
-      {!loadingInProgress && inProgressSessions.length > 0 && (
-        <div className="in-progress-section">
-          <h2>
-            <Clock size={20} />
-            继续练习
-          </h2>
-          <div className="in-progress-grid">
-            {inProgressSessions.map((session) => (
-              <InProgressSessionCard
-                key={session.id}
-                session={session}
-                onContinue={handleContinue}
-                onDelete={handleDelete}
-                isDeleting={deletingSessionId === session.id}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {loadingInProgress && (
-        <div className="in-progress-loading">
-          <Loader2 size={20} className="spin" />
-          <span>加载中...</span>
-        </div>
-      )}
-
-      {inProgressError && (
-        <div className="in-progress-error">
-          <AlertCircle size={18} />
-          <span>{inProgressError}</span>
-        </div>
-      )}
-
       <div className="panel hero">
         <div>
           <p className="eyebrow">流程</p>
@@ -254,6 +219,48 @@ const DashboardPage = () => {
           </button>
         </div>
       </div>
+
+      {/* In-Progress Sessions Section (Requirements 4.1, 4.2) */}
+      {!loadingInProgress && (
+        <div className="in-progress-section">
+          <h2>
+            <Clock size={20} />
+            继续练习
+          </h2>
+          {inProgressSessions.length > 0 ? (
+            <div className="in-progress-grid">
+              {inProgressSessions.map((session) => (
+                <InProgressSessionCard
+                  key={session.id}
+                  session={session}
+                  onContinue={handleContinue}
+                  onDelete={handleDelete}
+                  isDeleting={deletingSessionId === session.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="in-progress-empty">
+              <p>暂无进行中的练习</p>
+              <p className="hint">做题时点击"暂停"按钮可保存进度，稍后继续</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {loadingInProgress && (
+        <div className="in-progress-loading">
+          <Loader2 size={20} className="spin" />
+          <span>加载中...</span>
+        </div>
+      )}
+
+      {inProgressError && (
+        <div className="in-progress-error">
+          <AlertCircle size={18} />
+          <span>{inProgressError}</span>
+        </div>
+      )}
 
       {authMode === 'guest' && (
         <div className="panel warning">
