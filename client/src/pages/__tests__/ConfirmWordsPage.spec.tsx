@@ -26,6 +26,27 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+});
+
 const mockSessionSnapshot = {
   sessionId: 'test-session-123',
   metadata: {
@@ -231,7 +252,9 @@ describe('ConfirmWordsPage - Vocabulary Details Toggle', () => {
       const skipButton = screen.getByRole('button', { name: /跳过，直接开始/i });
       fireEvent.click(skipButton);
 
-      expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith('/practice/quiz');
+      });
     });
 
     it('should retry vocab details when clicking retry button', async () => {
