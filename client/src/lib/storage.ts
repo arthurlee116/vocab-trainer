@@ -50,6 +50,7 @@ export const saveGuestSession = (session: {
     status: inferredStatus,
     currentQuestionIndex: inferredIndex,
     updatedAt: now,
+    hasVocabDetails: false,
   };
 
   const history = loadGuestHistory();
@@ -83,15 +84,15 @@ export const updateGuestProgress = (
   newIndex: number
 ): SessionSnapshot | undefined => {
   if (!safeWindow) return;
-  
+
   const history = loadGuestHistory();
   const sessionIndex = history.findIndex((s) => s.id === sessionId);
-  
+
   if (sessionIndex === -1) return undefined;
-  
+
   const session = history[sessionIndex];
   const totalQuestions = session.superJson.metadata.totalQuestions;
-  
+
   // Append answer and update index
   const updatedAnswers = [...session.answers, answer];
   const updatedSession: SessionSnapshot = {
@@ -102,18 +103,18 @@ export const updateGuestProgress = (
     // Auto-transition to completed when all questions answered (Requirement 2.4)
     status: newIndex >= totalQuestions ? 'completed' : 'in_progress',
   };
-  
+
   // Update score if completed
   if (updatedSession.status === 'completed') {
     const correctCount = updatedAnswers.filter((a) => a.correct).length;
     updatedSession.score = Math.round((correctCount / totalQuestions) * 100);
   }
-  
+
   // Update history
   const updatedHistory = [...history];
   updatedHistory[sessionIndex] = updatedSession;
   safeWindow.localStorage.setItem(STORAGE_KEYS.guestHistory, JSON.stringify(updatedHistory));
-  
+
   return updatedSession;
 };
 
@@ -126,7 +127,7 @@ export const updateGuestProgress = (
  */
 export const getGuestInProgressSessions = (): InProgressSessionSummary[] => {
   const history = loadGuestHistory();
-  
+
   return history
     .filter((s) => s.status === 'in_progress')
     .map((s) => ({
@@ -148,13 +149,13 @@ export const getGuestInProgressSessions = (): InProgressSessionSummary[] => {
  */
 export const deleteGuestSession = (sessionId: string): boolean => {
   if (!safeWindow) return false;
-  
+
   const history = loadGuestHistory();
   const filteredHistory = history.filter((s) => s.id !== sessionId);
-  
+
   // Return false if session was not found
   if (filteredHistory.length === history.length) return false;
-  
+
   safeWindow.localStorage.setItem(STORAGE_KEYS.guestHistory, JSON.stringify(filteredHistory));
   return true;
 };
@@ -171,28 +172,28 @@ export const updateGuestSessionSuperJson = (
   superJson: import('../types').SuperJson
 ): SessionSnapshot | undefined => {
   if (!safeWindow) return;
-  
+
   const history = loadGuestHistory();
   const sessionIndex = history.findIndex((s) => s.id === sessionId);
-  
+
   if (sessionIndex === -1) return undefined;
-  
+
   const session = history[sessionIndex];
-  
+
   // Only allow updating in-progress sessions
   if (session.status !== 'in_progress') return undefined;
-  
+
   const updatedSession: SessionSnapshot = {
     ...session,
     superJson,
     updatedAt: new Date().toISOString(),
   };
-  
+
   // Update history
   const updatedHistory = [...history];
   updatedHistory[sessionIndex] = updatedSession;
   safeWindow.localStorage.setItem(STORAGE_KEYS.guestHistory, JSON.stringify(updatedHistory));
-  
+
   return updatedSession;
 };
 
@@ -212,10 +213,10 @@ export const createGuestInProgressSession = (params: {
   vocabDetails?: import('../types').VocabularyDetail[];
 }): { id: string; createdAt: string } | undefined => {
   if (!safeWindow) return undefined;
-  
+
   const now = new Date().toISOString();
   const id = nanoid();
-  
+
   const snapshot: SessionSnapshot = {
     id,
     mode: 'guest',
@@ -232,10 +233,10 @@ export const createGuestInProgressSession = (params: {
     hasVocabDetails: params.hasVocabDetails ?? false,
     vocabDetails: params.vocabDetails,
   };
-  
+
   const history = loadGuestHistory();
   const updated = [snapshot, ...history].slice(0, MAX_GUEST_HISTORY);
   safeWindow.localStorage.setItem(STORAGE_KEYS.guestHistory, JSON.stringify(updated));
-  
+
   return { id, createdAt: now };
 };

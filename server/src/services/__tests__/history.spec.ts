@@ -85,6 +85,7 @@ describe('history service', () => {
         analysis: { report: 'report', recommendations: ['focus'] },
         status: 'completed',
         currentQuestionIndex: 1,
+        hasVocabDetails: false,
       });
 
       const fetched = getSession('tester', saved.id);
@@ -117,6 +118,7 @@ describe('history service', () => {
         analysis: { report: 'first', recommendations: [] },
         status: 'completed',
         currentQuestionIndex: 1,
+        hasVocabDetails: false,
       });
 
       vi.advanceTimersByTime(1000);
@@ -132,6 +134,7 @@ describe('history service', () => {
         analysis: { report: 'second', recommendations: ['repeat'] },
         status: 'completed',
         currentQuestionIndex: 1,
+        hasVocabDetails: false,
       });
 
       const sessions = listSessions('tester');
@@ -211,6 +214,7 @@ describe('history service - progress and session management', () => {
         difficulty: 'beginner',
         words: ['alpha', 'beta', 'gamma'],
         superJson: superJsonWithMultipleQuestions,
+        hasVocabDetails: false,
       });
 
       expect(session.status).toBe('in_progress');
@@ -254,6 +258,7 @@ describe('history service - progress and session management', () => {
         difficulty: 'beginner',
         words: ['alpha'],
         superJson,
+        hasVocabDetails: false,
       });
 
       // Answer the only question (totalQuestions = 1)
@@ -302,6 +307,7 @@ describe('history service - progress and session management', () => {
         difficulty: 'beginner',
         words: ['alpha'],
         superJson: createSuperJson(),
+        hasVocabDetails: false,
       });
 
       // Verify session exists
@@ -339,6 +345,7 @@ describe('history service - progress and session management', () => {
         difficulty: 'beginner',
         words: ['alpha'],
         superJson: createSuperJson(),
+        hasVocabDetails: false,
       });
 
       // Try to delete with wrong user ID
@@ -472,6 +479,7 @@ describe('history service - progress and session management', () => {
         difficulty: 'beginner',
         words: ['alpha'],
         superJson: createSuperJson(),
+        hasVocabDetails: false,
       });
 
       // Create a completed session
@@ -486,6 +494,7 @@ describe('history service - progress and session management', () => {
         analysis: { report: 'done', recommendations: [] },
         status: 'completed',
         currentQuestionIndex: 1,
+        hasVocabDetails: false,
       });
 
       // List all sessions
