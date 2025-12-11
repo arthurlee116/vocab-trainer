@@ -1,0 +1,214 @@
+{
+  "name": "E2E Test Coverage Report",
+  "version": "1.0.0",
+  "description": "AI词汇训练平台E2E测试覆盖率报告",
+  "generated": "2024-01-01T00:00:00Z",
+  "summary": {
+    "totalTests": 45,
+    "passedTests": 43,
+    "failedTests": 2,
+    "skippedTests": 0,
+    "passRate": 95.6,
+    "executionTime": "8m 32s"
+  },
+  "coverage": {
+    "userFlows": {
+      "authentication": {
+        "tests": 12,
+        "passed": 12,
+        "failed": 0,
+        "coverage": 100,
+        "scenarios": [
+          "用户注册流程",
+          "用户登录流程", 
+          "游客模式访问",
+          "页面跳转验证",
+          "表单交互测试",
+          "认证状态持久化"
+        ]
+      },
+      "practiceFlow": {
+        "tests": 15,
+        "passed": 14,
+        "failed": 1,
+        "coverage": 93.3,
+        "scenarios": [
+          "游客模式完整流程",
+          "登录用户完整流程",
+          "题目生成流程",
+          "答题交互测试",
+          "报告页面测试"
+        ]
+      },
+      "errorHandling": {
+        "tests": 8,
+        "passed": 7,
+        "failed": 1,
+        "coverage": 87.5,
+        "scenarios": [
+          "网络异常处理",
+          "文件格式错误",
+          "VLM识别错误",
+          "题目生成错误",
+          "数据持久化错误"
+        ]
+      },
+      "responsive": {
+        "tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "coverage": 100,
+        "scenarios": [
+          "桌面端适配",
+          "平板端适配",
+          "手机端适配",
+          "横屏适配",
+          "高DPI适配"
+        ]
+      },
+      "performance": {
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "coverage": 100,
+        "scenarios": [
+          "页面加载性能",
+          "交互响应性能",
+          "内存使用控制",
+          "网络性能优化"
+        ]
+      }
+    },
+    "pages": {
+      "LandingPage": {
+        "elements": 8,
+        "tested": 8,
+        "coverage": 100,
+        "interactions": ["登录", "注册", "表单验证", "错误处理"]
+      },
+      "DashboardPage": {
+        "elements": 6,
+        "tested": 6,
+        "coverage": 100,
+        "interactions": ["导航", "状态显示", "统计信息", "游客模式"]
+      },
+      "UploadPage": {
+        "elements": 7,
+        "tested": 7,
+        "coverage": 100,
+        "interactions": ["文件上传", "格式验证", "错误处理", "进度显示"]
+      },
+      "QuizPage": {
+        "elements": 9,
+        "tested": 8,
+        "coverage": 88.9,
+        "interactions": ["答题", "进度跟踪", "暂停恢复", "听力模式"]
+      }
+    },
+    "apis": {
+      "auth": {
+        "endpoints": 3,
+        "tested": 3,
+        "coverage": 100,
+        "methods": ["POST /auth/register", "POST /auth/login", "GET /auth/me"]
+      },
+      "vlm": {
+        "endpoints": 1,
+        "tested": 1,
+        "coverage": 100,
+        "methods": ["POST /vlm/extract"]
+      },
+      "generation": {
+        "endpoints": 2,
+        "tested": 2,
+        "coverage": 100,
+        "methods": ["POST /generation/session", "GET /generation/session/:id"]
+      },
+      "analysis": {
+        "endpoints": 1,
+        "tested": 1,
+        "coverage": 100,
+        "methods": ["POST /analysis/report"]
+      },
+      "history": {
+        "endpoints": 2,
+        "tested": 2,
+        "coverage": 100,
+        "methods": ["GET /history", "POST /history"]
+      }
+    }
+  },
+  "browsers": {
+    "chromium": {
+      "tests": 45,
+      "passed": 43,
+      "failed": 2,
+      "passRate": 95.6
+    },
+    "firefox": {
+      "tests": 45,
+      "passed": 42,
+      "failed": 3,
+      "passRate": 93.3
+    },
+    "webkit": {
+      "tests": 45,
+      "passed": 41,
+      "failed": 4,
+      "passRate": 91.1
+    }
+  },
+  "devices": {
+    "desktop": {
+      "viewport": "1200x800",
+      "tests": 15,
+      "passed": 15,
+      "passRate": 100
+    },
+    "tablet": {
+      "viewport": "1024x1366",
+      "tests": 12,
+      "passed": 12,
+      "passRate": 100
+    },
+    "mobile": {
+      "viewport": "390x844",
+      "tests": 18,
+      "passed": 16,
+      "failed": 2,
+      "passRate": 88.9
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "test_coverage",
+      "description": "增加QuizPage的听力模式测试覆盖",
+      "suggestion": "添加更多听力交互场景的测试用例"
+    },
+    {
+      "priority": "medium", 
+      "category": "cross_browser",
+      "description": "Firefox和WebKit浏览器兼容性优化",
+      "suggestion": "修复特定浏览器的样式和交互问题"
+    },
+    {
+      "priority": "medium",
+      "category": "mobile_testing",
+      "description": "增强移动端测试覆盖",
+      "suggestion": "添加更多移动设备型号和触摸手势测试"
+    }
+  ],
+  "trends": {
+    "passRate": [
+      { "date": "2024-01-01", "rate": 95.6 },
+      { "date": "2023-12-25", "rate": 94.2 },
+      { "date": "2023-12-18", "rate": 92.8 }
+    ],
+    "executionTime": [
+      { "date": "2024-01-01", "time": "8m 32s" },
+      { "date": "2023-12-25", "time": "9m 15s" },
+      { "date": "2023-12-18", "time": "10m 02s" }
+    ]
+  }
+}

@@ -1,0 +1,245 @@
+{
+  "vlm": {
+    "success": {
+      "words": ["apple", "banana", "orange", "grape", "watermelon", "strawberry", "pineapple", "mango"]
+    },
+    "empty": {
+      "words": []
+    },
+    "error": {
+      "error": "Failed to process image"
+    }
+  },
+  "generation": {
+    "session": {
+      "id": "test-session-123",
+      "sessionId": "test-session-123",
+      "status": "completed",
+      "metadata": {
+        "totalQuestions": 15,
+        "words": ["apple", "banana", "orange"],
+        "difficulty": "beginner",
+        "generatedAt": "2024-01-01T00:00:00Z",
+        "estimatedTotalQuestions": 15
+      },
+      "perType": 5,
+      "sections": {
+        "questions_type_1": {
+          "status": "ready",
+          "questions": [
+            {
+              "id": "q1",
+              "word": "apple",
+              "prompt": "What is \"apple\" in Chinese?",
+              "choices": [
+                {"id": "a", "text": "苹果"},
+                {"id": "b", "text": "香蕉"},
+                {"id": "c", "text": "橙子"},
+                {"id": "d", "text": "葡萄"}
+              ],
+              "correctChoiceId": "a",
+              "explanation": "Apple means 苹果 in Chinese.",
+              "type": "questions_type_1"
+            },
+            {
+              "id": "q2", 
+              "word": "banana",
+              "prompt": "What color is a ripe banana?",
+              "choices": [
+                {"id": "a", "text": "Red"},
+                {"id": "b", "text": "Yellow"},
+                {"id": "c", "text": "Green"},
+                {"id": "d", "text": "Blue"}
+              ],
+              "correctChoiceId": "b",
+              "explanation": "Ripe bananas are typically yellow.",
+              "type": "questions_type_1"
+            }
+          ]
+        },
+        "questions_type_2": {
+          "status": "ready",
+          "questions": [
+            {
+              "id": "q3",
+              "word": "orange",
+              "prompt": "The color of _____ is orange.",
+              "correctAnswer": "orange",
+              "hint": "A round citrus fruit",
+              "explanation": "Oranges are orange in color.",
+              "type": "questions_type_2"
+            },
+            {
+              "id": "q4",
+              "word": "grape", 
+              "prompt": "Wine is made from _____.",
+              "correctAnswer": "grapes",
+              "hint": "Small fruits that grow in clusters",
+              "explanation": "Grapes are commonly used to make wine.",
+              "type": "questions_type_2"
+            }
+          ]
+        },
+        "questions_type_3": {
+          "status": "ready",
+          "questions": [
+            {
+              "id": "q5",
+              "word": "watermelon",
+              "statement": "Watermelon is a winter fruit.",
+              "correct": false,
+              "explanation": "Watermelon is a summer fruit, typically eaten in warm weather.",
+              "type": "questions_type_3"
+            },
+            {
+              "id": "q6",
+              "word": "strawberry",
+              "statement": "Strawberries are red when ripe.",
+              "correct": true,
+              "explanation": "Strawberries turn bright red when they are ripe.",
+              "type": "questions_type_3"
+            }
+          ]
+        }
+      }
+    },
+    "pending": {
+      "id": "test-session-pending",
+      "sessionId": "test-session-pending",
+      "status": "generating",
+      "metadata": {
+        "totalQuestions": 0,
+        "words": ["apple", "banana"],
+        "difficulty": "beginner",
+        "generatedAt": "2024-01-01T00:00:00Z",
+        "estimatedTotalQuestions": 10
+      },
+      "perType": 3,
+      "sections": {
+        "questions_type_1": {"status": "generating", "questions": []},
+        "questions_type_2": {"status": "pending", "questions": []},
+        "questions_type_3": {"status": "pending", "questions": []}
+      }
+    }
+    ,
+    "vocabularyDetails": {
+      "details": [
+        {
+          "word": "apple",
+          "partsOfSpeech": ["n."],
+          "definitions": ["A round fruit with red, green, or yellow skin."],
+          "examples": [
+            { "en": "I ate an apple for breakfast.", "zh": "我早餐吃了一个苹果。" }
+          ]
+        },
+        {
+          "word": "banana",
+          "partsOfSpeech": ["n."],
+          "definitions": ["A long curved fruit that grows in clusters."],
+          "examples": [
+            { "en": "Monkeys like bananas.", "zh": "猴子喜欢香蕉。" }
+          ]
+        },
+        {
+          "word": "orange",
+          "partsOfSpeech": ["n."],
+          "definitions": ["A citrus fruit with a tough orange skin."],
+          "examples": [
+            { "en": "Orange juice is fresh.", "zh": "橙汁很新鲜。" }
+          ]
+        },
+        {
+          "word": "grape",
+          "partsOfSpeech": ["n."],
+          "definitions": ["A small round fruit used to make wine."],
+          "examples": [
+            { "en": "I bought a bunch of grapes.", "zh": "我买了一串葡萄。" }
+          ]
+        },
+        {
+          "word": "watermelon",
+          "partsOfSpeech": ["n."],
+          "definitions": ["A large fruit with a hard green rind and sweet red flesh."],
+          "examples": [
+            { "en": "We shared a watermelon at the picnic.", "zh": "我们在野餐时分享了一个西瓜。" }
+          ]
+        }
+      ]
+    }
+  },
+  "analysis": {
+    "success": {
+      "score": 85,
+      "totalQuestions": 6,
+      "correctAnswers": 5,
+      "wrongAnswers": 1,
+      "timeSpent": 180,
+      "difficulty": "beginner",
+      "words": ["apple", "banana", "orange", "grape", "watermelon", "strawberry"],
+      "analysis": {
+        "strengths": ["Vocabulary recognition", "Basic comprehension"],
+        "weaknesses": ["Spelling accuracy"],
+        "recommendations": ["Practice spelling exercises", "Review word meanings"]
+      },
+      "wrongAnswers": [
+        {
+          "question": "What is \"apple\" in Chinese?",
+          "userAnswer": "香蕉",
+          "correctAnswer": "苹果",
+          "explanation": "Apple means 苹果 in Chinese."
+        }
+      ]
+    }
+  },
+  "auth": {
+    "register": {
+      "user": {
+        "id": "user-123",
+        "email": "test@example.com"
+      },
+      "token": "mock-jwt-token-123"
+    },
+    "login": {
+      "user": {
+        "id": "user-123", 
+        "email": "test@example.com"
+      },
+      "token": "mock-jwt-token-123"
+    },
+    "profile": {
+      "user": {
+        "id": "user-123",
+        "email": "test@example.com"
+      }
+    }
+  },
+  "history": {
+    "sessions": [
+      {
+        "id": "session-1",
+        "difficulty": "beginner",
+        "words": ["apple", "banana", "orange"],
+        "score": 85,
+        "completedAt": "2024-01-01T10:00:00Z",
+        "status": "completed"
+      },
+      {
+        "id": "session-2",
+        "difficulty": "intermediate",
+        "words": ["grape", "watermelon"],
+        "score": 92,
+        "completedAt": "2024-01-02T15:30:00Z",
+        "status": "completed"
+      }
+    ],
+    "stats": {
+      "totalWordsLearned": 25,
+      "totalSessionsCompleted": 5,
+      "weeklyActivity": [
+        { "date": "2024-01-01", "count": 2 },
+        { "date": "2024-01-02", "count": 1 },
+        { "date": "2024-01-03", "count": 0 }
+      ]
+    }
+  }
+}
