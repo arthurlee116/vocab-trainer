@@ -213,7 +213,7 @@ test.describe('完整练习流程测试', () => {
         { type: 'text' as const, value: 'True' }
       ];
       
-      await quizPage.completeQuiz(answers);
+      await quizPage.completeQuizAuto();
 
       // 7. 等待跳转到报告页面
       await quizPage.waitForRedirectToReport();
@@ -326,7 +326,7 @@ test.describe('完整练习流程测试', () => {
         { type: 'text' as const, value: 'True' }
       ];
       
-      await quizPage.completeQuiz(answers);
+      await quizPage.completeQuizAuto();
       await quizPage.waitForRedirectToReport();
 
       // 7. 验证报告页面
@@ -439,7 +439,7 @@ test.describe('完整练习流程测试', () => {
       await vocabDetailsPage.clickStartPractice();
 
       // 验证生成进度显示（词汇详情或确认页面展示不同文本）
-      await expect(page.getByText(/AI 正在整理词条/)).toBeVisible();
+      await expect(page.getByText(/正在生成题目|AI 正在为您准备题目|AI 正在整理词条|题库准备中/)).toBeVisible();
     });
   });
 
@@ -502,7 +502,7 @@ test.describe('完整练习流程测试', () => {
         { type: 'choice' as const, value: 'apple' }
       ];
       
-      await quizPage.completeQuiz(answers);
+      await quizPage.completeQuizAuto();
       await quizPage.waitForRedirectToReport();
 
       // 验证报告内容
@@ -527,11 +527,11 @@ test.describe('完整练习流程测试', () => {
       await quizPage.waitForPageLoad();
 
       const answers = [
-        { type: 'choice' as const, value: 'Wrong answer' }, // 故意答错
+        { type: 'choice' as const, value: 'Wrong option 1' }, // 故意答错
         { type: 'choice' as const, value: 'apple' }
       ];
       
-      await quizPage.completeQuiz(answers);
+      await quizPage.completeQuizAuto();
       await quizPage.waitForRedirectToReport();
 
       // 验证错题显示

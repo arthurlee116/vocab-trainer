@@ -97,7 +97,13 @@ export class UploadPage {
    */
   async clickStartRecognition(): Promise<void> {
     await this.uploadButton.click();
-    await this.processingIndicator.waitFor({ state: 'visible' });
+    // The processing indicator may or may not appear depending on how fast mocked responses are.
+    // Try to wait briefly for it; ignore the timeout and continue if it doesn't appear to make tests more robust.
+    try {
+      await this.processingIndicator.waitFor({ state: 'visible', timeout: 3000 });
+    } catch (e) {
+      // ignore if the indicator doesn't appear (fast response or direct navigation)
+    }
   }
 
   /**

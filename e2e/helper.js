@@ -73,7 +73,7 @@ class E2EHelper {
       'npx', 'playwright', 'test',
       '--project=' + browser,
       '--reporter=html,list',
-      '--output-dir=' + CONFIG.REPORT_DIR
+      '--output=' + CONFIG.REPORT_DIR
     ];
 
     if (headed) args.push('--headed');
@@ -106,7 +106,7 @@ class E2EHelper {
       'npx', 'playwright', 'test', testFile,
       '--project=' + browser,
       '--reporter=html,list',
-      '--output-dir=' + CONFIG.REPORT_DIR
+      '--output=' + CONFIG.REPORT_DIR
     ];
 
     if (headed) args.push('--headed');
