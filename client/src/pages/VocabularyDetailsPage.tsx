@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -56,19 +56,19 @@ const VocabularyDetailsPage = () => {
   );
   const progressPercent = Math.min((readyCount / totalTarget) * 100, 100);
 
-  const sectionStates = SECTION_ORDER.map((type) => ({
+  const sectionStates = useMemo(() => SECTION_ORDER.map((type) => ({
     type,
     label: SECTION_LABELS[type],
     status: sectionStatus[type],
     error: sectionErrors[type],
     count: sectionQuestions[type].length,
     canRetry: type !== 'questions_type_1' && !!sessionId,
-  }));
+  })), [sectionStatus, sectionErrors, sectionQuestions, sessionId]);
 
   // For resumed sessions with vocab details, they are already ready (Requirements 5.1, 5.2)
   const detailReady = detailsStatus === 'ready' && (vocabDetails?.length ?? 0) > 0;
 
-  const handleRetrySection = async (type: QuestionType) => {
+  const handleRetrySection = useCallback(async (type: QuestionType) => {
     if (!sessionId) return;
     setSectionRetryError('');
     setRetryingSection(type);
@@ -80,7 +80,7 @@ const VocabularyDetailsPage = () => {
     } finally {
       setRetryingSection(null);
     }
-  };
+  }, [sessionId, applySessionSnapshot]);
 
   const handleRetryDetails = async () => {
     if (!words.length || !difficulty) {
