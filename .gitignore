@@ -2,6 +2,8 @@ node_modules
 .env
 .kiro/
 .vscode/
+Docs/
+test-results/
 client/node_modules
 server/node_modules
 server/storage/*.db
@@ -13,3 +15,7 @@ dist
 *.log
 client/dist
 server/dist
+e2e-results/
+e2e-screenshots/
+playwright-report/
+.trae/

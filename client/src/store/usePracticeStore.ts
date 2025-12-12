@@ -72,7 +72,7 @@ interface PracticeState {
   // Session resume actions (Requirements 2.1, 2.2, 3.3, 3.4, 3.5, 7.2)
   initializeHistorySession: (historySessionId: string) => void;
   resumeSession: (session: SessionSnapshot) => void;
-  saveProgress: (answer: AnswerRecord) => Promise<void>;
+  saveProgress: (answer: AnswerRecord, newIndex: number) => Promise<void>;
 }
 
 const createInitialSectionStatus = (): Record<QuestionType, SectionStatus> => ({
@@ -329,19 +329,18 @@ export const usePracticeStore = create<PracticeState>((set, get) => ({
       },
     });
   },
-  saveProgress: async (answer) => {
-    const { historySessionId, answers } = get();
+  saveProgress: async (answer, newIndex) => {
+    const { historySessionId } = get();
     if (!historySessionId) {
       // No history session yet, just record locally
       set((state) => ({
         answers: [...state.answers, answer],
-        currentQuestionIndex: state.currentQuestionIndex + 1,
+        currentQuestionIndex: newIndex,
       }));
       return;
     }
     // Import dynamically to avoid circular dependency
     const { saveProgress: saveProgressService } = await import('../lib/progressService');
-    const newIndex = answers.length + 1;
     await saveProgressService(historySessionId, answer, newIndex);
     set((state) => ({
       answers: [...state.answers, answer],

@@ -5,7 +5,7 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import ReportPage from '../ReportPage';
 import { usePracticeStore } from '../../store/usePracticeStore';
@@ -121,16 +121,20 @@ const renderReportPage = () => {
 
 describe('ReportPage - Property Tests', () => {
   beforeEach(() => {
-    usePracticeStore.setState({
-      isRetryMode: false,
-      retryQuestions: [],
-      retryAnswers: [],
-      originalLastResult: undefined,
+    act(() => {
+      usePracticeStore.setState({
+        isRetryMode: false,
+        retryQuestions: [],
+        retryAnswers: [],
+        originalLastResult: undefined,
+      });
     });
   });
 
   afterEach(() => {
-    usePracticeStore.getState().resetSession();
+    act(() => {
+      usePracticeStore.getState().resetSession();
+    });
   });
 
   /**
@@ -183,18 +187,20 @@ describe('ReportPage - Property Tests', () => {
           });
 
           // Set up store state
-          usePracticeStore.setState({
-            superJson,
-            answers,
-            lastResult: {
-              score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
-              analysis: {
-                report: 'Test report',
-                recommendations: ['Recommendation 1'],
+          act(() => {
+            usePracticeStore.setState({
+              superJson,
+              answers,
+              lastResult: {
+                score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
+                analysis: {
+                  report: 'Test report',
+                  recommendations: ['Recommendation 1'],
+                },
+                incorrectWords: [],
               },
-              incorrectWords: [],
-            },
-            isRetryMode: false,
+              isRetryMode: false,
+            });
           });
 
           renderReportPage();
@@ -245,18 +251,20 @@ describe('ReportPage - Property Tests', () => {
           }
         });
 
-        usePracticeStore.setState({
-          superJson,
-          answers,
-          lastResult: {
-            score: 100,
-            analysis: {
-              report: 'Perfect score!',
-              recommendations: [],
+        act(() => {
+          usePracticeStore.setState({
+            superJson,
+            answers,
+            lastResult: {
+              score: 100,
+              analysis: {
+                report: 'Perfect score!',
+                recommendations: [],
+              },
+              incorrectWords: [],
             },
-            incorrectWords: [],
-          },
-          isRetryMode: false,
+            isRetryMode: false,
+          });
         });
 
         renderReportPage();
@@ -314,18 +322,20 @@ describe('ReportPage - Property Tests', () => {
             }
           });
 
-          usePracticeStore.setState({
-            superJson,
-            answers,
-            lastResult: {
-              score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
-              analysis: {
-                report: 'Test report',
-                recommendations: ['Study more'],
+          act(() => {
+            usePracticeStore.setState({
+              superJson,
+              answers,
+              lastResult: {
+                score: ((allQuestions.length - actualWrongCount) / allQuestions.length) * 100,
+                analysis: {
+                  report: 'Test report',
+                  recommendations: ['Study more'],
+                },
+                incorrectWords: [],
               },
-              incorrectWords: [],
-            },
-            isRetryMode: false,
+              isRetryMode: false,
+            });
           });
 
           renderReportPage();

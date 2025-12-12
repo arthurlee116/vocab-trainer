@@ -36,7 +36,6 @@ const QuizPage = () => {
   const setRetryResult = usePracticeStore((state) => state.setRetryResult);
   // Session resume state (Requirements 3.3, 3.4)
   const currentQuestionIndex = usePracticeStore((state) => state.currentQuestionIndex);
-  const isResumedSession = usePracticeStore((state) => state.isResumedSession);
   const historySessionId = usePracticeStore((state) => state.historySessionId);
   const saveProgressAction = usePracticeStore((state) => state.saveProgress);
   const navigate = useNavigate();
@@ -128,7 +127,7 @@ const QuizPage = () => {
   const canProcessSentence = Boolean(
     current?.sentence &&
     (current?.type === 'questions_type_2' || (!sentenceHasProvidedBlank && !isType3)) &&
-    matchSourceText,
+    (current?.type === 'questions_type_2' || matchSourceText),
   );
   const sentenceMaskResult = canProcessSentence && current?.sentence && matchSourceText
     ? buildSentenceParts(current.sentence, matchSourceText)
@@ -158,13 +157,6 @@ const QuizPage = () => {
     setIsHintOpen(false);
     setTextInput(''); // 切换题目时清空填空输入
   }, [currentId]);
-
-  // Sync index when resuming a session (Requirements 3.3, 3.4)
-  useEffect(() => {
-    if (isResumedSession && currentQuestionIndex > 0) {
-      setIndex(currentQuestionIndex);
-    }
-  }, [isResumedSession, currentQuestionIndex]);
 
   // 重练模式下不需要 superJson，只需要 retryQuestions
   if (!isRetryMode && !superJson) {
@@ -245,7 +237,7 @@ const QuizPage = () => {
       // Auto-save progress for non-retry mode (Requirements 2.1, 2.2)
       if (historySessionId) {
         try {
-          await saveProgressAction(answer);
+          await saveProgressAction(answer, index + 1);
           setSaveError(null);
         } catch {
           // Handle save errors gracefully - show toast but continue
@@ -537,7 +529,7 @@ const QuizPage = () => {
               </div>
             </div>
 
-            {current.sentence && current.type !== 'questions_type_1' && (
+            {current.sentence && (sentenceMaskResult || current.type === 'questions_type_2' || current.type === 'questions_type_3') && (
               <div className={listeningMode && current.type === 'questions_type_3' ? 'masked-content sentence' : 'sentence'}>
                 {isType3 ? (
                   // 第三大题：直接显示句子（已包含 _____），用首字母提示替换空白
