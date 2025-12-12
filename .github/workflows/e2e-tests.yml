@@ -1,0 +1,277 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e-tests:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox, webkit]
+        shard: [1, 2, 3]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run test:e2e:install
+
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps ${{ matrix.browser }}
+
+    - name: Prepare root .env for build
+      run: |
+        cat > .env <<'EOF'
+        OPENROUTER_API_KEY=dummy-ci-key
+        JWT_SECRET=dummy-ci-secret
+        CLIENT_ORIGINS=http://localhost:5173
+        VITE_MAX_VLM_IMAGES=5
+        EOF
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run E2E tests
+      run: |
+        npx playwright test \
+          --project=${{ matrix.browser }} \
+          --shard=${{ matrix.shard }}/3 \
+          --reporter=html,github \
+          --output-dir=e2e-results/${{ matrix.browser }}-shard-${{ matrix.shard }}
+      env:
+        CI: true
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-results-${{ matrix.browser }}-shard-${{ matrix.shard }}
+        path: e2e-results/${{ matrix.browser }}-shard-${{ matrix.shard }}/
+        retention-days: 7
+
+  merge-e2e-reports:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: e2e-tests
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run test:e2e:install
+
+    - name: Download chromium shard 1 results
+      uses: actions/download-artifact@v4
+      with:
+        name: e2e-results-chromium-shard-1
+        path: e2e-results/chromium-shard-1
+
+    - name: Download chromium shard 2 results
+      uses: actions/download-artifact@v4
+      with:
+        name: e2e-results-chromium-shard-2
+        path: e2e-results/chromium-shard-2
+
+    - name: Download chromium shard 3 results
+      uses: actions/download-artifact@v4
+      with:
+        name: e2e-results-chromium-shard-3
+        path: e2e-results/chromium-shard-3
+
+    - name: Merge test reports
+      run: |
+        npx playwright merge-reports \
+          e2e-results/chromium-shard-1 \
+          e2e-results/chromium-shard-2 \
+          e2e-results/chromium-shard-3 \
+          --reporter=html \
+          --output-dir=e2e-results/merged
+
+    - name: Upload merged report
+      uses: actions/upload-artifact@v4
+      with:
+        name: e2e-html-report
+        path: e2e-results/merged/
+        retention-days: 7
+
+  performance-tests:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run test:e2e:install
+
+    - name: Install Playwright
+      run: npx playwright install --with-deps chromium
+
+    - name: Prepare root .env for build
+      run: |
+        cat > .env <<'EOF'
+        OPENROUTER_API_KEY=dummy-ci-key
+        JWT_SECRET=dummy-ci-secret
+        CLIENT_ORIGINS=http://localhost:5173
+        VITE_MAX_VLM_IMAGES=5
+        EOF
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run performance tests
+      run: |
+        npx playwright test performance.spec.ts \
+          --project=chromium \
+          --reporter=json,html \
+          --output-dir=e2e-results/performance
+      env:
+        CI: true
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-test-results
+        path: e2e-results/performance/
+        retention-days: 7
+
+  responsive-tests:
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run test:e2e:install
+
+    - name: Install Playwright
+      run: npx playwright install --with-deps chromium
+
+    - name: Prepare root .env for build
+      run: |
+        cat > .env <<'EOF'
+        OPENROUTER_API_KEY=dummy-ci-key
+        JWT_SECRET=dummy-ci-secret
+        CLIENT_ORIGINS=http://localhost:5173
+        VITE_MAX_VLM_IMAGES=5
+        EOF
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run responsive tests
+      run: |
+        npx playwright test responsive.spec.ts \
+          --project=chromium \
+          --reporter=html,github \
+          --output-dir=e2e-results/responsive
+      env:
+        CI: true
+
+    - name: Upload responsive test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: responsive-test-results
+        path: e2e-results/responsive/
+        retention-days: 7
+
+  comment-pr:
+    if: github.event_name == 'pull_request'
+    needs: [e2e-tests, performance-tests, responsive-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Comment PR
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('E2E Test Results')
+          );
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              comment_id: botComment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: generateCommentBody()
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: generateCommentBody()
+            });
+          }
+          const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+          
+          function generateCommentBody() {
+            return `## 🧪 E2E Test Results
+            
+            ### Test Status
+            - ✅ E2E Tests: Completed
+            - ✅ Performance Tests: Completed  
+            - ✅ Responsive Tests: Completed
+            
+            ### Artifacts
+            - [📊 Test Report](${runUrl})
+            - [📱 Responsive Tests](${runUrl})
+            - [⚡ Performance Tests](${runUrl})
+            
+            ---
+            *Generated by E2E Test Bot*
+            `;
+          }
