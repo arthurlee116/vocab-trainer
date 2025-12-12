@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { QuestionType, SectionStatus } from '../types';
 
 export interface SectionCapsuleData {
@@ -32,7 +33,7 @@ const getStatusText = (status: SectionStatus, count: number, error?: string) => 
   }
 };
 
-const SectionProgressCapsules = ({ sections, onRetry, retryingSection }: SectionProgressCapsulesProps) => (
+const SectionProgressCapsules = memo(({ sections, onRetry, retryingSection }: SectionProgressCapsulesProps) => (
   <div className="section-capsule-row">
     {sections.map((section) => {
       const statusText = getStatusText(section.status, section.count, section.error);
@@ -58,6 +59,8 @@ const SectionProgressCapsules = ({ sections, onRetry, retryingSection }: Section
       );
     })}
   </div>
-);
+));
+
+SectionProgressCapsules.displayName = 'SectionProgressCapsules';
 
 export default SectionProgressCapsules;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePracticeStore } from '../store/usePracticeStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -130,9 +130,13 @@ const QuizPage = () => {
     (current?.type === 'questions_type_2' || (!sentenceHasProvidedBlank && !isType3)) &&
     matchSourceText,
   );
-  const sentenceMaskResult = canProcessSentence && current?.sentence && matchSourceText
-    ? buildSentenceParts(current.sentence, matchSourceText)
-    : null;
+
+  const sentenceMaskResult = useMemo(() => {
+    return canProcessSentence && current?.sentence && matchSourceText
+      ? buildSentenceParts(current.sentence, matchSourceText)
+      : null;
+  }, [canProcessSentence, current, matchSourceText]);
+
   const sentenceParts = sentenceMaskResult?.parts ?? null;
   const matchedSentenceVariant = sentenceMaskResult?.matchedVariant;
   const currentChoices = useMemo(() => {
@@ -166,20 +170,21 @@ const QuizPage = () => {
     }
   }, [isResumedSession, currentQuestionIndex]);
 
-  // 重练模式下不需要 superJson，只需要 retryQuestions
-  if (!isRetryMode && !superJson) {
-    return null;
-  }
   const progressCurrent = Math.min(index + 1, totalTarget);
   const progressPercent = Math.min((progressCurrent / totalTarget) * 100, 100);
+
   // 重练模式下不需要 sectionQuestions，使用空数组
-  const sectionQuestions: Record<QuestionType, SuperQuestion[]> = isRetryMode
-    ? { questions_type_1: [], questions_type_2: [], questions_type_3: [] }
-    : {
-      questions_type_1: superJson!.questions_type_1,
-      questions_type_2: superJson!.questions_type_2,
-      questions_type_3: superJson!.questions_type_3,
+  const sectionQuestions: Record<QuestionType, SuperQuestion[]> = useMemo(() => {
+    if (isRetryMode || !superJson) {
+      return { questions_type_1: [], questions_type_2: [], questions_type_3: [] };
+    }
+    return {
+      questions_type_1: superJson.questions_type_1,
+      questions_type_2: superJson.questions_type_2,
+      questions_type_3: superJson.questions_type_3,
     };
+  }, [isRetryMode, superJson]);
+
   const currentSectionType = current?.type as QuestionType | undefined;
   const nextBlockedSection = currentSectionType
     ? SECTION_ORDER.slice(SECTION_ORDER.indexOf(currentSectionType) + 1).find((type) => sectionStatus[type] !== 'ready')
@@ -187,14 +192,16 @@ const QuizPage = () => {
   const waitingSectionType = pendingAdvance
     ? nextBlockedSection ?? SECTION_ORDER.find((type) => sectionStatus[type] !== 'ready')
     : undefined;
-  const sectionStates = SECTION_ORDER.map((type) => ({
+
+  const sectionStates = useMemo(() => SECTION_ORDER.map((type) => ({
     type,
     label: SECTION_LABELS[type],
     status: sectionStatus[type],
     error: sectionErrors[type],
     count: sectionQuestions[type].length,
     canRetry: type !== 'questions_type_1' && !!sessionId,
-  }));
+  })), [sectionStatus, sectionErrors, sectionQuestions, sessionId]);
+
   const progressLabel = isRetryMode
     ? '错题重练'
     : waitingSectionType
@@ -384,7 +391,7 @@ const QuizPage = () => {
     }
   };
 
-  const handleRetry = async (type: QuestionType) => {
+  const handleRetry = useCallback(async (type: QuestionType) => {
     if (!sessionId) return;
     setRetryingSection(type);
     setError('');
@@ -418,7 +425,7 @@ const QuizPage = () => {
     } finally {
       setRetryingSection(null);
     }
-  };
+  }, [sessionId, applySessionSnapshot, historySessionId]);
 
   // Pause button handlers (Requirements 3.1, 3.2)
   const handlePauseClick = () => {
@@ -433,6 +440,11 @@ const QuizPage = () => {
   const handlePauseCancel = () => {
     setShowPauseConfirm(false);
   };
+
+  // 重练模式下不需要 superJson，只需要 retryQuestions
+  if (!isRetryMode && !superJson) {
+    return null;
+  }
 
   return (
     <div className="quiz-shell">
